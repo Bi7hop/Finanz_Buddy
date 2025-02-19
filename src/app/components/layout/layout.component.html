@@ -1,0 +1,27 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" opened class="sidenav">
+      <mat-toolbar color="primary" class="sidenav-toolbar">Finanz Buddy</mat-toolbar>
+      <button mat-button routerLink="">
+        <mat-icon>home</mat-icon>
+        Dashboard
+      </button>
+      <button mat-button routerLink="einnahmen">
+        <mat-icon>attach_money</mat-icon>
+        Einnahmen
+      </button>
+      <button mat-button routerLink="ausgaben">
+        <mat-icon>money_off</mat-icon>
+        Ausgaben
+      </button>
+    </mat-sidenav>
+  
+    <mat-sidenav-content class="main-content">
+      <mat-toolbar color="primary" class="top-toolbar">
+        <span>Finanz Buddy - Hauptbereich</span>
+      </mat-toolbar>
+      <div class="content">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  

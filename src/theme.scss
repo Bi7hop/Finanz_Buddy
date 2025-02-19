@@ -1,0 +1,27 @@
+@use '@angular/material' as mat;
+
+$primary-color: mat.define-palette(mat.$blue-grey-palette, 900);  // z.B. dunkelblau/grau
+$accent-color: mat.define-palette(mat.$amber-palette, 500);
+
+
+$warn-color: mat.define-palette(mat.$red-palette);
+
+
+$my-dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $primary-color,
+    accent: $accent-color,
+    warn: $warn-color
+  )
+));
+
+
+@include mat.all-component-themes($my-dark-theme);
+
+
+body {
+  background: mat.get-color-from-palette($primary-color, 900); 
+  color: white;
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
