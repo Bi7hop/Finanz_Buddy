@@ -1,27 +1,46 @@
-# FinanzBuddy
+# 💰 FinanzBuddy
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Angular](https://img.shields.io/badge/Angular-17.3.12-red.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+A comprehensive personal finance management application that helps you track your household budget with ease.
+
+<p align="center">
+  <img src="/api/placeholder/800/400" alt="FinanzBuddy App Preview" />
+</p>
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 📊 **Transactions** | Track all your financial transactions in one place |
+| 💵 **Budget** | Set and monitor spending limits for different categories |
+| 🔄 **Standing Orders** | Manage recurring payments and subscriptions |
+| 📝 **Reports** | Generate detailed financial reports |
+| 📊 **Distribution** | Visualize your spending distribution |
+| 📈 **Statistics** | Access insights about your financial habits |
+
+FinanzBuddy gives you a complete overview of your income and expenses at a glance, helping you make informed financial decisions and maintain better control of your household finances.
+
+## 🚀 Getting Started
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.12.
 
-## Development server
+### Prerequisites
+- Node.js (v16+)
+- Angular CLI (`npm install -g @angular/cli`)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Bi7hop/Finanz_Buddy.git
 
-## Code scaffolding
+# Navigate to the project directory
+cd Finanz_Buddy
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+# Install dependencies
+npm install
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# Start the development server
+ng serve
