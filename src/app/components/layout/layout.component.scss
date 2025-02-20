@@ -1,16 +1,121 @@
-.sidenav-container {
-    height: 100vh; 
+$sidebar-width: 210px;
+$sidebar-bg: #2c3546;
+$header-height: 60px;
+$main-bg: #1e3045;
+$text-color: #ffffff;
+$active-item-bg: rgba(255, 255, 255, 0.1);
+$hover-bg: rgba(255, 255, 255, 0.05);
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: $sidebar-width;
+  background-color: $sidebar-bg;
+  color: $text-color;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  
+  .app-title {
+    font-size: 18px;
+    font-weight: 500;
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .nav-menu {
     display: flex;
     flex-direction: column;
+    padding: 16px 0;
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      color: $text-color;
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: background-color 0.2s;
+      
+      mat-icon {
+        margin-right: 10px;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+      
+      &:hover {
+        background-color: $hover-bg;
+      }
+      
+      &.active {
+        background-color: $active-item-bg;
+        border-left: 3px solid #4caf50;
+      }
+    }
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $main-bg;
+  overflow: hidden;
+  
+  .header {
+    height: $header-height;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    color: $text-color;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 400;
+      margin: 0;
+    }
   }
   
-  .top-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+  .content-container {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding: 0;
+    
+    ::ng-deep app-dashboard {
+      display: block;
+      height: 100%;
+      
+      .dashboard-container {
+        height: 100%;
+      }
+    }
   }
-  
-  .content {
-    padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 64px;
+    
+    .app-title {
+      display: none;
+    }
+    
+    .nav-menu .nav-item span {
+      display: none;
+    }
+    
+    .nav-menu .nav-item mat-icon {
+      margin-right: 0;
+    }
   }
-  
+}

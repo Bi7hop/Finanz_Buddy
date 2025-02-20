@@ -1,0 +1,65 @@
+<div class="budget-container">
+    <div class="budget-summary">
+      <div class="summary-card">
+        <div class="summary-item">
+          <div class="label">Gesamt Budget</div>
+          <div class="amount">{{ totalBudgeted | currency:'EUR' }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Ausgegeben</div>
+          <div class="amount">{{ totalSpent | currency:'EUR' }}</div>
+        </div>
+        <div class="summary-item">
+          <div class="label">Verbleibend</div>
+          <div class="amount" [ngClass]="{'positive': totalRemaining > 0, 'negative': totalRemaining < 0}">
+            {{ totalRemaining | currency:'EUR' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="month-navigation">
+      <button mat-icon-button (click)="previousMonth()">
+        <mat-icon>navigate_before</mat-icon>
+      </button>
+      <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
+      <button mat-icon-button (click)="nextMonth()">
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+    </div>
+  
+    <div class="budget-categories">
+      <mat-card *ngFor="let category of budgetCategories" class="category-card">
+        <div class="category-header">
+          <div class="category-name">{{ category.name }}</div>
+          <button mat-icon-button (click)="editBudgetCategory(category.id)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+        
+        <div class="category-amount-row">
+          <div class="budget-amount">{{ category.budgeted | currency:'EUR' }}</div>
+          <div class="spent-amount">{{ category.spent | currency:'EUR' }}</div>
+        </div>
+        
+        <div class="progress-container">
+          <mat-progress-bar 
+            [value]="category.progressPercentage"
+            [color]="category.status === 'danger' ? 'warn' : 
+                    (category.status === 'warning' ? 'accent' : 'primary')">
+          </mat-progress-bar>
+          <div class="remaining-amount" 
+               [ngClass]="{'positive': category.remaining > 0, 'negative': category.remaining < 0}">
+            {{ category.remaining | currency:'EUR' }} verbleibend
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  
+    <div class="add-budget-container">
+      <button mat-flat-button color="primary" (click)="addBudgetCategory()">
+        <mat-icon>add</mat-icon>
+        Neue Budgetkategorie
+      </button>
+    </div>
+  </div>

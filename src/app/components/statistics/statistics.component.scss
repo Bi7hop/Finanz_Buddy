@@ -1,0 +1,305 @@
+$dark-blue-background: #1e3045;
+$light-text: #ffffff;
+$income-green: #4caf50;
+$expense-red: #f44336;
+$tab-background: rgba(255, 255, 255, 0.06);
+$border-color: rgba(255, 255, 255, 0.1);
+
+$housing-color: rgba(255, 99, 132, 0.7);
+$food-color: rgba(54, 162, 235, 0.7);
+$transport-color: rgba(255, 206, 86, 0.7);
+$leisure-color: rgba(75, 192, 192, 0.7);
+$savings-color: rgba(153, 102, 255, 0.7);
+$other-color: rgba(255, 159, 64, 0.7);
+
+.statistics-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $dark-blue-background;
+  color: $light-text;
+}
+
+.statistics-header {
+  padding: 20px;
+  
+  h1 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+  }
+  
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    
+    mat-form-field {
+      width: 200px;
+      
+      ::ng-deep .mat-form-field-wrapper {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+      
+      ::ng-deep .mat-form-field-outline {
+        color: rgba(255, 255, 255, 0.3);
+      }
+      
+      ::ng-deep .mat-select-value, 
+      ::ng-deep .mat-select-arrow,
+      ::ng-deep .mat-form-field-label {
+        color: $light-text;
+      }
+    }
+    
+    button {
+      height: 50px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: $light-text;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+}
+
+::ng-deep .mat-tab-group {
+  flex: 1;
+  
+  .mat-tab-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid $border-color;
+    
+    .mat-tab-label {
+      color: $light-text;
+      opacity: 0.7;
+      
+      &.mat-tab-label-active {
+        opacity: 1;
+      }
+    }
+    
+    .mat-ink-bar {
+      background-color: $income-green;
+    }
+  }
+  
+  .mat-tab-body-wrapper {
+    flex: 1;
+  }
+}
+
+.chart-container {
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-placeholder {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  .chart-title {
+    font-size: 18px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+}
+
+.line-chart-placeholder {
+  display: flex;
+  flex: 1;
+  margin-bottom: 24px;
+  position: relative;
+  height: 300px;
+  
+  .axis {
+    display: flex;
+    
+    &.y-axis {
+      flex-direction: column-reverse;
+      justify-content: space-between;
+      width: 60px;
+      
+      .tick {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+    }
+    
+    &.x-axis {
+      position: absolute;
+      bottom: -25px;
+      left: 60px;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      
+      .tick {
+        font-size: 12px;
+        opacity: 0.7;
+      }
+    }
+  }
+  
+  .chart-area {
+    flex: 1;
+    position: relative;
+    border-left: 1px solid $border-color;
+    border-bottom: 1px solid $border-color;
+    
+    .data-line {
+      position: absolute;
+      height: 2px;
+      left: 0;
+      right: 0;
+      
+      &.income {
+        background: linear-gradient(to right, 
+          transparent 0%, $income-green 10%, $income-green 30%, 
+          $income-green 50%, $income-green 70%, $income-green 90%, transparent 100%);
+        top: 20%;
+      }
+      
+      &.expenses {
+        background: linear-gradient(to right, 
+          transparent 0%, $expense-red 10%, $expense-red 30%, 
+          $expense-red 70%, $expense-red 90%, transparent 100%);
+        top: 40%;
+      }
+    }
+  }
+}
+
+.pie-chart-placeholder {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  
+  .pie-segment {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    
+    &.housing {
+      background-color: $housing-color;
+      clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 70%, 50% 50%);
+    }
+    
+    &.food {
+      background-color: $food-color;
+      clip-path: polygon(50% 50%, 100% 70%, 90% 100%, 50% 100%, 50% 50%);
+    }
+    
+    &.transport {
+      background-color: $transport-color;
+      clip-path: polygon(50% 50%, 50% 100%, 20% 100%, 10% 70%, 50% 50%);
+    }
+    
+    &.leisure {
+      background-color: $leisure-color;
+      clip-path: polygon(50% 50%, 10% 70%, 0 30%, 20% 10%, 50% 50%);
+    }
+    
+    &.savings {
+      background-color: $savings-color;
+      clip-path: polygon(50% 50%, 20% 10%, 50% 0, 50% 50%);
+    }
+    
+    &.other {
+      display: none;
+    }
+  }
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    .color-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      
+      &.income { background-color: $income-green; }
+      &.expenses { background-color: $expense-red; }
+      &.housing { background-color: $housing-color; }
+      &.food { background-color: $food-color; }
+      &.transport { background-color: $transport-color; }
+      &.leisure { background-color: $leisure-color; }
+      &.savings { background-color: $savings-color; }
+      &.other { background-color: $other-color; }
+    }
+    
+    span {
+      font-size: 12px;
+    }
+  }
+}
+
+.placeholder-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 18px;
+  opacity: 0.5;
+}
+
+.export-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 20px;
+  border-top: 1px solid $border-color;
+  
+  button {
+    color: $light-text;
+    border-color: rgba(255, 255, 255, 0.3);
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .statistics-header .filters {
+    flex-direction: column;
+    align-items: stretch;
+    
+    mat-form-field {
+      width: 100%;
+    }
+  }
+  
+  .export-container {
+    flex-direction: column;
+  }
+}

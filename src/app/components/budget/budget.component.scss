@@ -1,0 +1,154 @@
+$dark-blue-background: #1e3045;
+$light-text: #ffffff;
+$income-green: #4caf50;
+$expense-red: #f44336;
+$warning-color: #ff9800;
+$card-background: rgba(255, 255, 255, 0.06);
+
+.budget-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $dark-blue-background;
+  color: $light-text;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.budget-summary {
+  margin-bottom: 24px;
+  
+  .summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .summary-item {
+    .label {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+    
+    .amount {
+      font-size: 20px;
+      font-weight: 500;
+      
+      &.positive {
+        color: $income-green;
+      }
+      
+      &.negative {
+        color: $expense-red;
+      }
+    }
+  }
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  
+  .current-month {
+    font-size: 18px;
+    margin: 0 16px;
+  }
+}
+
+.budget-categories {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  
+  .category-card {
+    background-color: $card-background;
+    border-radius: 8px;
+    padding: 16px;
+    
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      .category-name {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+    
+    .category-amount-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      
+      .budget-amount {
+        font-weight: 500;
+      }
+      
+      .spent-amount {
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
+    
+    .progress-container {
+      .mat-progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        margin-bottom: 8px;
+      }
+      
+      .remaining-amount {
+        font-size: 14px;
+        text-align: right;
+        
+        &.positive {
+          color: $income-green;
+        }
+        
+        &.negative {
+          color: $expense-red;
+        }
+      }
+    }
+  }
+}
+
+.add-budget-container {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding: 16px 0;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: rgba($income-green, 0.2);
+    color: $income-green;
+    
+    &:hover {
+      background-color: rgba($income-green, 0.3);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .budget-summary {
+    .summary-card {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+  
+  .budget-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+}

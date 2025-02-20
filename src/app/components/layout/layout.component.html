@@ -1,27 +1,71 @@
-<mat-sidenav-container class="sidenav-container">
-    <mat-sidenav mode="side" opened class="sidenav">
-      <mat-toolbar color="primary" class="sidenav-toolbar">Finanz Buddy</mat-toolbar>
-      <button mat-button routerLink="">
-        <mat-icon>home</mat-icon>
-        Dashboard
-      </button>
-      <button mat-button routerLink="einnahmen">
-        <mat-icon>attach_money</mat-icon>
-        Einnahmen
-      </button>
-      <button mat-button routerLink="ausgaben">
-        <mat-icon>money_off</mat-icon>
-        Ausgaben
-      </button>
-    </mat-sidenav>
-  
-    <mat-sidenav-content class="main-content">
-      <mat-toolbar color="primary" class="top-toolbar">
-        <span>Finanz Buddy - Hauptbereich</span>
-      </mat-toolbar>
-      <div class="content">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+<div class="app-container">
+  <!-- Left sidebar navigation -->
+  <div class="sidebar">
+    <div class="app-title">Finanz Buddy</div>
+    
+    <nav class="nav-menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/einnahmen" routerLinkActive="active" class="nav-item">
+        <mat-icon>arrow_upward</mat-icon>
+        <span>Einnahmen</span>
+      </a>
+      <a routerLink="/ausgaben" routerLinkActive="active" class="nav-item">
+        <mat-icon>arrow_downward</mat-icon>
+        <span>Ausgaben</span>
+      </a>
+      <a routerLink="/buchungen" routerLinkActive="active" class="nav-item">
+        <mat-icon>account_balance_wallet</mat-icon>
+        <span>Buchungen</span>
+      </a>
+      <a routerLink="/budget" routerLinkActive="active" class="nav-item">
+        <mat-icon>calculate</mat-icon>
+        <span>Budget</span>
+      </a>
+      <a routerLink="/dauerauftraege" routerLinkActive="active" class="nav-item">
+        <mat-icon>schedule</mat-icon>
+        <span>Daueraufträge</span>
+      </a>
+      <a routerLink="/banking" routerLinkActive="active" class="nav-item">
+        <mat-icon>account_balance</mat-icon>
+        <span>Banking</span>
+      </a>
+      <a routerLink="/kredite" routerLinkActive="active" class="nav-item">
+        <mat-icon>person</mat-icon>
+        <span>Kredite</span>
+      </a>
+      <a routerLink="/berichte" routerLinkActive="active" class="nav-item">
+        <mat-icon>description</mat-icon>
+        <span>Berichte</span>
+      </a>
+      <a routerLink="/verteilung" routerLinkActive="active" class="nav-item">
+        <mat-icon>pie_chart</mat-icon>
+        <span>Verteilung</span>
+      </a>
+      <a routerLink="/statistiken" routerLinkActive="active" class="nav-item">
+        <mat-icon>bar_chart</mat-icon>
+        <span>Statistiken</span>
+      </a>
+      <a routerLink="/einstellungen" routerLinkActive="active" class="nav-item">
+        <mat-icon>settings</mat-icon>
+        <span>Einstellungen</span>
+      </a>
+      <a routerLink="/handbuch" routerLinkActive="active" class="nav-item">
+        <mat-icon>help</mat-icon>
+        <span>Handbuch</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="header">
+      <h1 class="page-title">Finanz Buddy - Hauptbereich</h1>
+    </div>
+    
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
