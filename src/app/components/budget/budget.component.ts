@@ -5,10 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { BudgetFormComponent } from '../budget-form/budget-form.component';
 
 interface BudgetCategory {
   id: number;
   name: string;
+  category: string;
   budgeted: number;
   spent: number;
   remaining: number;
@@ -25,7 +28,8 @@ interface BudgetCategory {
     MatIconModule,
     MatButtonModule,
     MatProgressBarModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDialogModule
   ],
   templateUrl: './budget.component.html',
   styleUrls: ['./budget.component.scss']
@@ -39,7 +43,7 @@ export class BudgetComponent implements OnInit {
 
   budgetCategories: BudgetCategory[] = [];
 
-  constructor() { }
+  constructor(private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.updateCurrentMonthDisplay();
@@ -61,6 +65,7 @@ export class BudgetComponent implements OnInit {
       {
         id: 1,
         name: 'Lebensmittel',
+        category: 'food',
         budgeted: 500,
         spent: 320,
         remaining: 180,
@@ -70,6 +75,7 @@ export class BudgetComponent implements OnInit {
       {
         id: 2,
         name: 'Wohnen',
+        category: 'housing',
         budgeted: 850,
         spent: 850,
         remaining: 0,
@@ -79,6 +85,7 @@ export class BudgetComponent implements OnInit {
       {
         id: 3,
         name: 'Transport',
+        category: 'transport',
         budgeted: 200,
         spent: 140,
         remaining: 60,
@@ -88,6 +95,7 @@ export class BudgetComponent implements OnInit {
       {
         id: 4,
         name: 'Freizeit',
+        category: 'entertainment',
         budgeted: 300,
         spent: 275,
         remaining: 25,
@@ -97,11 +105,22 @@ export class BudgetComponent implements OnInit {
       {
         id: 5,
         name: 'Sparen',
+        category: 'savings',
         budgeted: 400,
         spent: 400,
         remaining: 0,
         progressPercentage: 100,
         status: 'good'
+      },
+      {
+        id: 6,
+        name: 'Einkaufen',
+        category: 'shopping',
+        budgeted: 250,
+        spent: 287,
+        remaining: -37,
+        progressPercentage: 115,
+        status: 'danger'
       }
     ];
 
@@ -115,18 +134,100 @@ export class BudgetComponent implements OnInit {
   }
 
   addBudgetCategory(): void {
-    console.log('Navigate to add budget category');
+    const dialogRef = this.dialog.open(BudgetFormComponent, {
+      width: '400px',
+      panelClass: 'dark-theme-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('New budget category:', result);
+        
+        const newCategory: BudgetCategory = {
+          id: this.budgetCategories.length + 1,
+          name: result.name,
+          category: result.category,
+          budgeted: result.budgeted,
+          spent: 0, 
+          remaining: result.budgeted,
+          progressPercentage: 0,
+          status: 'good'
+        };
+        
+        this.budgetCategories.push(newCategory);
+        this.calculateTotals();
+      }
+    });
   }
 
   editBudgetCategory(id: number): void {
-    console.log(`Edit budget category ${id}`);
+    const category = this.budgetCategories.find(cat => cat.id === id);
+    
+    if (!category) {
+      return;
+    }
+    
+    const dialogRef = this.dialog.open(BudgetFormComponent, {
+      width: '400px',
+      panelClass: 'dark-theme-dialog',
+      data: {
+        id: category.id,
+        name: category.name,
+        category: category.category,
+        budgeted: category.budgeted
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Updated budget category:', result);
+        
+        const index = this.budgetCategories.findIndex(cat => cat.id === id);
+        if (index !== -1) {
+          const spent = this.budgetCategories[index].spent;
+          const remaining = result.budgeted - spent;
+          const progressPercentage = spent / result.budgeted * 100;
+          
+          let status: 'good' | 'warning' | 'danger' = 'good';
+          if (progressPercentage >= 100) {
+            status = 'danger';
+          } else if (progressPercentage >= 80) {
+            status = 'warning';
+          }
+          
+          this.budgetCategories[index] = {
+            ...result,
+            spent,
+            remaining,
+            progressPercentage,
+            status
+          };
+          
+          this.calculateTotals();
+        }
+      }
+    });
   }
 
   previousMonth(): void {
- 
   }
 
   nextMonth(): void {
-   
+  }
+  
+  getCategoryIcon(category: string): string {
+    const iconMap: {[key: string]: string} = {
+      'housing': 'home',
+      'food': 'restaurant',
+      'transport': 'directions_car',
+      'entertainment': 'movie',
+      'shopping': 'shopping_cart',
+      'health': 'healing',
+      'education': 'school',
+      'savings': 'savings',
+      'misc': 'more_horiz'
+    };
+    
+    return iconMap[category] || 'category';
   }
 }
