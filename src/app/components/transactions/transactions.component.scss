@@ -1,0 +1,130 @@
+$dark-blue-background: #1e3045;
+$light-text: #ffffff;
+$income-green: #4caf50;
+$expense-red: #f44336;
+$input-background: rgba(255, 255, 255, 0.06);
+$form-width: 500px;
+
+.transaction-form-container {
+  display: flex;
+  flex-direction: column;
+  background-color: $dark-blue-background;
+  color: $light-text;
+  padding: 20px;
+  
+  .transaction-form-header {
+    margin-bottom: 24px;
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0;
+    }
+  }
+  
+  .transaction-form {
+    display: flex;
+    flex-direction: column;
+    max-width: $form-width;
+    margin: 0 auto;
+    width: 100%;
+    
+    ::ng-deep .mat-form-field {
+      margin-bottom: 16px;
+      
+      .mat-form-field-wrapper {
+        background-color: $input-background;
+        border-radius: 4px;
+        padding-bottom: 0;
+      }
+      
+      .mat-form-field-outline {
+        color: rgba(255, 255, 255, 0.3);
+      }
+      
+      .mat-form-field-infix {
+        padding: 0.75em 0;
+        width: 100%;
+      }
+      
+      .mat-select-value, 
+      .mat-select-arrow,
+      .mat-form-field-label,
+      .mat-input-element,
+      .mat-datepicker-toggle {
+        color: $light-text;
+      }
+      
+      &.mat-focused {
+        .mat-form-field-label {
+          color: $light-text;
+        }
+        
+        .mat-form-field-outline-thick {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+    
+    .recurring-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      label {
+        margin-right: 16px;
+        flex: 0 0 120px;
+      }
+      
+      .toggle-input {
+        flex: 1;
+        
+        ::ng-deep .mat-button-toggle-group {
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 4px;
+          background-color: transparent;
+          
+          .mat-button-toggle {
+            color: $light-text;
+            opacity: 0.7;
+            background-color: transparent;
+            
+            &.mat-button-toggle-checked {
+              background-color: rgba(255, 255, 255, 0.15);
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+      
+      button {
+        min-width: 120px;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .transaction-form-container {
+    padding: 16px;
+    
+    .transaction-form {
+      .form-actions {
+        flex-direction: column-reverse;
+        gap: 16px;
+        
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+
