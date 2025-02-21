@@ -24,23 +24,42 @@
     </div>
   </div>
 
-  <mat-card class="transactions-card">
-    <div class="transactions-list">
-      <div *ngFor="let category of categories" class="category-item">
-        <div class="category-bar" [ngClass]="category.type">
-          <div class="category-indicator"></div>
+  <div class="table-header">
+    <div class="column-header date-column">Datum</div>
+    <div class="column-header category-column">Kategorie</div>
+    <div class="column-header description-column">Beschreibung</div>
+    <div class="column-header amount-column">Betrag</div>
+    <div class="column-header actions-column"></div>
+  </div>
+  
+  <div class="transactions-list">
+    <div *ngFor="let category of categories" class="transaction-row">
+      <div class="date-column">
+        {{ category.displayDate || currentMonth }}
+        <mat-icon *ngIf="category.isRecurring" class="recurring-icon">loop</mat-icon>
+      </div>
+      
+      <div class="category-column">
+        <div class="category-icon-container" [ngClass]="category.type === 'income' ? 'income' : category.category">
+          <mat-icon>{{ getCategoryIcon(category) }}</mat-icon>
         </div>
-        <div class="category-details">
-          <div class="category-name">{{ category.name }}</div>
-          <div class="category-description">{{ category.description }}</div>
-        </div>
-        <div class="category-amount" 
-             [ngClass]="{'positive': category.type === 'income', 'negative': category.type === 'expense'}">
-          {{ category.type === 'income' ? '' : '-' }}{{ category.amount | currency:'EUR' }}
-        </div>
+        {{ category.name }}
+      </div>
+      
+      <div class="description-column">{{ category.description }}</div>
+      
+      <div class="amount-column" [ngClass]="{'positive': category.type === 'income', 'negative': category.type === 'expense'}">
+        {{ category.type === 'income' ? '+' : '-' }}{{ category.amount | currency:'EUR' }}
+      </div>
+      
+      <div class="actions-column">
       </div>
     </div>
-  </mat-card>
+    
+    <div *ngIf="categories.length === 0" class="empty-state">
+      Keine Transaktionen in diesem Zeitraum gefunden.
+    </div>
+  </div>
 
   <div class="navigation-footer">
     <div class="balance-total">

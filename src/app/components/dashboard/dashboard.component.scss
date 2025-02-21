@@ -1,21 +1,25 @@
 $dark-blue-background: #1e3045;
 $light-text: #ffffff;
-
 $income-green: #4caf50;
 $expense-red: #f44336;
+$table-header-bg: rgba(0, 0, 0, 0.2);
+$table-hover-bg: rgba(255, 255, 255, 0.05);
+$divider-color: rgba(255, 255, 255, 0.1);
 
-$card-background: rgba(255, 255, 255, 0.1);
-$hover-overlay: rgba(255, 255, 255, 0.05);
-$active-button: rgba(255, 255, 255, 0.2);
-$divider: rgba(255, 255, 255, 0.12);
+$housing-color: #4a6572;
+$food-color: #ff7043;
+$transport-color: #5c6bc0;
+$shopping-color: #7e57c2;
+$entertainment-color: #26a69a;
+$income-color: #43a047;
 
 .dashboard-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
   background-color: $dark-blue-background;
-  color: white;
-  overflow: hidden;
+  color: $light-text;
+  position: relative;
 }
 
 .summary-section {
@@ -23,47 +27,42 @@ $divider: rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   gap: 5px;
-}
-
-.balance-item {
-  font-size: 18px;
-  font-weight: 500;
-  padding: 5px 0;
   
-  &.positive {
-    color: $income-green;
-  }
-  
-  &.negative {
-    color: $expense-red;
-  }
-  
-  &.total {
-    color: $income-green;
+  .balance-item {
+    font-size: 18px;
+    font-weight: 500;
+    padding: 5px 0;
+    
+    &.positive {
+      color: $income-green;
+    }
+    
+    &.negative {
+      color: $expense-red;
+    }
+    
+    &.total {
+      color: $income-green;
+    }
   }
 }
 
 .month-navigation {
+  padding: 0 20px 15px;
   display: flex;
   align-items: center;
-  padding: 15px 20px;
+  border-bottom: 1px solid $divider-color;
   
   .nav-button {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: $light-text;
     
     &:hover {
-      opacity: 0.8;
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
   
   .current-month {
-    font-size: 16px;
+    font-size: 18px;
     margin: 0 10px;
   }
   
@@ -71,9 +70,8 @@ $divider: rgba(255, 255, 255, 0.12);
     margin-left: auto;
     
     .bank-link {
-      color: white;
+      color: $light-text;
       text-decoration: none;
-      font-weight: 500;
       
       &:hover {
         text-decoration: underline;
@@ -82,56 +80,92 @@ $divider: rgba(255, 255, 255, 0.12);
   }
 }
 
-.transactions-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 20px;
-}
-
-.category-item {
+.table-header {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  background-color: $table-header-bg;
+  padding: 12px 20px;
+  font-weight: 500;
+  border-bottom: 1px solid $divider-color;
 }
 
-.category-bar {
-  width: 4px;
-  height: 40px;
-  margin-right: 15px;
-  position: relative;
+.column-header,
+.date-column,
+.category-column,
+.description-column,
+.amount-column,
+.actions-column {
+  padding: 0 8px;
+}
+
+.date-column {
+  width: 120px;
+  display: flex;
+  align-items: center;
   
-  &.income {
-    background-color: $income-green;
-  }
-  
-  &.expense {
-    background-color: $expense-red;
-  }
-  
-  .category-indicator {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .recurring-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    margin-left: 5px;
+    opacity: 0.6;
   }
 }
 
-.category-details {
+.category-column {
+  width: 180px;
+  display: flex;
+  align-items: center;
+  
+  .category-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin-right: 8px;
+    
+    &.housing {
+      background-color: $housing-color;
+    }
+    
+    &.food {
+      background-color: $food-color;
+    }
+    
+    &.transport {
+      background-color: $transport-color;
+    }
+    
+    &.shopping {
+      background-color: $shopping-color;
+    }
+    
+    &.entertainment {
+      background-color: $entertainment-color;
+    }
+    
+    &.income {
+      background-color: $income-color;
+    }
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      color: white;
+    }
+  }
+}
+
+.description-column {
   flex: 1;
-  
-  .category-name {
-    font-weight: 500;
-    margin-bottom: 3px;
-  }
-  
-  .category-description {
-    font-size: 12px;
-    opacity: 0.7;
-  }
 }
 
-.category-amount {
+.amount-column {
+  width: 120px;
+  text-align: right;
   font-weight: 500;
   
   &.positive {
@@ -143,65 +177,129 @@ $divider: rgba(255, 255, 255, 0.12);
   }
 }
 
-.navigation-footer {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 15px 20px;
-}
-
-.balance-total {
+.actions-column {
+  width: 48px;
   text-align: right;
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 15px;
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.action-button {
+.transactions-list {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  overflow-y: auto;
   
-  &.income {
-    background-color: rgba($income-green, 0.2);
-    color: $income-green;
+  .transaction-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid $divider-color;
     
     &:hover {
-      background-color: rgba($income-green, 0.3);
+      background-color: $table-hover-bg;
     }
   }
   
-  &.expense {
-    background-color: rgba($expense-red, 0.2);
-    color: $expense-red;
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.navigation-footer {
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 15px 20px;
+  border-top: 1px solid $divider-color;
+  
+  .balance-total {
+    text-align: right;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
     
-    &:hover {
-      background-color: rgba($expense-red, 0.3);
+    .action-button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      
+      &.income {
+        background-color: rgba($income-green, 0.2);
+        color: $income-green;
+        
+        &:hover {
+          background-color: rgba($income-green, 0.3);
+        }
+      }
+      
+      &.expense {
+        background-color: rgba($expense-red, 0.2);
+        color: $expense-red;
+        
+        &:hover {
+          background-color: rgba($expense-red, 0.3);
+        }
+      }
+      
+      &.transfer {
+        background-color: rgba(white, 0.1);
+        color: white;
+        
+        &:hover {
+          background-color: rgba(white, 0.2);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .month-navigation {
+    flex-wrap: wrap;
+    
+    .right-aligned {
+      width: 100%;
+      margin-top: 10px;
+      text-align: right;
     }
   }
   
-  &.transfer {
-    background-color: rgba(white, 0.1);
-    color: white;
-    
-    &:hover {
-      background-color: rgba(white, 0.2);
-    }
+  .column-header,
+  .date-column,
+  .category-column,
+  .description-column,
+  .amount-column,
+  .actions-column {
+    padding: 0 4px;
   }
   
-  i {
-    font-size: 16px;
+  .date-column {
+    width: 90px;
+  }
+  
+  .category-column {
+    width: 140px;
+  }
+  
+  .description-column {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .navigation-footer {
+    .action-buttons {
+      flex-direction: column;
+      
+      .action-button {
+        padding: 10px;
+      }
+    }
   }
 }

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { RouterModule, Router } from '@angular/router';
 
 interface Category {
   id: number;
@@ -12,6 +12,9 @@ interface Category {
   description: string;
   amount: number;
   type: 'income' | 'expense';
+  category?: string;
+  displayDate?: string;
+  isRecurring?: boolean;
 }
 
 @Component({
@@ -23,8 +26,7 @@ interface Category {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatDividerModule,
-    CurrencyPipe
+    MatDividerModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
@@ -57,6 +59,7 @@ export class DashboardComponent implements OnInit {
   }
   
   loadMonthData(): void {
+
     this.mockDataForMonth();
     this.calculateSummary();
   }
@@ -69,35 +72,45 @@ export class DashboardComponent implements OnInit {
           name: 'Einnahmen',
           description: 'Gehalt, Kindergeld',
           amount: 1835.12,
-          type: 'income'
+          type: 'income',
+          category: 'salary',
+          displayDate: '01.07.2015'
         },
         {
           id: 2,
           name: 'Auto',
           description: 'Tanken',
           amount: 76.50,
-          type: 'expense'
+          type: 'expense',
+          category: 'transport',
+          displayDate: '05.07.2015'
         },
         {
           id: 3,
           name: 'Freizeit',
           description: 'Ausgehen',
           amount: 46.00,
-          type: 'expense'
+          type: 'expense',
+          category: 'entertainment',
+          displayDate: '12.07.2015'
         },
         {
           id: 4,
           name: 'Kredite und Bank',
           description: 'Kredite',
           amount: 310.00,
-          type: 'expense'
+          type: 'expense',
+          category: 'housing',
+          displayDate: '15.07.2015'
         },
         {
           id: 5,
           name: 'Wohnen',
           description: 'Strom, Miete',
           amount: 788.00,
-          type: 'expense'
+          type: 'expense',
+          category: 'housing',
+          displayDate: '20.07.2015'
         }
       ];
     } else {
@@ -107,28 +120,36 @@ export class DashboardComponent implements OnInit {
           name: 'Einnahmen',
           description: 'Gehalt, Sonstiges',
           amount: 1750 + Math.random() * 300,
-          type: 'income'
+          type: 'income',
+          category: 'salary',
+          displayDate: '01.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
         },
         {
           id: 2,
           name: 'Lebensmittel',
           description: 'Supermarkt, Restaurants',
           amount: 350 + Math.random() * 100,
-          type: 'expense'
+          type: 'expense',
+          category: 'food',
+          displayDate: '05.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
         },
         {
           id: 3,
           name: 'Wohnen',
           description: 'Miete, Nebenkosten',
           amount: 750 + Math.random() * 50,
-          type: 'expense'
+          type: 'expense',
+          category: 'housing',
+          displayDate: '10.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
         },
         {
           id: 4,
           name: 'Transport',
           description: 'Tanken, ÖPNV',
           amount: 90 + Math.random() * 40,
-          type: 'expense'
+          type: 'expense',
+          category: 'transport',
+          displayDate: '15.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
         }
       ];
     }
@@ -172,5 +193,24 @@ export class DashboardComponent implements OnInit {
   
   transfer(): void {
     this.router.navigate(['/transaction/transfer']);
+  }
+
+  getCategoryIcon(category: Category): string {
+    if (category.type === 'income') {
+      return 'attach_money';
+    }
+    
+    const iconMap: {[key: string]: string} = {
+      'housing': 'home',
+      'food': 'restaurant',
+      'transport': 'directions_car',
+      'entertainment': 'movie',
+      'shopping': 'shopping_cart',
+      'health': 'healing',
+      'education': 'school',
+      'salary': 'work'
+    };
+    
+    return iconMap[category.category || ''] || 'category';
   }
 }
