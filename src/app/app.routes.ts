@@ -4,6 +4,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { BudgetComponent } from './components/budget/budget.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { NotImplementedComponent } from './components/not-implemented/not-implemented.component';
+import { ExpenseComponent } from './components/expense/expense.component';
+import { IncomeComponent } from './components/income/income.component';
+import { TransactionFormComponent } from './components/transactions/transactions.component';
 
 export const routes: Routes = [
   {
@@ -12,8 +15,8 @@ export const routes: Routes = [
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },        
-      { path: 'einnahmen', component: NotImplementedComponent, data: { featureName: 'Einnahmen' } }, 
-      { path: 'ausgaben', component: NotImplementedComponent, data: { featureName: 'Ausgaben' } },
+      { path: 'einnahmen', component: IncomeComponent },
+      { path: 'ausgaben', component: ExpenseComponent },
       { path: 'budget', component: BudgetComponent },
       { path: 'buchungen', component: NotImplementedComponent, data: { featureName: 'Buchungen' } },
       { path: 'dauerauftraege', component: NotImplementedComponent, data: { featureName: 'Daueraufträge' } },
@@ -24,6 +27,7 @@ export const routes: Routes = [
       { path: 'statistiken', component: StatisticsComponent },
       { path: 'einstellungen', component: NotImplementedComponent, data: { featureName: 'Einstellungen' } },
       { path: 'handbuch', component: NotImplementedComponent, data: { featureName: 'Handbuch' } },
+      { path: 'transaction/new', component: TransactionFormComponent },
     ]
   },
 ];
