@@ -1,0 +1,226 @@
+$dark-blue-background: #1e3045;
+$light-text: #ffffff;
+$expense-red: #f44336;
+$table-header-bg: rgba(0, 0, 0, 0.2);
+$table-hover-bg: rgba(255, 255, 255, 0.05);
+$divider-color: rgba(255, 255, 255, 0.1);
+
+$housing-color: #4a6572;
+$food-color: #ff7043;
+$transport-color: #5c6bc0;
+$shopping-color: #7e57c2;
+$entertainment-color: #26a69a;
+
+.expense-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $dark-blue-background;
+  color: $light-text;
+  position: relative;
+}
+
+.expense-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid $divider-color;
+  
+  .month-navigation {
+    display: flex;
+    align-items: center;
+    
+    .current-month {
+      font-size: 18px;
+      margin: 0 10px;
+    }
+  }
+  
+  .expense-total {
+    text-align: right;
+    
+    .label {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+    
+    .amount {
+      font-size: 24px;
+      font-weight: 500;
+      color: $expense-red;
+    }
+  }
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  background-color: $table-header-bg;
+  padding: 12px 20px;
+  font-weight: 500;
+  border-bottom: 1px solid $divider-color;
+}
+
+.column-header,
+.date-column,
+.category-column,
+.description-column,
+.amount-column,
+.actions-column {
+  padding: 0 8px;
+}
+
+.date-column {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  
+  .recurring-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    margin-left: 5px;
+    opacity: 0.6;
+  }
+}
+
+.category-column {
+  width: 180px;
+  display: flex;
+  align-items: center;
+  
+  .category-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin-right: 8px;
+    
+    &.housing {
+      background-color: $housing-color;
+    }
+    
+    &.food {
+      background-color: $food-color;
+    }
+    
+    &.transport {
+      background-color: $transport-color;
+    }
+    
+    &.shopping {
+      background-color: $shopping-color;
+    }
+    
+    &.entertainment {
+      background-color: $entertainment-color;
+    }
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      color: white;
+    }
+  }
+}
+
+.description-column {
+  flex: 1;
+}
+
+.amount-column {
+  width: 120px;
+  text-align: right;
+  font-weight: 500;
+  
+  &.negative {
+    color: $expense-red;
+  }
+}
+
+.actions-column {
+  width: 48px;
+  text-align: right;
+}
+
+.transactions-list {
+  flex: 1;
+  overflow-y: auto;
+  
+  .transaction-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid $divider-color;
+    
+    &:hover {
+      background-color: $table-hover-bg;
+    }
+  }
+  
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.add-expense-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  
+  .add-button {
+    background-color: $expense-red;
+    
+    &:hover {
+      background-color: darken($expense-red, 5%);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .expense-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    
+    .month-navigation {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .expense-total {
+      align-self: flex-end;
+    }
+  }
+  
+  .column-header,
+  .date-column,
+  .category-column,
+  .description-column,
+  .amount-column,
+  .actions-column {
+    padding: 0 4px;
+  }
+  
+  .date-column {
+    width: 90px;
+  }
+  
+  .category-column {
+    width: 140px;
+  }
+  
+  .description-column {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
