@@ -1,0 +1,68 @@
+$dark-blue-background: #1e3045;
+$light-text: #ffffff;
+$input-background: rgba(255, 255, 255, 0.06);
+
+.budget-form-container {
+  color: $light-text;
+  padding: 16px;
+  
+  .form-title {
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  ::ng-deep {
+    .mat-form-field-wrapper {
+      background-color: $input-background;
+      border-radius: 4px;
+      padding-bottom: 0;
+    }
+    
+    .mat-form-field-outline {
+      color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .mat-form-field-infix {
+      padding: 0.75em 0;
+      width: 100%;
+    }
+    
+    .mat-select-value, 
+    .mat-select-arrow,
+    .mat-form-field-label,
+    .mat-input-element {
+      color: $light-text;
+    }
+    
+    .mat-form-field.mat-focused {
+      .mat-form-field-label {
+        color: $light-text;
+      }
+      
+      .mat-form-field-outline-thick {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+    
+    .mat-option {
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+  }
+}
