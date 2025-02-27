@@ -77,11 +77,56 @@ $hover-bg: rgba(255, 255, 255, 0.05);
     padding: 0 24px;
     color: $text-color;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    justify-content: space-between; 
     
     .page-title {
       font-size: 18px;
       font-weight: 400;
       margin: 0;
+    }
+    
+    .profile-container {
+      display: flex;
+      align-items: center;
+      
+      .profile-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        
+        &:hover .avatar-container {
+          opacity: 0.9;
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+        
+        .avatar-container {
+          position: relative;
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          overflow: hidden;
+          transition: all 0.2s ease;
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+          
+          .profile-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          
+          .status-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4caf50;
+            border: 2px solid $sidebar-bg;
+          }
+        }
+      }
     }
   }
   
