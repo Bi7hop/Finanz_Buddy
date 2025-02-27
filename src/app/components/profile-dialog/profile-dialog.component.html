@@ -1,0 +1,89 @@
+<div class="profile-dialog-container">
+  <h2 mat-dialog-title class="text-center">Profil & Einstellungen</h2>
+  
+  <mat-dialog-content>
+    <div class="profile-section">
+      <div class="avatar-large">
+        <img src="assets/images/test222.webp" 
+             alt="Profilbild" 
+             class="profile-avatar-large">
+        <button mat-mini-fab color="primary" class="edit-avatar-button">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+      
+      <div class="profile-info">
+        <div class="info-row">
+          <mat-icon>person</mat-icon>
+          <div class="info-value">{{ userProfile.name }}</div>
+        </div>
+        <div class="info-row">
+          <mat-icon>alternate_email</mat-icon>
+          <div class="info-value">{{ userProfile.nickname }}</div>
+        </div>
+        <div class="info-row">
+          <mat-icon>email</mat-icon>
+          <div class="info-value">{{ userProfile.email }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="settings-section">
+      <h3>Einstellungen</h3>
+      
+      <div class="settings-row">
+        <div class="setting-label">
+          <mat-icon>dark_mode</mat-icon>
+          <span>Dark Mode</span>
+        </div>
+        <mat-slide-toggle 
+          [checked]="userSettings.darkMode"
+          (change)="updateDarkMode($event.checked)"
+          color="primary">
+        </mat-slide-toggle>
+      </div>
+      
+      <div class="settings-row">
+        <div class="setting-label">
+          <mat-icon>euro</mat-icon>
+          <span>Währung</span>
+        </div>
+        <mat-button-toggle-group 
+          [value]="userSettings.currency"
+          (change)="updateCurrency($event.value)">
+          <mat-button-toggle value="EUR"><mat-icon>euro</mat-icon></mat-button-toggle>
+          <mat-button-toggle value="USD"><mat-icon>attach_money</mat-icon></mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+      
+      <div class="settings-row">
+        <div class="setting-label">
+          <mat-icon>language</mat-icon>
+          <span>Sprache</span>
+        </div>
+        <mat-button-toggle-group 
+          [value]="userSettings.language"
+          (change)="updateLanguage($event.value)">
+          <mat-button-toggle value="de">
+            <span class="flag-icon de-flag"></span>
+          </mat-button-toggle>
+          <mat-button-toggle value="en">
+            <span class="flag-icon uk-flag"></span>
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Abbrechen</button>
+    <button mat-raised-button
+            color="primary"
+            (click)="saveSettings()"
+            [mat-dialog-close]="true">
+      Speichern
+    </button>
+  </mat-dialog-actions>
+</div>
