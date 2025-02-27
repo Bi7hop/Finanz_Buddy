@@ -5,3 +5,29 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.custom-dialog {
+  .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      background-color: #1e3045; 
+      color: #ffffff; 
+      border-radius: 8px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+  }
+  
+  .mat-mdc-dialog-content {
+    color: rgba(255, 255, 255, 0.87);
+  }
+  
+  .mat-mdc-button:not(.mat-primary) {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .mat-primary {
+    &.mat-mdc-raised-button {
+      background-color: #4caf50;
+    }
+  }
+}
