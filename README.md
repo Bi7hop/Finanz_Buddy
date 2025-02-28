@@ -1,14 +1,13 @@
 <div align="center">
-  
+
 # 💰 FinanzBuddy
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,3,12&height=200&section=header&text=Finanz%20Buddy&fontColor=fff&fontSize=70&animation=fadeIn&fontAlignY=38" width="100%" />
 
-### Dein intelligenter Partner für persönliche Finanzen
+### Your Intelligent Partner for Personal Finance
   
 [![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)](https://github.com/Bi7hop/Finanz_Buddy)
 [![Angular](https://img.shields.io/badge/Angular-17.3.12-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
-[![License](https://img.shields.io/badge/license-MIT-22c55e?style=for-the-badge)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 
@@ -18,128 +17,100 @@
   <img src="https://user-images.githubusercontent.com/74038190/238355349-7d484dc9-68a9-4ee6-a767-aea59035c12d.gif" alt="Money Management Animation" width="400" />
 </p>
 
-## 🎯 Übersicht
-
-FinanzBuddy ist eine umfassende Anwendung zur Verwaltung persönlicher Finanzen, die dir hilft, dein Haushaltsbudget mühelos zu verfolgen. Behalte deine Finanzen im Griff, plane intelligenter und erreiche deine finanziellen Ziele schneller.
-
 <div align="center">
-  
-| 🔹 **Einfach zu bedienen** | 🔹 **Datenschutz im Fokus** | 🔹 **Kosteneffizient** |
-|---|---|---|
-| Intuitive Benutzeroberfläche für Anfänger und Profis | Deine Daten bleiben auf deinem Gerät | Spare Geld durch bessere Finanzentscheidungen |
+
+## 🎯 Overview
+
+FinanzBuddy is a comprehensive personal finance management application that helps you effortlessly track your household budget. Take control of your finances, plan smarter, and achieve your financial goals faster.
 
 </div>
 
-## ✨ Funktionen
+<div align="center">
+  
+| 🔹 **Easy to Use** | 🔹 **Privacy-Focused** | 🔹 **Cost-Efficient** |
+|---|---|---|
+| Intuitive interface for beginners and pros | Your data stays on your device | Save money through better financial decisions |
 
-<table align="center">
+</div>
+
+<div align="center">
+
+## ✨ Features
+
+<table>
   <tr>
     <td align="center" width="33%">
-      <h3>📊 Transaktionen</h3>
-      <p>Verfolge all deine finanziellen Transaktionen an einem Ort mit einfacher Kategorisierung und Tagging-Funktion</p>
+      <h3>📊 Transactions</h3>
+      <p>Track all your financial transactions in one place with easy categorization and tagging</p>
     </td>
     <td align="center" width="33%">
-      <h3>💵 Budgetierung</h3>
-      <p>Setze und überwache Ausgabenlimits für verschiedene Kategorien und erhalte Benachrichtigungen bei Überschreitungen</p>
+      <h3>💵 Budgeting</h3>
+      <p>Set and monitor spending limits for different categories and get notified when limits are exceeded</p>
     </td>
     <td align="center" width="33%">
-      <h3>🔄 Daueraufträge</h3>
-      <p>Verwalte wiederkehrende Zahlungen und Abonnements mit automatischer Erfassung und Erinnerungsfunktion</p>
+      <h3>🔄 Recurring Payments</h3>
+      <p>Manage recurring payments and subscriptions with automatic tracking and reminders</p>
     </td>
   </tr>
   <tr>
     <td align="center" width="33%">
-      <h3>📝 Berichte</h3>
-      <p>Generiere detaillierte Finanzberichte mit anpassbaren Zeiträumen und Exportfunktionen für Steuerunterlagen</p>
+      <h3>📝 Reports</h3>
+      <p>Generate detailed financial reports with customizable timeframes and export options for tax documents</p>
     </td>
     <td align="center" width="33%">
-      <h3>📊 Verteilung</h3>
-      <p>Visualisiere deine Ausgabenverteilung mit interaktiven Diagrammen und Trends über Zeit</p>
+      <h3>📊 Distribution</h3>
+      <p>Visualize your spending distribution with interactive charts and trends over time</p>
     </td>
     <td align="center" width="33%">
-      <h3>📈 Statistik</h3>
-      <p>Erhalte Einblicke in deine finanziellen Gewohnheiten mit KI-gestützten Analysen und Optimierungsvorschlägen</p>
+      <h3>📈 Statistics</h3>
+      <p>Gain insights into your financial habits with AI-powered analysis and optimization suggestions</p>
     </td>
   </tr>
 </table>
 
-## 📱 Bildschirmansichten
-
-<div align="center">
-  <table>
-    <tr>
-      <td><img src="/api/placeholder/260/480" alt="Dashboard" /></td>
-      <td><img src="/api/placeholder/260/480" alt="Transaktionen" /></td>
-      <td><img src="/api/placeholder/260/480" alt="Budget-Übersicht" /></td>
-    </tr>
-    <tr>
-      <td align="center"><strong>Dashboard</strong></td>
-      <td align="center"><strong>Transaktionen</strong></td>
-      <td align="center"><strong>Budget-Übersicht</strong></td>
-    </tr>
-  </table>
 </div>
 
-## 🚀 Erste Schritte
+<div align="center">
 
-Dieses Projekt wurde mit [Angular CLI](https://github.com/angular/angular-cli) Version 17.3.12 erstellt.
+## 🚀 Getting Started
 
-### Voraussetzungen
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.12.
 
-- Node.js (v16+)
-- Angular CLI (`npm install -g @angular/cli`)
+### Prerequisites
+
+ Node.js (v16+)
+ Angular CLI (npm install -g @angular/cli)
 
 ### Installation
 
 ```bash
-# Repository klonen
+# Clone the repository
 git clone https://github.com/Bi7hop/Finanz_Buddy.git
 
-# In das Projektverzeichnis wechseln
+# Navigate to the project directory
 cd Finanz_Buddy
 
-# Abhängigkeiten installieren
+# Install dependencies
 npm install
 
-# Entwicklungsserver starten
+# Start the development server
 ng serve
+After starting, the application will be available at http://localhost:4200/.
+
 ```
 
-Nach dem Start ist die Anwendung unter `http://localhost:4200/` erreichbar.
+</div><div align="center">
+🛠️ Technology Stack
+<h3>Frontend</h3><img src="https://skillicons.dev/icons?i=angular,ts,html,css&theme=dark" alt="Frontend Tech Stack" /></div><div align="center">
+🤝 Contributing
+Contributions, issues, and feature requests are welcome! Check out the Contribution Guidelines for more details.
 
-## 🛠️ Technologie-Stack
+</div><div align="center">
+📞 Contact
+Marcel Menke - marcel.menke1981@gmail.com
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <img src="https://skillicons.dev/icons?i=angular,ts,nodejs,html,css&theme=dark" alt="Frontend Tech Stack" />
-        <p><strong>Frontend</strong></p>
-      </td>
-      <td align="center">
-        <img src="https://skillicons.dev/icons?i=firebase,mongodb,express&theme=dark" alt="Backend Tech Stack" />
-        <p><strong>Backend & Datenbank</strong></p>
-      </td>
-    </tr>
-  </table>
 </div>
+<div align="center"> <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,3,12&height=100&section=footer" width="100%" />
+<strong>FinanzBuddy</strong> - Developed with ❤️ by <a href="https://github.com/Bi7hop">Marcel Menke</a>
 
-## 🤝 Beitragen
-
-Beiträge, Issues und Feature-Anfragen sind willkommen! Schau dir die [Contribution Guidelines](CONTRIBUTING.md) für weitere Informationen an.
-
-## 📄 Lizenz
-
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Siehe die [LICENSE](LICENSE) Datei für Details.
-
-## 📞 Kontakt
-
-Marcel Menke - [marcel.menke1981@gmail.com](mailto:marcel.menke1981@gmail.com)
-
----
-
-<div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=2,3,12&height=100&section=footer" width="100%" />
-  
-  <strong>FinanzBuddy</strong> - Entwickelt mit ❤️ von <a href="https://github.com/Bi7hop">Marcel Menke</a>
 </div>
