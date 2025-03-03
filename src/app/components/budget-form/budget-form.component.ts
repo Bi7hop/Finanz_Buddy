@@ -7,8 +7,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Budget } from '../../models/budget.model';
 
-interface BudgetCategory {
+interface BudgetFormData {
   id?: number;
   name: string;
   category: string;
@@ -52,7 +53,7 @@ export class BudgetFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<BudgetFormComponent>,
-    @Optional() @Inject(MAT_DIALOG_DATA) public data: BudgetCategory
+    @Optional() @Inject(MAT_DIALOG_DATA) public data: BudgetFormData
   ) { }
   
   ngOnInit(): void {
@@ -78,8 +79,12 @@ export class BudgetFormComponent implements OnInit {
       return;
     }
     
-    const result: BudgetCategory = {
-      ...this.budgetForm.value
+    const formValues = this.budgetForm.value;
+    
+    const result: BudgetFormData = {
+      name: formValues.name,
+      category: formValues.category,
+      budgeted: formValues.budgeted
     };
     
     if (this.isEditing && this.data.id) {
