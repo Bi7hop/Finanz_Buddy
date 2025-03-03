@@ -1,11 +1,11 @@
 <div class="budget-container">
   <div class="budget-header">
     <div class="month-navigation">
-      <button mat-icon-button (click)="previousMonth()">
+      <button mat-icon-button (click)="previousMonth()" [disabled]="isLoading">
         <mat-icon>navigate_before</mat-icon>
       </button>
       <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
-      <button mat-icon-button (click)="nextMonth()">
+      <button mat-icon-button (click)="nextMonth()" [disabled]="isLoading">
         <mat-icon>navigate_next</mat-icon>
       </button>
     </div>
@@ -30,7 +30,12 @@
     </div>
   </div>
 
-  <div class="categories-container">
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <div class="loading-text">Budgetdaten werden geladen...</div>
+  </div>
+
+  <div class="categories-container" *ngIf="!isLoading">
     <div *ngFor="let category of budgetCategories" class="budget-category-card">
       <div class="category-header">
         <div class="category-icon-container" [ngClass]="category.category">
@@ -62,15 +67,24 @@
           </div>
         </div>
       </div>
+      
+      <div class="category-actions">
+        <button mat-icon-button color="warn" (click)="deleteBudgetCategory(category.id)" class="delete-button">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </div>
     
     <div *ngIf="budgetCategories.length === 0" class="no-categories">
       <mat-icon>account_balance</mat-icon>
-      <div class="empty-message">Keine Budgetkategorien vorhanden</div>
+      <div class="empty-message">Keine Budgetkategorien für {{ currentMonth }} {{ currentYear }} vorhanden</div>
+      <button mat-raised-button color="primary" (click)="addBudgetCategory()" class="create-first-button">
+        Erstes Budget erstellen
+      </button>
     </div>
   </div>
 
-  <div class="add-budget-container">
+  <div class="add-budget-container" *ngIf="!isLoading">
     <button mat-fab color="primary" (click)="addBudgetCategory()" class="add-button">
       <mat-icon>add</mat-icon>
     </button>
