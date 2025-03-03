@@ -11,6 +11,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { TransactionService } from '../../services/transaction.service';
 
 interface Category {
   id: string;
@@ -66,7 +67,8 @@ export class TransactionFormComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private transactionService: TransactionService
   ) {}
   
   ngOnInit(): void {
@@ -106,7 +108,6 @@ export class TransactionFormComponent implements OnInit {
         intervalControl!.disable();
       }
     });
-    
     this.transactionForm.get('interval')!.disable();
   }
   
@@ -134,20 +135,48 @@ export class TransactionFormComponent implements OnInit {
     }
     
     const formValue = this.transactionForm.value;
-    console.log('Transaction data:', {
+    
+    const formattedDate = formValue.date instanceof Date 
+      ? formValue.date.toISOString().split('T')[0] 
+      : formValue.date;
+    
+    let transactionData: any = {
+      amount: formValue.amount,
+      date: formattedDate,
+      category: formValue.category,
+      description: formValue.description,
+      isRecurring: formValue.isRecurring,
       type: this.transactionType,
-      ...formValue
-    });
+      user_id: 'your-user-id' 
+    };
     
-    this.snackBar.open(
-      this.isEditing 
-        ? `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde aktualisiert`
-        : `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde gespeichert`,
-      'OK',
-      { duration: 3000 }
-    );
+    if (formValue.isRecurring) {
+      transactionData.interval = formValue.interval;
+    }
     
-    this.router.navigate(['/dashboard']);
+    if (this.isEditing) {
+      console.log('Update wird noch implementiert');
+      this.snackBar.open(
+        `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde aktualisiert`,
+        'OK',
+        { duration: 3000 }
+      );
+      this.router.navigate(['/dashboard']);
+    } else {
+      this.transactionService.createTransaction(transactionData)
+        .then(() => {
+          this.snackBar.open(
+            `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde gespeichert`,
+            'OK',
+            { duration: 3000 }
+          );
+          this.router.navigate(['/dashboard']);
+        })
+        .catch(error => {
+          console.error('Fehler beim Speichern der Transaktion:', error);
+          this.snackBar.open('Fehler beim Speichern der Transaktion', 'OK', { duration: 3000 });
+        });
+    }
   }
   
   onCancel(): void {
