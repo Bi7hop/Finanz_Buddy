@@ -1,11 +1,11 @@
 <div class="income-container">
   <div class="income-header">
     <div class="month-navigation">
-      <button mat-icon-button (click)="previousMonth()">
+      <button mat-icon-button (click)="previousMonth()" [disabled]="isLoading">
         <mat-icon>navigate_before</mat-icon>
       </button>
       <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
-      <button mat-icon-button (click)="nextMonth()">
+      <button mat-icon-button (click)="nextMonth()" [disabled]="isLoading">
         <mat-icon>navigate_next</mat-icon>
       </button>
     </div>
@@ -16,53 +16,61 @@
     </div>
   </div>
   
-  <div class="table-header">
-    <div class="column-header date-column">Datum</div>
-    <div class="column-header category-column">Kategorie</div>
-    <div class="column-header description-column">Beschreibung</div>
-    <div class="column-header amount-column">Betrag</div>
-    <div class="column-header actions-column"></div>
+  <!-- Loading-Anzeige -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <div class="loading-text">Einnahmen werden geladen...</div>
   </div>
   
-  <div class="transactions-list">
-    <div *ngFor="let transaction of transactions" class="transaction-row">
-      <div class="date-column">
-        {{ transaction.date | date:'dd.MM.yyyy' }}
-        <mat-icon *ngIf="transaction.isRecurring" class="recurring-icon">loop</mat-icon>
-      </div>
-      
-      <div class="category-column">
-        <div class="category-icon-container" [ngClass]="transaction.category">
-          <mat-icon>{{ getCategoryIcon(transaction.category) }}</mat-icon>
-        </div>
-        {{ transaction.categoryName }}
-      </div>
-      
-      <div class="description-column">{{ transaction.description }}</div>
-      
-      <div class="amount-column positive">+{{ transaction.amount | currency:'EUR' }}</div>
-      
-      <div class="actions-column">
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="editTransaction(transaction)">
-            <mat-icon>edit</mat-icon>
-            <span>Bearbeiten</span>
-          </button>
-          <button mat-menu-item (click)="deleteTransaction(transaction)">
-            <mat-icon>delete</mat-icon>
-            <span>Löschen</span>
-          </button>
-        </mat-menu>
-      </div>
+  <ng-container *ngIf="!isLoading">
+    <div class="table-header">
+      <div class="column-header date-column">Datum</div>
+      <div class="column-header category-column">Kategorie</div>
+      <div class="column-header description-column">Beschreibung</div>
+      <div class="column-header amount-column">Betrag</div>
+      <div class="column-header actions-column"></div>
     </div>
     
-    <div *ngIf="transactions.length === 0" class="empty-state">
-      Keine Einnahmen in diesem Zeitraum gefunden.
+    <div class="transactions-list">
+      <div *ngFor="let transaction of transactions" class="transaction-row">
+        <div class="date-column">
+          {{ transaction.date | date:'dd.MM.yyyy' }}
+          <mat-icon *ngIf="transaction.isRecurring" class="recurring-icon">loop</mat-icon>
+        </div>
+        
+        <div class="category-column">
+          <div class="category-icon-container" [ngClass]="transaction.category">
+            <mat-icon>{{ getCategoryIcon(transaction.category) }}</mat-icon>
+          </div>
+          {{ transaction.categoryName }}
+        </div>
+        
+        <div class="description-column">{{ transaction.description }}</div>
+        
+        <div class="amount-column positive">+{{ transaction.amount | currency:'EUR' }}</div>
+        
+        <div class="actions-column">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="editTransaction(transaction)">
+              <mat-icon>edit</mat-icon>
+              <span>Bearbeiten</span>
+            </button>
+            <button mat-menu-item (click)="deleteTransaction(transaction)">
+              <mat-icon>delete</mat-icon>
+              <span>Löschen</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+      
+      <div *ngIf="transactions.length === 0" class="empty-state">
+        Keine Einnahmen in diesem Zeitraum gefunden.
+      </div>
     </div>
-  </div>
+  </ng-container>
   
   <div class="add-income-container">
     <button mat-fab color="primary" (click)="addIncome()" class="add-button">
