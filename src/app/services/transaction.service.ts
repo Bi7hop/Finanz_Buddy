@@ -207,4 +207,58 @@ export class TransactionService {
       this.loadingSubject.next(false);
     }
   }
+
+  async getIncomeTransactionsByPeriod(period: string): Promise<Transaction[]> {
+    try {
+      this.loadingSubject.next(true);
+      
+      const [year, month] = period.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]; 
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+      
+      console.log(`Lade Einnahmen für Periode ${period} (${startDate} bis ${endDate})`);
+      
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('transactions')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .eq('type', 'income') 
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      
+      console.log(`${data?.length || 0} Einnahmen geladen`);
+      return data || [];
+    } catch (error) {
+      console.error(`Fehler beim Laden der Einnahmen für Periode ${period}:`, error);
+      return [];
+    } finally {
+      this.loadingSubject.next(false);
+    }
+  }
+
+  async getIncomeSumByCategory(category: string, period: string): Promise<number> {
+    try {
+      const [year, month] = period.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+      
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('transactions')
+        .select('amount')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .eq('type', 'income') 
+        .eq('category', category);
+      
+      if (error) throw error;
+      
+      const sum = data?.reduce((total, transaction) => total + (transaction.amount || 0), 0) || 0;
+      return sum;
+    } catch (error) {
+      console.error(`Fehler beim Berechnen der Einnahmen für Kategorie ${category} und Periode ${period}:`, error);
+      return 0;
+    }
+  }
 }
