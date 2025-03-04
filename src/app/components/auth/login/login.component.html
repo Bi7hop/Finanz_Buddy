@@ -1,0 +1,55 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Finanz Buddy</h2>
+    <p class="subtitle">Melde dich an, um deine Finanzen intelligent zu verwalten</p>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">E-Mail</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          placeholder="deine@email.de">
+        <div class="error-message" *ngIf="email?.invalid && email?.touched">
+          Bitte gib eine gültige E-Mail-Adresse ein
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Passwort</label>
+        <div class="password-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password"
+            formControlName="password"
+            placeholder="Dein Passwort">
+          <button 
+            type="button" 
+            class="password-toggle" 
+            (click)="togglePasswordVisibility()">
+            <i class="icon">{{ showPassword ? '👁️' : '👁️‍🗨️' }}</i>
+          </button>
+        </div>
+        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+          Das Passwort muss mindestens 6 Zeichen lang sein
+        </div>
+      </div>
+      
+      <button 
+        type="submit" 
+        class="submit-button" 
+        [disabled]="loginForm.invalid || isLoading">
+        {{ isLoading ? 'Wird angemeldet...' : 'Anmelden' }}
+      </button>
+      
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+    </form>
+    
+    <div class="auth-footer">
+      <p>Noch kein Konto? <a routerLink="/signup">Jetzt registrieren</a></p>
+    </div>
+  </div>
+</div>

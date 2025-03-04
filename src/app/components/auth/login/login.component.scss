@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a1128;
+  --bg-secondary: #172a46;
+  --text-primary: #f0f4f8;
+  --text-secondary: #8ba3c1;
+  --primary-color: #4ecdc4;
+  --accent-color: #45b7d1;
+  --gradient-primary: linear-gradient(135deg, #4ecdc4, #45b7d1);
+  --gradient-secondary: linear-gradient(135deg, #172a46, #0a1128);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--gradient-secondary);
+  padding: 40px;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--bg-secondary);
+  border-radius: 24px;
+  padding: 60px;
+  box-shadow: 
+    0 40px 80px var(--shadow-color), 
+    0 20px 40px rgba(77, 207, 202, 0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(23, 42, 70, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+}
+
+h2 {
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 40px;
+  font-weight: 700;
+  text-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  padding-right: 50px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--text-secondary);
+  border-radius: 12px;
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: all 0.4s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 
+      0 0 0 2px rgba(78, 205, 196, 0.3),
+      0 10px 20px rgba(78, 205, 196, 0.1);
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .icon {
+    font-size: 20px;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  &:hover .icon {
+    opacity: 1;
+  }
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 8px;
+  opacity: 0.8;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 20px;
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--primary-color);
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle closest-corner at center, 
+      rgba(78, 205, 196, 0.3), 
+      transparent 70%
+    );
+    opacity: 0;
+    transition: all 0.4s ease;
+    z-index: -1;
+  }
+
+  &:hover {
+    background: var(--gradient-primary);
+    color: var(--bg-primary);
+    box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+    transform: translateY(-5px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+  
+  &:disabled {
+    background-color: var(--text-secondary);
+    color: var(--bg-primary);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.auth-footer {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    display: inline-block;
+    
+    &:hover {
+      color: var(--accent-color);
+      text-decoration: underline;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card {
+  animation: fadeInUp 1s ease forwards;
+}
