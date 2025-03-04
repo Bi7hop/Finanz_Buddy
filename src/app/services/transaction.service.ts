@@ -7,6 +7,8 @@ import { Transaction } from '../models/transaction.model';
   providedIn: 'root'
 })
 export class TransactionService {
+  private readonly DEV_USER_ID = '00000000-0000-0000-0000-000000000000';
+  
   private transactionsSubject = new BehaviorSubject<Transaction[]>([]);
   transactions$ = this.transactionsSubject.asObservable();
 
@@ -65,11 +67,25 @@ export class TransactionService {
     try {
       this.loadingSubject.next(true);
       
-      console.log('Erstelle neue Transaktion:', transaction);
+      const { data: sessionData, error: sessionError } = await this.supabaseService.supabaseClient.auth.getSession();
+      console.log('Session Data:', sessionData);
+      
+      if (sessionError) {
+        console.error('Fehler beim Abrufen der Session:', sessionError);
+      }
+      
+      let userId = sessionData?.session?.user?.id;
+      if (!userId) {
+        console.warn('Keine aktive Session gefunden, verwende Dummy-UUID');
+        userId = this.DEV_USER_ID;
+      }
+      
+      const newTransaction = { ...transaction, user_id: userId };
+      console.log('Erstelle neue Transaktion:', newTransaction);
       
       const { data, error } = await this.supabaseService.supabaseClient
         .from('transactions')
-        .insert(transaction)
+        .insert(newTransaction)
         .select()
         .single();
       
@@ -238,6 +254,36 @@ export class TransactionService {
     }
   }
 
+  async getExpenseTransactionsByPeriod(period: string): Promise<Transaction[]> {
+    try {
+      this.loadingSubject.next(true);
+      
+      const [year, month] = period.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]; 
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+      
+      console.log(`Lade Ausgaben für Periode ${period} (${startDate} bis ${endDate})`);
+      
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('transactions')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .eq('type', 'expense') 
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      
+      console.log(`${data?.length || 0} Ausgaben geladen`);
+      return data || [];
+    } catch (error) {
+      console.error(`Fehler beim Laden der Ausgaben für Periode ${period}:`, error);
+      return [];
+    } finally {
+      this.loadingSubject.next(false);
+    }
+  }
+
   async getIncomeSumByCategory(category: string, period: string): Promise<number> {
     try {
       const [year, month] = period.split('-').map(Number);
@@ -259,6 +305,67 @@ export class TransactionService {
     } catch (error) {
       console.error(`Fehler beim Berechnen der Einnahmen für Kategorie ${category} und Periode ${period}:`, error);
       return 0;
+    }
+  }
+  
+  async getExpenseSumByCategory(category: string, period: string): Promise<number> {
+    try {
+      const [year, month] = period.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+      
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('transactions')
+        .select('amount')
+        .gte('date', startDate)
+        .lte('date', endDate)
+        .eq('type', 'expense')
+        .eq('category', category);
+      
+      if (error) throw error;
+      
+      const sum = data?.reduce((total, transaction) => total + (transaction.amount || 0), 0) || 0;
+      return sum;
+    } catch (error) {
+      console.error(`Fehler beim Berechnen der Ausgaben für Kategorie ${category} und Periode ${period}:`, error);
+      return 0;
+    }
+  }
+  
+  async getTotalsByPeriod(period: string): Promise<{income: number, expense: number, balance: number}> {
+    try {
+      const [year, month] = period.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]; 
+      
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('transactions')
+        .select('*')
+        .gte('date', startDate)
+        .lte('date', endDate);
+      
+      if (error) throw error;
+      
+      const result = {
+        income: 0,
+        expense: 0,
+        balance: 0
+      };
+      
+      data?.forEach(transaction => {
+        if (transaction.type === 'income') {
+          result.income += transaction.amount || 0;
+        } else if (transaction.type === 'expense') {
+          result.expense += transaction.amount || 0;
+        }
+      });
+      
+      result.balance = result.income - result.expense;
+      
+      return result;
+    } catch (error) {
+      console.error(`Fehler beim Berechnen der Summen für Periode ${period}:`, error);
+      return {income: 0, expense: 0, balance: 0};
     }
   }
 }
