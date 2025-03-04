@@ -4,11 +4,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 
 export interface UserProfile {
-  id: string;
+  id: string;        
+  user_id: string;   
   email?: string;
   first_name?: string;
   last_name?: string;
   currency?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 @Injectable({
@@ -44,7 +47,7 @@ export class AuthService {
     const { data, error } = await this.supabaseService.supabaseClient
       .from('profiles')
       .select('*')
-      .eq('id', userId)
+      .eq('user_id', userId)  
       .single();
 
     if (error) {
@@ -56,6 +59,7 @@ export class AuthService {
 
     const userProfile: UserProfile = {
       id: userId,
+      user_id: userId, 
       email: user?.email,
       ...data
     };
@@ -81,7 +85,7 @@ export class AuthService {
       const { error: profileError } = await this.supabaseService.supabaseClient
         .from('profiles')
         .insert({
-          id: data.user.id,
+          user_id: data.user.id,  
           currency: 'EUR'
         });
 
@@ -130,7 +134,7 @@ export class AuthService {
     const { error } = await this.supabaseService.supabaseClient
       .from('profiles')
       .update(profile)
-      .eq('id', currentUser.id);
+      .eq('user_id', currentUser.id); 
 
     if (error) {
       return { success: false, error };
