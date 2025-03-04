@@ -86,7 +86,7 @@ export class IncomeComponent implements OnInit, OnDestroy {
         date: transaction.date, 
         category: (transaction as any).category_icon || this.mapCategoryToIcon(transaction.category),
         categoryName: transaction.category,
-        isRecurring: (transaction as any).is_recurring || false
+        isRecurring: (transaction as any).isRecurring || false
       }));
       
       this.calculateTotal();
