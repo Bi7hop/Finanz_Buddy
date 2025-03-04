@@ -7,14 +7,23 @@ import { NotImplementedComponent } from './components/not-implemented/not-implem
 import { ExpenseComponent } from './components/expense/expense.component';
 import { IncomeComponent } from './components/income/income.component';
 import { TransactionFormComponent } from './components/transactions/transactions.component';
+import { LoginComponent } from './components/auth/login/login.component';
+import { SignupComponent } from './components/auth/signup/signup.component';
+import { LandingComponent } from './components/landing/landing.component'; 
 
 export const routes: Routes = [
+  { path: '', component: LandingComponent },
+
+  // Auth-Routen:
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+
+  // Geschützte Routen im Haupt-Layout:
   {
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: DashboardComponent },
-      { path: 'dashboard', component: DashboardComponent },        
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'einnahmen', component: IncomeComponent },
       { path: 'ausgaben', component: ExpenseComponent },
       { path: 'budget', component: BudgetComponent },
@@ -30,4 +39,7 @@ export const routes: Routes = [
       { path: 'transaction/new', component: TransactionFormComponent },
     ]
   },
+
+  // Fallback-Route:
+  { path: '**', redirectTo: '' }
 ];
