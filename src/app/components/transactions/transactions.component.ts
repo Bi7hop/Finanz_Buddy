@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { TransactionService } from '../../services/transaction.service';
+import { SupabaseService } from '../../services/supabase.service';
 
 interface Category {
   id: string;
@@ -46,6 +47,7 @@ export class TransactionFormComponent implements OnInit {
   formTitle: string = 'Neue Ausgabe';
   submitLabel: string = 'Ausgabe speichern';
   isEditing: boolean = false;
+  transactionId: number | null = null;
   
   categories: Category[] = [
     { id: 'salary', name: 'Gehalt', type: 'income', icon: 'work' },
@@ -68,7 +70,8 @@ export class TransactionFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
-    private transactionService: TransactionService
+    private transactionService: TransactionService,
+    private supabaseService: SupabaseService
   ) {}
   
   ngOnInit(): void {
@@ -83,6 +86,7 @@ export class TransactionFormComponent implements OnInit {
       
       if (params['id']) {
         this.isEditing = true;
+        this.transactionId = Number(params['id']);
         this.loadTransaction(params['id']);
         this.formTitle = this.transactionType === 'income' ? 'Einnahme bearbeiten' : 'Ausgabe bearbeiten';
         this.submitLabel = this.transactionType === 'income' ? 'Einnahme aktualisieren' : 'Ausgabe aktualisieren';
@@ -111,76 +115,144 @@ export class TransactionFormComponent implements OnInit {
     this.transactionForm.get('interval')!.disable();
   }
   
-  loadTransaction(id: string): void {
-    const mockTransaction = {
-      id: id,
-      amount: 42.99,
-      date: new Date('2023-04-15'),
-      category: this.transactionType === 'income' ? 'salary' : 'food',
-      description: this.transactionType === 'income' ? 'Monatsgehalt' : 'Einkauf im Supermarkt',
-      isRecurring: false,
-      interval: 'monthly'
-    };
-    
-    this.transactionForm.patchValue(mockTransaction);
+  async loadTransaction(id: string): Promise<void> {
+    try {
+      console.log('Lade Transaktion mit ID:', id);
+      
+      const loadingSnackBarRef = this.snackBar.open('Transaktion wird geladen...', '', {
+        duration: 0 
+      });
+      
+      const numericId = Number(id);
+      
+      const transaction = await this.transactionService.getTransactionById(numericId);
+      
+      if (!transaction) {
+        this.snackBar.open('Transaktion nicht gefunden!', 'OK', { duration: 3000 });
+        this.router.navigate([this.transactionType === 'income' ? '/einnahmen' : '/ausgaben']);
+        return;
+      }
+      
+      console.log('Geladene Transaktion:', transaction);
+      
+      this.transactionType = transaction.type;
+      
+      const transactionDate = transaction.date instanceof Date ? 
+        transaction.date : 
+        new Date(transaction.date);
+      
+      this.transactionForm.patchValue({
+        amount: transaction.amount,
+        date: transactionDate,
+        category: transaction.category,
+        description: transaction.description,
+        isRecurring: transaction.isRecurring || false,
+        interval: transaction.interval || 'monthly'
+      });
+      
+      this.formTitle = this.transactionType === 'income' ? 'Einnahme bearbeiten' : 'Ausgabe bearbeiten';
+      this.submitLabel = this.transactionType === 'income' ? 'Einnahme aktualisieren' : 'Ausgabe aktualisieren';
+
+      loadingSnackBarRef.dismiss();
+      
+    } catch (error) {
+      console.error('Fehler beim Laden der Transaktion:', error);
+      this.snackBar.open('Fehler beim Laden der Transaktion', 'OK', { duration: 3000 });
+      this.router.navigate([this.transactionType === 'income' ? '/einnahmen' : '/ausgaben']);
+    }
   }
   
   getFilteredCategories(): Category[] {
     return this.categories.filter(category => category.type === this.transactionType);
   }
   
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.transactionForm.invalid) {
       return;
     }
     
-    const formValue = this.transactionForm.value;
-    
-    const formattedDate = formValue.date instanceof Date 
-      ? formValue.date.toISOString().split('T')[0] 
-      : formValue.date;
-    
-    let transactionData: any = {
-      amount: formValue.amount,
-      date: formattedDate,
-      category: formValue.category,
-      description: formValue.description,
-      isRecurring: formValue.isRecurring,
-      type: this.transactionType,
-      user_id: 'your-user-id' 
-    };
-    
-    if (formValue.isRecurring) {
-      transactionData.interval = formValue.interval;
-    }
-    
-    if (this.isEditing) {
-      console.log('Update wird noch implementiert');
-      this.snackBar.open(
-        `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde aktualisiert`,
-        'OK',
-        { duration: 3000 }
-      );
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.transactionService.createTransaction(transactionData)
-        .then(() => {
+    try {
+      const { data: userData, error: userError } = await this.supabaseService.supabaseClient.auth.getUser();
+      
+      if (userError || !userData.user) {
+        console.error('Benutzer nicht authentifiziert:', userError);
+        this.snackBar.open('Bitte melde dich erneut an, um fortzufahren', 'OK', { duration: 5000 });
+        this.router.navigate(['/login'], { 
+          queryParams: { 
+            returnUrl: this.router.url 
+          } 
+        });
+        return;
+      }
+      
+      console.log('Authentifizierter Benutzer:', userData.user);
+      
+      const formValue = this.transactionForm.value;
+      
+      const formattedDate = formValue.date instanceof Date 
+        ? formValue.date.toISOString().split('T')[0] 
+        : formValue.date;
+      
+      let transactionData: any = {
+        amount: formValue.amount,
+        date: formattedDate,
+        category: formValue.category,
+        description: formValue.description,
+        isRecurring: formValue.isRecurring,
+        type: this.transactionType,
+        user_id: userData.user.id 
+      };
+      
+      if (formValue.isRecurring) {
+        transactionData.interval = formValue.interval;
+      }
+      
+      if (this.isEditing && this.transactionId) {
+        console.log('Aktualisiere Transaktion mit ID:', this.transactionId, transactionData);
+        
+        try {
+          await this.transactionService.updateTransaction(this.transactionId, transactionData);
+          
+          this.snackBar.open(
+            `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde aktualisiert`,
+            'OK',
+            { duration: 3000 }
+          );
+          
+          this.router.navigate([this.transactionType === 'income' ? '/einnahmen' : '/ausgaben']);
+        } catch (updateError) {
+          console.error('Fehler beim Aktualisieren der Transaktion:', updateError);
+          this.snackBar.open('Fehler beim Aktualisieren: ' + (updateError as Error).message, 'OK', { duration: 5000 });
+        }
+      } else {
+        try {
+          await this.transactionService.createTransaction(transactionData);
+          
           this.snackBar.open(
             `${this.transactionType === 'income' ? 'Einnahme' : 'Ausgabe'} wurde gespeichert`,
             'OK',
             { duration: 3000 }
           );
-          this.router.navigate(['/dashboard']);
-        })
-        .catch(error => {
-          console.error('Fehler beim Speichern der Transaktion:', error);
-          this.snackBar.open('Fehler beim Speichern der Transaktion', 'OK', { duration: 3000 });
-        });
+          
+          this.router.navigate([this.transactionType === 'income' ? '/einnahmen' : '/ausgaben']);
+        } catch (createError) {
+          console.error('Fehler beim Erstellen der Transaktion:', createError);
+          this.snackBar.open('Fehler beim Speichern: ' + (createError as Error).message, 'OK', { duration: 5000 });
+        }
+      }
+    } catch (authError) {
+      console.error('Fehler bei der Authentifizierungsprüfung:', authError);
+      this.snackBar.open('Authentifizierungsfehler. Bitte erneut anmelden.', 'OK', { duration: 5000 });
+      this.router.navigate(['/login'], { 
+        queryParams: { 
+          returnUrl: this.router.url 
+        } 
+      });
     }
   }
   
   onCancel(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate([this.transactionType === 'income' ? '/einnahmen' : '/ausgaben']);
   }
 
   disableArrows(event: KeyboardEvent) {
