@@ -44,57 +44,119 @@ export class AuthService {
   }
 
   async loadUserProfile(userId: string) {
-    const { data, error } = await this.supabaseService.supabaseClient
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId)  
-      .single();
+    try {
+      // Versuche das Benutzerprofil zu laden
+      const { data, error } = await this.supabaseService.supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('user_id', userId);
 
-    if (error) {
-      console.error('Error loading user profile:', error);
-      return;
+      if (error) {
+        console.error('Error loading user profile:', error);
+        return;
+      }
+
+      // Wenn kein Profil gefunden wurde, erstelle ein neues
+      if (!data || data.length === 0) {
+        console.log('No profile found, creating a new one');
+        const { error: insertError } = await this.supabaseService.supabaseClient
+          .from('profiles')
+          .insert({
+            user_id: userId,
+            currency: 'EUR'
+          });
+
+        if (insertError) {
+          console.error('Error creating missing profile:', insertError);
+          return;
+        }
+
+        // Nach dem Erstellen erneut laden
+        const { data: newData, error: newError } = await this.supabaseService.supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (newError || !newData || newData.length === 0) {
+          console.error('Error loading newly created profile:', newError);
+          return;
+        }
+
+        const { data: { user } } = await this.supabaseService.supabaseClient.auth.getUser();
+
+        const userProfile: UserProfile = {
+          id: userId,
+          user_id: userId,
+          email: user?.email,
+          ...newData[0]
+        };
+
+        this.currentUserSubject.next(userProfile);
+        return;
+      }
+
+      // Wenn Profil gefunden wurde
+      const { data: { user } } = await this.supabaseService.supabaseClient.auth.getUser();
+
+      const userProfile: UserProfile = {
+        id: userId,
+        user_id: userId,
+        email: user?.email,
+        ...data[0] // Wir nehmen das erste Ergebnis
+      };
+
+      this.currentUserSubject.next(userProfile);
+    } catch (err) {
+      console.error('Unexpected error loading profile:', err);
     }
-
-    const { data: { user } } = await this.supabaseService.supabaseClient.auth.getUser();
-
-    const userProfile: UserProfile = {
-      id: userId,
-      user_id: userId, 
-      email: user?.email,
-      ...data
-    };
-
-    this.currentUserSubject.next(userProfile);
   }
 
   getCurrentUser(): UserProfile | null {
     return this.currentUserSubject.value;
   }
 
-  async signUp(email: string, password: string): Promise<{ success: boolean, error?: any }> {
-    const { data, error } = await this.supabaseService.supabaseClient.auth.signUp({
-      email,
-      password
-    });
+  async signUp(email: string, password: string, firstName?: string, lastName?: string): Promise<{ success: boolean, error?: any }> {
+    try {
+      // Benutzer registrieren ohne automatisches Einloggen
+      const { data, error } = await this.supabaseService.supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
 
-    if (error) {
-      return { success: false, error };
-    }
-
-    if (data.user) {
-      const { error: profileError } = await this.supabaseService.supabaseClient
-        .from('profiles')
-        .insert({
-          user_id: data.user.id,  
-          currency: 'EUR'
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
+      if (error) {
+        console.error('Error in signup:', error);
+        return { success: false, error };
       }
-    }
 
-    return { success: true };
+      if (!data.user) {
+        return { success: false, error: new Error('No user data returned') };
+      }
+
+      // Profil mit Vor- und Nachnamen erstellen
+      if (firstName || lastName) {
+        const { error: profileError } = await this.supabaseService.supabaseClient
+          .from('profiles')
+          .insert({
+            user_id: data.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            currency: 'EUR'
+          });
+
+        if (profileError) {
+          console.error('Error creating profile during signup:', profileError);
+          // Wir brechen hier nicht ab, da der Benutzer bereits erstellt wurde
+        }
+      }
+
+      return { success: true };
+    } catch (err) {
+      console.error('Unexpected error during signup:', err);
+      return { success: false, error: err };
+    }
   }
 
   async signIn(email: string, password: string): Promise<{ success: boolean, error?: any }> {
