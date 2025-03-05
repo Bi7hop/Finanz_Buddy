@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction.model';
 import { Subscription } from 'rxjs';
+import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-expense',
@@ -43,7 +44,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private transactionService: TransactionService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private confirmationDialogService: ConfirmationDialogService
   ) {}
 
   ngOnInit(): void {
@@ -119,16 +121,25 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   }
 
   async deleteTransaction(transaction: Transaction): Promise<void> {
-    if (confirm('Möchtest du diese Ausgabe wirklich löschen?')) {
-      try {
-        await this.transactionService.deleteTransaction(transaction.id);
-        this.snackBar.open('Ausgabe erfolgreich gelöscht', 'Schließen', { duration: 3000 });
-        await this.loadTransactions();
-      } catch (error) {
-        console.error('Fehler beim Löschen der Ausgabe:', error);
-        this.snackBar.open('Fehler beim Löschen der Ausgabe', 'Schließen', { duration: 3000 });
-      }
-    }
+    // Benutzerdefinierte Nachricht erstellen, die die Beschreibung der Transaktion enthält
+    const customMessage = transaction.description 
+      ? `Möchtest du die Ausgabe "${transaction.description}" wirklich löschen?`
+      : `Möchtest du diese Ausgabe wirklich löschen?`;
+
+    // Den ConfirmationDialogService verwenden
+    this.confirmationDialogService.openDeleteDialog('Ausgabe', customMessage)
+      .subscribe(async (confirmed) => {
+        if (confirmed) {
+          try {
+            await this.transactionService.deleteTransaction(transaction.id);
+            this.snackBar.open('Ausgabe erfolgreich gelöscht', 'Schließen', { duration: 3000 });
+            await this.loadTransactions();
+          } catch (error) {
+            console.error('Fehler beim Löschen der Ausgabe:', error);
+            this.snackBar.open('Fehler beim Löschen der Ausgabe', 'Schließen', { duration: 3000 });
+          }
+        }
+      });
   }
 
   async previousMonth(): Promise<void> {
