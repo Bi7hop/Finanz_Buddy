@@ -19,9 +19,9 @@
     <button mat-icon-button class="nav-button" (click)="nextMonth()">
       <mat-icon>navigate_next</mat-icon>
     </button>
-    <div class="right-aligned">
+    <!-- <div class="right-aligned">
       <a routerLink="/banking" class="bank-link">Bank</a>
-    </div>
+    </div> -->
   </div>
 
   <div class="table-header">
@@ -33,6 +33,16 @@
   </div>
   
   <div class="transactions-list">
+    <div *ngIf="isLoading" class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Daten werden geladen...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-state">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ errorMessage }}</p>
+    </div>
+    
     <div *ngFor="let category of categories" class="transaction-row">
       <div class="date-column">
         {{ category.displayDate || currentMonth }}
@@ -56,7 +66,7 @@
       </div>
     </div>
     
-    <div *ngIf="categories.length === 0" class="empty-state">
+    <div *ngIf="categories.length === 0 && !isLoading && !errorMessage" class="empty-state">
       Keine Transaktionen in diesem Zeitraum gefunden.
     </div>
   </div>
@@ -71,9 +81,6 @@
       </button>
       <button mat-flat-button class="action-button expense" (click)="addExpense()">
         <mat-icon>remove</mat-icon> Ausgabe
-      </button>
-      <button mat-flat-button class="action-button transfer" (click)="transfer()">
-        <mat-icon>swap_horiz</mat-icon> Umbuchen
       </button>
     </div>
   </div>

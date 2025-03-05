@@ -204,6 +204,26 @@ $income-color: #43a047;
   }
 }
 
+.loading-state,
+.error-state,
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  
+  p {
+    margin-top: 16px;
+  }
+}
+
+.error-state {
+  color: $expense-red;
+}
+
 .navigation-footer {
   background-color: rgba(0, 0, 0, 0.15);
   padding: 15px 20px;

@@ -4,7 +4,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterModule, Router } from '@angular/router';
+import { SupabaseService } from '../../services/supabase.service';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface Category {
   id: number;
@@ -26,7 +30,8 @@ interface Category {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
@@ -41,8 +46,13 @@ export class DashboardComponent implements OnInit {
   netBalance: number = 0;
   
   categories: Category[] = [];
+  isLoading: boolean = false;
+  errorMessage: string = '';
   
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private supabaseService: SupabaseService
+  ) { }
 
   ngOnInit(): void {
     this.updateCurrentMonthDisplay();
@@ -59,100 +69,28 @@ export class DashboardComponent implements OnInit {
   }
   
   loadMonthData(): void {
-
-    this.mockDataForMonth();
-    this.calculateSummary();
-  }
-  
-  mockDataForMonth(): void {
-    if (this.currentMonth === 'Juli' && this.currentYear === 2015) {
-      this.categories = [
-        {
-          id: 1,
-          name: 'Einnahmen',
-          description: 'Gehalt, Kindergeld',
-          amount: 1835.12,
-          type: 'income',
-          category: 'salary',
-          displayDate: '01.07.2015'
+    this.isLoading = true;
+    this.errorMessage = '';
+    
+    // Aktueller Monat ist 0-based (0 = Januar, 11 = Dezember)
+    this.supabaseService.getTransactionsForMonth(this.currentDate.getMonth(), this.currentYear)
+      .pipe(
+        catchError(error => {
+          this.errorMessage = `Fehler beim Laden der Daten: ${error.message}`;
+          this.categories = [];
+          return of([]);
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.categories = data;
+          this.calculateSummary();
+          this.isLoading = false;
         },
-        {
-          id: 2,
-          name: 'Auto',
-          description: 'Tanken',
-          amount: 76.50,
-          type: 'expense',
-          category: 'transport',
-          displayDate: '05.07.2015'
-        },
-        {
-          id: 3,
-          name: 'Freizeit',
-          description: 'Ausgehen',
-          amount: 46.00,
-          type: 'expense',
-          category: 'entertainment',
-          displayDate: '12.07.2015'
-        },
-        {
-          id: 4,
-          name: 'Kredite und Bank',
-          description: 'Kredite',
-          amount: 310.00,
-          type: 'expense',
-          category: 'housing',
-          displayDate: '15.07.2015'
-        },
-        {
-          id: 5,
-          name: 'Wohnen',
-          description: 'Strom, Miete',
-          amount: 788.00,
-          type: 'expense',
-          category: 'housing',
-          displayDate: '20.07.2015'
+        complete: () => {
+          this.isLoading = false;
         }
-      ];
-    } else {
-      this.categories = [
-        {
-          id: 1,
-          name: 'Einnahmen',
-          description: 'Gehalt, Sonstiges',
-          amount: 1750 + Math.random() * 300,
-          type: 'income',
-          category: 'salary',
-          displayDate: '01.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
-        },
-        {
-          id: 2,
-          name: 'Lebensmittel',
-          description: 'Supermarkt, Restaurants',
-          amount: 350 + Math.random() * 100,
-          type: 'expense',
-          category: 'food',
-          displayDate: '05.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
-        },
-        {
-          id: 3,
-          name: 'Wohnen',
-          description: 'Miete, Nebenkosten',
-          amount: 750 + Math.random() * 50,
-          type: 'expense',
-          category: 'housing',
-          displayDate: '10.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
-        },
-        {
-          id: 4,
-          name: 'Transport',
-          description: 'Tanken, ÖPNV',
-          amount: 90 + Math.random() * 40,
-          type: 'expense',
-          category: 'transport',
-          displayDate: '15.' + (this.currentDate.getMonth() + 1) + '.' + this.currentYear
-        }
-      ];
-    }
+      });
   }
   
   calculateSummary(): void {
@@ -189,10 +127,6 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/transaction/new'], { 
       queryParams: { type: 'expense' }
     });
-  }
-  
-  transfer(): void {
-    this.router.navigate(['/transaction/transfer']);
   }
 
   getCategoryIcon(category: Category): string {
