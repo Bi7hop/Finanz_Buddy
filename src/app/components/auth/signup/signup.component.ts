@@ -26,6 +26,8 @@ export class SignupComponent {
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       passwordConfirm: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
@@ -42,6 +44,8 @@ export class SignupComponent {
   }
 
   get email() { return this.signupForm.get('email'); }
+  get firstName() { return this.signupForm.get('firstName'); }
+  get lastName() { return this.signupForm.get('lastName'); }
   get password() { return this.signupForm.get('password'); }
   get passwordConfirm() { return this.signupForm.get('passwordConfirm'); }
 
@@ -64,21 +68,16 @@ export class SignupComponent {
     try {
       const { success, error } = await this.authService.signUp(
         this.email?.value,
-        this.password?.value
+        this.password?.value,
+        this.firstName?.value,
+        this.lastName?.value
       );
 
       if (success) {
-        const signInResult = await this.authService.signIn(
-          this.email?.value,
-          this.password?.value
-        );
-        
-        if (signInResult.success) {
-          this.router.navigate(['/dashboard']);
-        } else {
-          this.errorMessage = 'Registrierung erfolgreich. Bitte melde dich jetzt an.';
-          this.router.navigate(['/login']);
-        }
+        // Nach erfolgreicher Registrierung zur Login-Seite navigieren,
+        // NICHT automatisch einloggen
+        this.router.navigate(['/login']);
+        // Optional: Erfolgsmeldung anzeigen
       } else {
         this.errorMessage = error?.message || 'Registrierung fehlgeschlagen.';
       }
