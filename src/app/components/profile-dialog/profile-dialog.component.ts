@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,18 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { UserProfileService } from '../../services/user-profile.service';
-
-export interface UserProfile {
-  name: string;
-  nickname: string;
-  email: string;
-}
-
-export interface UserSettings {
-  darkMode: boolean;
-  currency: 'EUR' | 'USD';
-  language: 'de' | 'en';
-}
+import { UserProfile, UserSettings } from '../../services/user-profile.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-profile-dialog',
@@ -33,9 +23,10 @@ export interface UserSettings {
   templateUrl: './profile-dialog.component.html',
   styleUrls: ['./profile-dialog.component.scss']
 })
-export class ProfileDialogComponent implements OnInit {
+export class ProfileDialogComponent implements OnInit, OnDestroy {
   private userProfileService = inject(UserProfileService);
   private dialogRef = inject(MatDialogRef<ProfileDialogComponent>);
+  private subscriptions = new Subscription();
   
   userProfile: UserProfile = {
     name: 'Marcel Menke',
@@ -49,10 +40,30 @@ export class ProfileDialogComponent implements OnInit {
     language: 'de'
   };
 
+  loading = true;
+
   ngOnInit(): void {
     this.userProfile = this.userProfileService.getUserProfile();
     this.userSettings = this.userProfileService.getUserSettings();
     console.log('Geladenes Profil:', this.userProfile);
+    
+    this.subscriptions.add(
+      this.userProfileService.userProfile$.subscribe(profile => {
+        this.userProfile = profile;
+        this.loading = false;
+      })
+    );
+    
+    this.subscriptions.add(
+      this.userProfileService.userSettings$.subscribe(settings => {
+        this.userSettings = settings;
+        this.loading = false;
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   updateDarkMode(value: boolean): void {
@@ -67,9 +78,9 @@ export class ProfileDialogComponent implements OnInit {
     this.userSettings.language = value;
   }
 
-  saveSettings(): void {
-    this.userProfileService.saveUserProfile(this.userProfile);
-    this.userProfileService.saveUserSettings(this.userSettings);
+  async saveSettings(): Promise<void> {
+    await this.userProfileService.saveUserProfile(this.userProfile);
+    await this.userProfileService.saveUserSettings(this.userSettings);
     
     this.dialogRef.close({
       profile: this.userProfile,
