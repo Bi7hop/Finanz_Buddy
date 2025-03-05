@@ -13,6 +13,7 @@ import { BudgetService } from '../../services/budget.service';
 import { TransactionService } from '../../services/transaction.service';
 import { Budget } from '../../models/budget.model';
 import { Subscription } from 'rxjs';
+import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
 
 interface BudgetCategory {
   id: number;
@@ -60,7 +61,8 @@ export class BudgetComponent implements OnInit, OnDestroy {
     private dialog: MatDialog, 
     private budgetService: BudgetService,
     private transactionService: TransactionService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private confirmationDialogService: ConfirmationDialogService
   ) { }
 
   ngOnInit(): void {
@@ -313,22 +315,34 @@ export class BudgetComponent implements OnInit, OnDestroy {
   }
 
   async deleteBudgetCategory(id: number): Promise<void> {
-    if (confirm('Möchtest du dieses Budget wirklich löschen?')) {
-      try {
-        await this.budgetService.deleteBudget(id);
-        
-        this.loadBudgetData();
-        
-        this.snackBar.open('Budget erfolgreich gelöscht', 'Schließen', {
-          duration: 3000
-        });
-      } catch (error) {
-        console.error('Fehler beim Löschen des Budgets:', error);
-        this.snackBar.open('Fehler beim Löschen des Budgets', 'Schließen', {
-          duration: 3000
-        });
-      }
+    // Budget-Kategorie finden, um den Namen in der Nachricht zu verwenden
+    const category = this.budgetCategories.find(cat => cat.id === id);
+    
+    if (!category) {
+      return;
     }
+    
+    // Benutzerdefinierte Nachricht erstellen
+    const customMessage = `Möchtest du das Budget für "${category.name}" wirklich löschen?`;
+    
+    // Den ConfirmationDialogService verwenden
+    this.confirmationDialogService.openDeleteDialog('Budget', customMessage)
+      .subscribe(async (confirmed) => {
+        if (confirmed) {
+          try {
+            await this.budgetService.deleteBudget(id);
+            this.loadBudgetData();
+            this.snackBar.open('Budget erfolgreich gelöscht', 'Schließen', {
+              duration: 3000
+            });
+          } catch (error) {
+            console.error('Fehler beim Löschen des Budgets:', error);
+            this.snackBar.open('Fehler beim Löschen des Budgets', 'Schließen', {
+              duration: 3000
+            });
+          }
+        }
+      });
   }
 
   async previousMonth(): Promise<void> {
