@@ -33,13 +33,13 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   
   userProfile: UserProfile = {
-    name: 'Marcel Menke',
-    nickname: 'Bi7hop',
-    email: 'marcel.menke1981@gmail.com'
+    name: '',
+    nickname: '',
+    email: ''
   };
 
   userSettings: UserSettings = {
-    darkMode: true,
+    darkMode: false,
     currency: 'EUR',
     language: 'de'
   };
@@ -47,9 +47,13 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
   loading = true;
 
   ngOnInit(): void {
+    // Lokale Kopie aus dem Cache laden für schnelle erste Anzeige
     this.userProfile = this.userProfileService.getUserProfile();
     this.userSettings = this.userProfileService.getUserSettings();
     console.log('Geladenes Profil:', this.userProfile);
+    
+    // Aktive Daten aus Supabase laden
+    this.loadProfileData();
     
     this.subscriptions.add(
       this.userProfileService.userProfile$.subscribe(profile => {
@@ -64,6 +68,25 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
         this.loading = false;
       })
     );
+  }
+
+  async loadProfileData(): Promise<void> {
+    try {
+      // Parallel laden der Profil- und Einstellungsdaten von Supabase
+      const [profileData, settingsData] = await Promise.all([
+        this.userProfileService.loadUserProfile(),
+        this.userProfileService.loadUserSettings()
+      ]);
+      
+      // Direkt lokale Objekte aktualisieren
+      this.userProfile = profileData;
+      this.userSettings = settingsData;
+    } catch (error) {
+      console.error('Fehler beim Laden der Profildaten:', error);
+    } finally {
+      // Loading-State auf false setzen, unabhängig davon ob erfolgreich oder nicht
+      this.loading = false;
+    }
   }
 
   ngOnDestroy(): void {
