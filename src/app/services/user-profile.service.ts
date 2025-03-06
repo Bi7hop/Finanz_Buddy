@@ -27,14 +27,14 @@ export class UserProfileService {
   private readonly SETTINGS_KEY = 'user_settings';
 
   private defaultProfile: UserProfile = {
-    name: 'Marcel Menke',
-    nickname: 'Bi7hop',
-    email: 'marcel.menke1981@gmail.com',
+    name: 'Benutzer',
+    nickname: 'Benutzer',
+    email: '',
     currency: 'EUR'
   };
 
   private defaultSettings: UserSettings = {
-    darkMode: true,
+    darkMode: false,
     currency: 'EUR',
     language: 'de'
   };
@@ -63,6 +63,9 @@ export class UserProfileService {
         return this.defaultProfile;
       }
       
+      // Benutze die E-Mail aus der Authentifizierung als Backup
+      const authEmail = user.user.email || '';
+      
       const { data: profileData, error: profileError } = await this.supabaseService.supabaseClient
         .from('profiles')
         .select('*')
@@ -71,22 +74,30 @@ export class UserProfileService {
       
       if (profileError) {
         console.error('Fehler beim Laden des Profils:', profileError);
-        return this.defaultProfile;
+        // Verwende die E-Mail aus der Authentifizierung, wenn das Profil nicht geladen werden kann
+        return { ...this.defaultProfile, email: authEmail };
       }
       
       if (!profileData) {
         console.log('Kein Profil gefunden, verwende Standard-Profil');
-        return this.defaultProfile;
+        // Verwende die E-Mail aus der Authentifizierung, wenn kein Profil gefunden wurde
+        return { ...this.defaultProfile, email: authEmail };
       }
+      
+      // Debug: Log das gesamte Profil aus der Datenbank
+      console.log('Geladene Profildaten aus der Datenbank:', profileData);
       
       const profile: UserProfile = {
         id: profileData.id,
         name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || this.defaultProfile.name,
         nickname: profileData.nickname || this.defaultProfile.nickname,
-        email: profileData.email || this.defaultProfile.email,
+        // Verwende die E-Mail aus dem Profil ODER aus der Auth ODER den Standardwert
+        email: profileData.email || authEmail || this.defaultProfile.email,
         avatar_url: profileData.avatar_url,
         currency: profileData.currency || this.defaultProfile.currency
       };
+      
+      console.log('Konstruiertes Profil-Objekt:', profile);
       
       this.userProfileSubject.next(profile);
       localStorage.setItem(this.PROFILE_KEY, JSON.stringify(profile));
