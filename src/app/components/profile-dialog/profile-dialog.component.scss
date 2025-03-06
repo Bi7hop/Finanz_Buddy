@@ -1,21 +1,30 @@
 $dark-blue-background: #1e3045;
+$darker-blue: darken($dark-blue-background, 5%);
 $light-text: #ffffff;
 $income-green: #4caf50;
+$income-green-dark: darken($income-green, 10%);
+$income-green-light: rgba($income-green, 0.15);
 $divider-color: rgba(255, 255, 255, 0.1);
+$card-background: rgba(255, 255, 255, 0.05);
+$hover-overlay: rgba(255, 255, 255, 0.05);
+$button-border: rgba(255, 255, 255, 0.2);
+$cancel-hover: rgba(255, 255, 255, 0.1);
 
 :host {
   display: block;
 }
 
 .profile-dialog-container {
-  min-width: 350px;
-  max-width: 500px;
+  min-width: 450px;
+  max-width: 600px;
   
   ::ng-deep .mat-mdc-dialog-title {
     color: $light-text;
     font-weight: 500;
     margin-bottom: 20px;
     text-align: center;
+    font-size: 20px;
+    letter-spacing: 0.5px;
   }
   
   .text-center {
@@ -24,7 +33,7 @@ $divider-color: rgba(255, 255, 255, 0.1);
   
   ::ng-deep .mat-mdc-dialog-content {
     max-height: 70vh;
-    padding-bottom: 12px;
+    padding-bottom: 16px;
   }
 }
 
@@ -32,6 +41,10 @@ $divider-color: rgba(255, 255, 255, 0.1);
   display: flex;
   gap: 24px;
   margin-bottom: 24px;
+  background-color: $card-background;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   
   .avatar-large {
     position: relative;
@@ -45,7 +58,8 @@ $divider-color: rgba(255, 255, 255, 0.1);
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid $income-green;
-      background-color: darken($dark-blue-background, 5%);
+      background-color: $darker-blue;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
     }
     
     .edit-avatar-button {
@@ -56,6 +70,7 @@ $divider-color: rgba(255, 255, 255, 0.1);
       height: 32px;
       min-height: 0;
       padding: 0;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
       
       .mat-icon {
         font-size: 16px;
@@ -75,19 +90,30 @@ $divider-color: rgba(255, 255, 255, 0.1);
     .info-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
-      font-size: 14px;
+      font-size: 15px;
       
       mat-icon {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8);
         font-size: 18px;
         width: 18px;
         height: 18px;
+        flex-shrink: 0;
       }
       
       .info-value {
-        word-break: break-word;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+      
+      &.email-row {
+        margin-bottom: 0;
+        
+        .email-value {
+          word-break: break-all; 
+          font-size: 14px; 
+        }
       }
     }
   }
@@ -96,47 +122,104 @@ $divider-color: rgba(255, 255, 255, 0.1);
 .divider {
   height: 1px;
   background-color: $divider-color;
-  margin: 20px 0;
+  margin: 24px 0;
+}
+
+.settings-divider {
+  height: 1px;
+  background-color: $divider-color;
+  margin: 16px 0;
+}
+
+.logout-button-prominent {
+  display: block;
+  width: 100%;
+  margin: 0 0 24px 0;
+  padding: 10px 0;
+  font-size: 15px;
+  color: #ff5252;
+  border-color: rgba(255, 82, 82, 0.5);
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  
+  mat-icon {
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  &:hover {
+    background-color: rgba(255, 82, 82, 0.1);
+    border-color: #ff5252;
+  }
+}
+
+.settings-header {
+  margin: 0 0 16px 0;
+  font-weight: 500;
+  font-size: 18px;
+  color: $light-text;
+  letter-spacing: 0.3px;
+  text-align: center; 
 }
 
 .settings-section {
-  h3 {
-    margin: 0 0 20px 0;
-    font-weight: 500;
-    font-size: 16px;
-    color: $light-text;
+  .settings-card {
+    background-color: $card-background;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
   
   .settings-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    padding: 8px 0;
     
     .setting-label {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 14px;
+      gap: 12px;
+      font-size: 15px;
       
       mat-icon {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.8);
         font-size: 18px;
         width: 18px;
         height: 18px;
       }
     }
     
-    ::ng-deep .mat-button-toggle-group {
+    .custom-button-group {
+      display: flex;
       border-radius: 4px;
-      border: none;
-      background-color: rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      border: 1px solid $button-border;
       
-      .mat-button-toggle {
+      .toggle-button {
+        background: none;
+        border: none;
         color: rgba(255, 255, 255, 0.7);
-        font-size: 13px;
+        min-width: 40px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 0 12px;
         
-        &.mat-button-toggle-checked {
+        &:not(:last-child) {
+          border-right: 1px solid $button-border;
+        }
+        
+        &:hover:not(.active) {
+          background-color: $hover-overlay;
+        }
+        
+        &.active {
           background-color: $income-green;
           color: $light-text;
         }
@@ -145,7 +228,6 @@ $divider-color: rgba(255, 255, 255, 0.1);
           font-size: 18px;
           width: 18px;
           height: 18px;
-          vertical-align: middle;
         }
         
         .flag-icon {
@@ -155,15 +237,10 @@ $divider-color: rgba(255, 255, 255, 0.1);
           background-size: contain;
           background-position: 50%;
           background-repeat: no-repeat;
-          vertical-align: middle;
         }
         
         .de-flag {
           background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCA1IDMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+DQogIDxwYXRoIGQ9Ik0wIDBoNXYzSDB6IiBmaWxsPSIjMDAwIi8+DQogIDxwYXRoIGQ9Ik0wIDFoNXYySDB6IiBmaWxsPSIjRDAwIi8+DQogIDxwYXRoIGQ9Ik0wIDJoNXYxSDB6IiBmaWxsPSIjRkZDRTAwIi8+DQo8L3N2Zz4=');
-        }
-        
-        .us-flag {
-          background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjM1IDY1MCIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPg0KPGRlZnM+DQo8ZyBpZD0idW5pb24iPg0KPHVzZSB5PSItLjIxNiIgeGxpbms6aHJlZj0iI3g0Ii8+DQo8dXNlIHk9Ii0uMjE2IiB4bGluazpocmVmPSIjeDV4WCIvPg0KPHVzZSB5PSIuMDcxIiB4bGluazpocmVmPSIjeHh4eCIvPg0KPHVzZSB5PSIuMzYzIiB4bGluazpocmVmPSIjeHh4eCIvPg0KPHVzZSB5PSIuNjc5IiB4bGluazpocmVmPSIjeHh4eCIvPg0KPHVzZSB5PSIuOTk1IiB4bGluazpocmVmPSIjeHh4eCIvPg0KPHVzZSB5PSIxLjQyNiIgeGxpbms6aHJlZj0iI3g0Ii8+DQo8dXNlIHk9IjEuNDI2IiB4bGluazpocmVmPSIjeDV4WCIvPg0KPC9nPg0KPGcgaWQ9Ing0Ij4NCjx1c2UgeD0iLS4yNTIiIHhsaW5rOmhyZWY9IiN4WCIvPg0KPHVzZSB4PSIuMTI2IiB4bGluazpocmVmPSIjeFgiLz4NCjx1c2UgeD0iLjUwNCIgeGxpbms6aHJlZj0iI3hYIi8+DQo8dXNlIHg9Ii44ODIiIHhsaW5rOmhyZWY9IiN4WCIvPg0KPC9nPg0KPGcgaWQ9Inh4eHgiPg0KPHVzZSB4PSItLjI1MiIgeGxpbms6aHJlZj0iI3hYIi8+DQo8dXNlIHg9Ii4xMjYiIHhsaW5rOmhyZWY9IiN4WCIvPg0KPHVzZSB4PSIuNTA0IiB4bGluazpocmVmPSIjeFgiLz4NCjx1c2UgeD0iLjg4MiIgeGxpbms6aHJlZj0iI3hYIi8+DQo8dXNlIHg9IjEuMjYiIHhsaW5rOmhyZWY9IiN4WCIvPg0KPC9nPg0KPGcgaWQ9Ing1eFgiPg0KPHVzZSB4PSIxLjI2IiB4bGluazpocmVmPSIjeFgiLz4NCjwvZz4NCjxwYXRoIGZpbGw9IiNmZmYiIGlkPSJ4WCIgZD0iTTAgMGw1LjUzMyAzLjgyNUg0LjhMLjc5My41OSAyLjI2IDAgNC4yMTIgMS45OCAyLjYybC0uNzggMkgweiIvPg0KPHBhdGggc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9Ii42MyIgaWQ9InN0cmlwZSIgZD0iTTAgMGgyMzUiLz4NCjwvZGVmcz4NCjxwYXRoIGZpbGw9IiNiMjIyMzQiIGQ9Ik0wIDBoMTIzNXY2NTBIMHoiLz4NCjxwYXRoIGQ9Ik0wIDUwaDEyMzVNMCAxMDBIMTIzNU0wIDE1MGgxMjM1TTAgMjAwaDEyMzVNMCAyNTBoMTIzNU0wIDMwMGgxMjM1TTAgMzUwaDF3MzVNMCA0MDBoMTIzNU0wIDQ1MGgxMjM1TTAgNTAwaDEyMzVNMCA1NTBoMTIzNU0wIDYwMGgxMjM1IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNTAiLz4NCjxwYXRoIGZpbGw9IiMzYzNiNmUiIGQ9Ik0wIDBoNDk0djM1MEgweiIvPg0KPHVzZSB4bGluazpocmVmPSIjdW5pb24iIHRyYW5zZm9ybT0ibWF0cml4KDY1MCAwIDAgNjUwIDI0Ny4yIDE3NSkiLz4NCjwvc3ZnPg==');
         }
         
         .uk-flag {
@@ -180,15 +257,43 @@ $divider-color: rgba(255, 255, 255, 0.1);
       &.mat-mdc-slide-toggle-checked .mdc-switch__track {
         background-color: rgba($income-green, 0.5);
       }
+      
+      .mdc-switch__thumb {
+        transition: all 0.3s ease;
+      }
+      
+      &.mat-mdc-slide-toggle-checked .mdc-switch__thumb {
+        background-color: $income-green;
+      }
     }
   }
 }
 
-::ng-deep .mat-mdc-dialog-actions {
-  padding-top: 12px;
+.custom-actions {
+  padding-top: 16px;
   margin-bottom: 0;
+  display: flex;
+  gap: 12px;
   
-  button {
-    min-width: 90px;
+  .cancel-button {
+    min-width: 100px;
+    border-color: $button-border;
+    color: $light-text;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: $cancel-hover;
+    }
+  }
+  
+  .save-button {
+    min-width: 100px;
+    background-color: $income-green;
+    color: $light-text;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: $income-green-dark;
+    }
   }
 }

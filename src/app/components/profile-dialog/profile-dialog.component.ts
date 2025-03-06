@@ -7,6 +7,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { UserProfileService } from '../../services/user-profile.service';
 import { UserProfile, UserSettings } from '../../services/user-profile.service';
+import { SupabaseService } from '../../services/supabase.service';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,7 +27,9 @@ import { Subscription } from 'rxjs';
 })
 export class ProfileDialogComponent implements OnInit, OnDestroy {
   private userProfileService = inject(UserProfileService);
+  private supabaseService = inject(SupabaseService);
   private dialogRef = inject(MatDialogRef<ProfileDialogComponent>);
+  private router = inject(Router);
   private subscriptions = new Subscription();
   
   userProfile: UserProfile = {
@@ -86,5 +90,15 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
       profile: this.userProfile,
       settings: this.userSettings
     });
+  }
+
+  async logout(): Promise<void> {
+    try {
+      await this.supabaseService.supabaseClient.auth.signOut();
+      this.dialogRef.close();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Fehler beim Logout:', error);
+    }
   }
 }
