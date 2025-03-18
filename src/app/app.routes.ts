@@ -10,6 +10,7 @@ import { TransactionFormComponent } from './components/transactions/transactions
 import { LoginComponent } from './components/auth/login/login.component';
 import { SignupComponent } from './components/auth/signup/signup.component';
 import { LandingComponent } from './components/landing/landing.component'; 
+import { ManualComponent } from './components/manual/manual.component'; // Importiere die ManualComponent (Pfad anpassen!)
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -35,7 +36,7 @@ export const routes: Routes = [
       { path: 'verteilung', component: NotImplementedComponent, data: { featureName: 'Verteilung' } },
       { path: 'statistiken', component: StatisticsComponent },
       { path: 'einstellungen', component: NotImplementedComponent, data: { featureName: 'Einstellungen' } },
-      { path: 'handbuch', component: NotImplementedComponent, data: { featureName: 'Handbuch' } },
+      { path: 'handbuch', component: ManualComponent }, // Hier wurde die Komponente geändert
       { path: 'transaction/new', component: TransactionFormComponent },
     ]
   },

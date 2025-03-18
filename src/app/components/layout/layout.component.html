@@ -3,57 +3,23 @@
     <div class="app-title">Finanz Buddy</div>
     
     <nav class="nav-menu">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/einnahmen" routerLinkActive="active" class="nav-item">
-        <mat-icon>arrow_upward</mat-icon>
-        <span>Einnahmen</span>
-      </a>
-      <a routerLink="/ausgaben" routerLinkActive="active" class="nav-item">
-        <mat-icon>arrow_downward</mat-icon>
-        <span>Ausgaben</span>
-      </a>
-      <a routerLink="/buchungen" routerLinkActive="active" class="nav-item">
-        <mat-icon>account_balance_wallet</mat-icon>
-        <span>Buchungen</span>
-      </a>
-      <a routerLink="/budget" routerLinkActive="active" class="nav-item">
-        <mat-icon>calculate</mat-icon>
-        <span>Budget</span>
-      </a>
-      <a routerLink="/dauerauftraege" routerLinkActive="active" class="nav-item">
-        <mat-icon>schedule</mat-icon>
-        <span>Daueraufträge</span>
-      </a>
-      <a routerLink="/banking" routerLinkActive="active" class="nav-item">
-        <mat-icon>account_balance</mat-icon>
-        <span>Banking</span>
-      </a>
-      <a routerLink="/kredite" routerLinkActive="active" class="nav-item">
-        <mat-icon>person</mat-icon>
-        <span>Kredite</span>
-      </a>
-      <a routerLink="/berichte" routerLinkActive="active" class="nav-item">
-        <mat-icon>description</mat-icon>
-        <span>Berichte</span>
-      </a>
-      <a routerLink="/verteilung" routerLinkActive="active" class="nav-item">
-        <mat-icon>pie_chart</mat-icon>
-        <span>Verteilung</span>
-      </a>
-      <a routerLink="/statistiken" routerLinkActive="active" class="nav-item">
-        <mat-icon>bar_chart</mat-icon>
-        <span>Statistiken</span>
-      </a>
-      <a routerLink="/einstellungen" routerLinkActive="active" class="nav-item">
-        <mat-icon>settings</mat-icon>
-        <span>Einstellungen</span>
-      </a>
-      <a routerLink="/handbuch" routerLinkActive="active" class="nav-item">
-        <mat-icon>help</mat-icon>
-        <span>Handbuch</span>
+      <ng-container *ngFor="let item of menuItems">
+        <a *ngIf="item.implemented || showUnimplementedFeatures" 
+           [routerLink]="item.path" 
+           routerLinkActive="active" 
+           class="nav-item"
+           [class.not-implemented]="!item.implemented">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </ng-container>
+
+      <a (click)="toggleUnimplementedFeatures()" 
+         class="nav-item coming-features">
+        <mat-icon>
+          {{ showUnimplementedFeatures ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+        <span>{{ showUnimplementedFeatures ? 'Features ausblenden' : 'Coming Features' }}</span>
       </a>
     </nav>
   </div>
@@ -62,15 +28,15 @@
     <div class="header">
       <h1 class="page-title">Finanz Buddy - Hauptbereich</h1>
       
-<div class="profile-container">
-  <button mat-icon-button class="profile-button" (click)="openProfileDialog()">
-    <div class="avatar-container">
-      <img src="assets/images/test222.webp" 
-           alt="Profilbild" class="profile-avatar">
-      <div class="status-indicator"></div>
-    </div>
-  </button>
-</div>
+      <div class="profile-container">
+        <button mat-icon-button class="profile-button" (click)="openProfileDialog()">
+          <div class="avatar-container">
+            <img src="assets/images/test222.webp" 
+                alt="Profilbild" class="profile-avatar">
+            <div class="status-indicator"></div>
+          </div>
+        </button>
+      </div>
     </div>
     
     <div class="content-container">
