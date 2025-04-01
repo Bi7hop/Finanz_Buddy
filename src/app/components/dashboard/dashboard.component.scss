@@ -2,8 +2,6 @@ $dark-blue-background: #1e3045;
 $light-text: #ffffff;
 $income-green: #4caf50;
 $expense-red: #f44336;
-$table-header-bg: rgba(0, 0, 0, 0.2);
-$table-hover-bg: rgba(255, 255, 255, 0.05);
 $divider-color: rgba(255, 255, 255, 0.1);
 
 $housing-color: #4a6572;
@@ -17,53 +15,108 @@ $income-color: #43a047;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: $dark-blue-background;
+  background: linear-gradient(135deg, $dark-blue-background 0%, darken($dark-blue-background, 10%) 100%);
   color: $light-text;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
 .summary-section {
-  padding: 20px;
+  padding: 24px;
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid $divider-color;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
   
-  .balance-item {
-    font-size: 18px;
-    font-weight: 500;
-    padding: 5px 0;
+  .balance-card {
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     
-    &.positive {
-      color: $income-green;
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     }
     
-    &.negative {
-      color: $expense-red;
+    .label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
     }
     
-    &.total {
-      color: $income-green;
+    .balance-item {
+      font-size: 22px;
+      font-weight: 600;
+      
+      &.positive {
+        color: $income-green;
+      }
+      
+      &.negative {
+        color: $expense-red;
+      }
+      
+      &.total {
+        color: $income-green;
+      }
     }
   }
 }
 
 .month-navigation {
-  padding: 0 20px 15px;
+  padding: 18px 24px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid $divider-color;
+  background-color: rgba(0, 0, 0, 0.1);
   
   .nav-button {
     color: $light-text;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
   
   .current-month {
-    font-size: 18px;
-    margin: 0 10px;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 20px;
+    padding: 5px 16px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
   }
   
   .right-aligned {
@@ -72,114 +125,46 @@ $income-color: #43a047;
     .bank-link {
       color: $light-text;
       text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
       
       &:hover {
-        text-decoration: underline;
+        background-color: rgba(255, 255, 255, 0.15);
+        text-decoration: none;
       }
     }
   }
 }
 
-.table-header {
-  display: flex;
-  align-items: center;
-  background-color: $table-header-bg;
-  padding: 12px 20px;
-  font-weight: 500;
-  border-bottom: 1px solid $divider-color;
-}
-
-.column-header,
-.date-column,
-.category-column,
-.description-column,
-.amount-column,
-.actions-column {
-  padding: 0 8px;
-}
-
-.date-column {
-  width: 120px;
-  display: flex;
-  align-items: center;
-  
-  .recurring-icon {
-    font-size: 14px;
-    height: 14px;
-    width: 14px;
-    margin-left: 5px;
-    opacity: 0.6;
-  }
-}
-
-.category-column {
-  width: 180px;
-  display: flex;
-  align-items: center;
-  
-  .category-icon-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    margin-right: 8px;
-    
-    &.housing {
-      background-color: $housing-color;
-    }
-    
-    &.food {
-      background-color: $food-color;
-    }
-    
-    &.transport {
-      background-color: $transport-color;
-    }
-    
-    &.shopping {
-      background-color: $shopping-color;
-    }
-    
-    &.entertainment {
-      background-color: $entertainment-color;
-    }
-    
-    &.income {
-      background-color: $income-color;
-    }
-    
-    mat-icon {
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-      color: white;
-    }
-  }
-}
-
-.description-column {
+.transactions-container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.amount-column {
-  width: 120px;
-  text-align: right;
-  font-weight: 500;
+.transactions-table-header {
+  display: grid;
+  grid-template-columns: 140px 220px 1fr 150px;
+  padding: 16px 24px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15));
+  font-weight: 600;
+  border-bottom: 1px solid $divider-color;
+  letter-spacing: 0.5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
   
-  &.positive {
-    color: $income-green;
+  > div {
+    padding: 0 5px;
+    font-size: 14px;
+    text-transform: uppercase;
   }
   
-  &.negative {
-    color: $expense-red;
+  .th-amount {
+    text-align: right;
   }
-}
-
-.actions-column {
-  width: 48px;
-  text-align: right;
 }
 
 .transactions-list {
@@ -187,130 +172,274 @@ $income-color: #43a047;
   overflow-y: auto;
   
   .transaction-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 140px 220px 1fr 150px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
     align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid $divider-color;
     
     &:hover {
-      background-color: $table-hover-bg;
+      background-color: rgba(255, 255, 255, 0.07);
+      
+      .category-icon-container {
+        transform: scale(1.05);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+      }
+    }
+    
+    &:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.03);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.07);
+      }
+    }
+    
+    > div {
+      padding: 0 5px;
     }
   }
   
-  .empty-state {
-    padding: 40px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+  .td-date {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    
+    .recurring-icon {
+      font-size: 14px;
+      height: 14px;
+      width: 14px;
+      margin-left: 8px;
+      opacity: 0.7;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  .td-category {
+    display: flex;
+    align-items: center;
+    
+    .category-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      margin-right: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      
+      &.housing {
+        background: linear-gradient(135deg, $housing-color, darken($housing-color, 15%));
+      }
+      
+      &.food {
+        background: linear-gradient(135deg, $food-color, darken($food-color, 15%));
+      }
+      
+      &.transport {
+        background: linear-gradient(135deg, $transport-color, darken($transport-color, 15%));
+      }
+      
+      &.shopping {
+        background: linear-gradient(135deg, $shopping-color, darken($shopping-color, 15%));
+      }
+      
+      &.entertainment {
+        background: linear-gradient(135deg, $entertainment-color, darken($entertainment-color, 15%));
+      }
+      
+      &.income {
+        background: linear-gradient(135deg, $income-color, darken($income-color, 15%));
+      }
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        color: white;
+      }
+    }
+    
+    span {
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+    }
+  }
+  
+  .td-description {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+    padding-left: 15px !important;
+  }
+  
+  .td-amount {
+    text-align: right;
+    font-weight: 600;
+    font-size: 16px;
+    padding-right: 10px;
+    
+    &.positive {
+      color: $income-green;
+      text-shadow: 0 0 10px rgba($income-green, 0.3);
+    }
+    
+    &.negative {
+      color: $expense-red;
+      text-shadow: 0 0 10px rgba($expense-red, 0.3);
+    }
   }
 }
 
+.empty-state,
 .loading-state,
-.error-state,
-.empty-state {
-  padding: 40px;
+.error-state {
+  padding: 50px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  
+  mat-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
   
   p {
-    margin-top: 16px;
+    margin-top: 12px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
 .error-state {
-  color: $expense-red;
+  mat-icon {
+    color: $expense-red;
+  }
+  
+  p {
+    color: rgba($expense-red, 0.9);
+  }
 }
 
 .navigation-footer {
-  background-color: rgba(0, 0, 0, 0.15);
-  padding: 15px 20px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.25));
+  padding: 24px;
   border-top: 1px solid $divider-color;
+  border-radius: 0 0 12px 12px;
   
   .balance-total {
     text-align: right;
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding: 12px 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    // display: inline-block;
+    float: right;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   }
   
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
+    clear: both;
     
     .action-button {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      padding: 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      
+      mat-icon {
+        margin-right: 10px;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+      }
       
       &.income {
-        background-color: rgba($income-green, 0.2);
-        color: $income-green;
+        background: linear-gradient(to right, rgba($income-green, 0.7), rgba(darken($income-green, 10%), 0.7));
+        color: white;
+        box-shadow: 0 3px 8px rgba($income-green, 0.3), 0 0 0 1px rgba($income-green, 0.5);
         
         &:hover {
-          background-color: rgba($income-green, 0.3);
+          background: linear-gradient(to right, rgba($income-green, 0.8), rgba(darken($income-green, 10%), 0.8));
+          box-shadow: 0 5px 15px rgba($income-green, 0.4), 0 0 0 1px rgba($income-green, 0.6);
+          transform: translateY(-2px);
+        }
+        
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 5px rgba($income-green, 0.3), 0 0 0 1px rgba($income-green, 0.6);
         }
       }
       
       &.expense {
-        background-color: rgba($expense-red, 0.2);
-        color: $expense-red;
-        
-        &:hover {
-          background-color: rgba($expense-red, 0.3);
-        }
-      }
-      
-      &.transfer {
-        background-color: rgba(white, 0.1);
+        background: linear-gradient(to right, rgba($expense-red, 0.7), rgba(darken($expense-red, 10%), 0.7));
         color: white;
+        box-shadow: 0 3px 8px rgba($expense-red, 0.3), 0 0 0 1px rgba($expense-red, 0.5);
         
         &:hover {
-          background-color: rgba(white, 0.2);
+          background: linear-gradient(to right, rgba($expense-red, 0.8), rgba(darken($expense-red, 10%), 0.8));
+          box-shadow: 0 5px 15px rgba($expense-red, 0.4), 0 0 0 1px rgba($expense-red, 0.6);
+          transform: translateY(-2px);
+        }
+        
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 5px rgba($expense-red, 0.3), 0 0 0 1px rgba($expense-red, 0.6);
         }
       }
     }
   }
 }
 
+@media (max-width: 900px) {
+  .transactions-table-header,
+  .transaction-row {
+    grid-template-columns: 120px 180px 1fr 120px;
+  }
+}
+
 @media (max-width: 768px) {
-  .month-navigation {
-    flex-wrap: wrap;
+  .summary-section {
+    flex-direction: column;
     
-    .right-aligned {
-      width: 100%;
-      margin-top: 10px;
-      text-align: right;
+    .balance-card {
+      margin-bottom: 10px;
     }
   }
   
-  .column-header,
-  .date-column,
-  .category-column,
-  .description-column,
-  .amount-column,
-  .actions-column {
-    padding: 0 4px;
+  .transactions-table-header,
+  .transaction-row {
+    grid-template-columns: 100px 160px 1fr 100px;
+    padding: 12px 16px;
   }
   
-  .date-column {
-    width: 90px;
-  }
-  
-  .category-column {
-    width: 140px;
-  }
-  
-  .description-column {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .td-category {
+    .category-icon-container {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+    }
   }
   
   .navigation-footer {
@@ -318,7 +447,8 @@ $income-color: #43a047;
       flex-direction: column;
       
       .action-button {
-        padding: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
       }
     }
   }
