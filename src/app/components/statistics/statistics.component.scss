@@ -22,6 +22,19 @@ $other-color: rgba(255, 159, 64, 0.7);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
+:host ::ng-deep .mdc-tab__text-label {
+  color: white !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+:host ::ng-deep .mdc-tab--active .mdc-tab__text-label {
+  color: white !important;
+  opacity: 1 !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9) !important;
+}
+
 .statistics-header {
   padding: 24px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
@@ -88,40 +101,84 @@ $other-color: rgba(255, 159, 64, 0.7);
   overflow: hidden;
   
   .mat-tab-header {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.35));
     border-bottom: 1px solid $divider-color;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .mat-mdc-tab-labels {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .mat-tab-label {
+    color: $light-text !important;
+    opacity: 1 !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease;
     
-    .mat-tab-label {
-      color: $light-text;
-      opacity: 0.7;
-      
-      &.mat-tab-label-active {
-        opacity: 1;
-      }
+    &.mat-tab-label-active {
+      opacity: 1 !important;
+      font-weight: 600 !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      border-bottom: 3px solid $income-green !important;
+      box-shadow: 0 0 10px rgba($income-green, 0.3) !important;
     }
-    
-    .mat-ink-bar {
-      background-color: $income-green;
+
+    &:hover {
+      opacity: 0.9;
+      background-color: rgba(255, 255, 255, 0.08);
     }
+  }
+  
+  .mat-ink-bar {
+    background-color: $income-green !important;
+    height: 3px !important;
   }
   
   .mat-tab-body-wrapper {
     flex: 1;
     overflow: hidden;
+    display: flex;
+  }
+  
+  .mat-tab-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
   }
   
   .mat-tab-body-content {
-    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
     height: 100% !important;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
   }
 }
 
 .chart-container {
   padding: 24px;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .chart-placeholder {
@@ -129,10 +186,9 @@ $other-color: rgba(255, 159, 64, 0.7);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 24px;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .chart-wrapper {
@@ -187,6 +243,11 @@ canvas {
       box-shadow: 0 3px 8px rgba($income-green, 0.3);
     }
   }
+}
+
+:root {
+  --mdc-tab-text-label-color-default: white !important;
+  --mdc-tab-text-label-color-active: white !important;
 }
 
 @media (max-width: 768px) {
