@@ -2,70 +2,109 @@ $dark-blue-background: #1e3045;
 $light-text: #ffffff;
 $income-green: #4caf50;
 $expense-red: #f44336;
-$warning-color: #ffc107;
-$card-background: rgba(255, 255, 255, 0.06);
 $divider-color: rgba(255, 255, 255, 0.1);
-
-$housing-color: #4a6572;
-$food-color: #ff7043;
-$transport-color: #5c6bc0;
-$shopping-color: #7e57c2;
-$entertainment-color: #26a69a;
-$savings-color: #00acc1;
-$health-color: #ec407a;
-$education-color: #9ccc65;
-$misc-color: #bdbdbd;
+$menu-background: #2a4364;
+$menu-hover-background: #3a5a7a;
 
 .budget-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $dark-blue-background;
+  height: 100%;
+  background: linear-gradient(135deg, $dark-blue-background 0%, darken($dark-blue-background, 10%) 100%);
   color: $light-text;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
 .budget-header {
-  padding: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
   border-bottom: 1px solid $divider-color;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
   
   .month-navigation {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    justify-content: center;
+    margin-bottom: 16px;
+    
+    .nav-button {
+      color: $light-text;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(255, 255, 255, 0.15);
+        transform: scale(1.05);
+      }
+      
+      &:active:not([disabled]) {
+        transform: scale(0.95);
+      }
+      
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
+    }
     
     .current-month {
-      font-size: 18px;
-      margin: 0 10px;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 20px;
+      padding: 5px 16px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      letter-spacing: 0.5px;
     }
   }
   
   .budget-summary {
     .summary-card {
       display: flex;
-      flex-wrap: wrap;
-      gap: 24px;
+      justify-content: space-between;
       
       .summary-item {
+        text-align: center;
         flex: 1;
-        min-width: 120px;
         
         .label {
           font-size: 14px;
-          opacity: 0.7;
-          margin-bottom: 4px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-bottom: 6px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-weight: 500;
         }
         
         .amount {
-          font-size: 20px;
-          font-weight: 500;
+          font-size: 24px;
+          font-weight: 700;
           
           &.positive {
             color: $income-green;
+            text-shadow: 0 0 10px rgba($income-green, 0.3);
           }
           
           &.negative {
             color: $expense-red;
+            text-shadow: 0 0 10px rgba($expense-red, 0.3);
           }
         }
       }
@@ -74,15 +113,15 @@ $misc-color: #bdbdbd;
 }
 
 .loading-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  flex: 1;
+  padding: 50px;
   
   .loading-text {
-    margin-top: 16px;
+    margin-top: 20px;
     font-size: 16px;
     color: rgba(255, 255, 255, 0.7);
   }
@@ -91,23 +130,30 @@ $misc-color: #bdbdbd;
 .categories-container {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 24px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
 .budget-category-card {
-  background-color: $card-background;
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
   overflow: hidden;
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
   
   .category-header {
     display: flex;
     align-items: center;
     padding: 16px;
     border-bottom: 1px solid $divider-color;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
     
     .category-icon-container {
       display: flex;
@@ -115,44 +161,18 @@ $misc-color: #bdbdbd;
       justify-content: center;
       width: 40px;
       height: 40px;
-      border-radius: 4px;
+      border-radius: 8px;
       margin-right: 12px;
       
-      &.housing {
-        background-color: $housing-color;
-      }
-      
-      &.food {
-        background-color: $food-color;
-      }
-      
-      &.transport {
-        background-color: $transport-color;
-      }
-      
-      &.shopping {
-        background-color: $shopping-color;
-      }
-      
-      &.entertainment {
-        background-color: $entertainment-color;
-      }
-      
-      &.savings {
-        background-color: $savings-color;
-      }
-      
-      &.health {
-        background-color: $health-color;
-      }
-      
-      &.education {
-        background-color: $education-color;
-      }
-      
-      &.misc {
-        background-color: $misc-color;
-      }
+      &.housing { background: linear-gradient(135deg, #4a6572, darken(#4a6572, 15%)); }
+      &.food { background: linear-gradient(135deg, #ff7043, darken(#ff7043, 15%)); }
+      &.transport { background: linear-gradient(135deg, #5c6bc0, darken(#5c6bc0, 15%)); }
+      &.shopping { background: linear-gradient(135deg, #7e57c2, darken(#7e57c2, 15%)); }
+      &.entertainment { background: linear-gradient(135deg, #26a69a, darken(#26a69a, 15%)); }
+      &.savings { background: linear-gradient(135deg, #00acc1, darken(#00acc1, 15%)); }
+      &.health { background: linear-gradient(135deg, #ec407a, darken(#ec407a, 15%)); }
+      &.education { background: linear-gradient(135deg, #9ccc65, darken(#9ccc65, 15%)); }
+      &.misc { background: linear-gradient(135deg, #bdbdbd, darken(#bdbdbd, 15%)); }
       
       mat-icon {
         color: white;
@@ -163,15 +183,16 @@ $misc-color: #bdbdbd;
       flex: 1;
       font-size: 16px;
       font-weight: 500;
+      color: $light-text;
     }
     
     .edit-button {
       color: $light-text;
-      opacity: 0.7;
+      background-color: rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
       
       &:hover {
-        opacity: 1;
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.15);
       }
     }
   }
@@ -186,11 +207,12 @@ $misc-color: #bdbdbd;
       
       .budgeted {
         font-weight: 500;
+        color: $light-text;
       }
       
       .spent {
         &.warning {
-          color: $warning-color;
+          color: #ffc107;
         }
       }
     }
@@ -207,17 +229,9 @@ $misc-color: #bdbdbd;
           height: 100%;
           border-radius: 3px;
           
-          &.good {
-            background-color: $income-green;
-          }
-          
-          &.warning {
-            background-color: $warning-color;
-          }
-          
-          &.danger {
-            background-color: $expense-red;
-          }
+          &.good { background-color: $income-green; }
+          &.warning { background-color: #ffc107; }
+          &.danger { background-color: $expense-red; }
         }
       }
       
@@ -225,13 +239,8 @@ $misc-color: #bdbdbd;
         text-align: right;
         font-size: 14px;
         
-        &.positive {
-          color: $income-green;
-        }
-        
-        &.negative {
-          color: $expense-red;
-        }
+        &.positive { color: $income-green; }
+        &.negative { color: $expense-red; }
       }
     }
   }
@@ -243,11 +252,11 @@ $misc-color: #bdbdbd;
     
     .delete-button {
       color: $expense-red;
-      opacity: 0.7;
+      background-color: rgba(244, 67, 54, 0.08);
+      transition: all 0.2s ease;
       
       &:hover {
-        opacity: 1;
-        background-color: rgba(244, 67, 54, 0.1);
+        background-color: rgba(244, 67, 54, 0.15);
       }
     }
   }
@@ -260,22 +269,20 @@ $misc-color: #bdbdbd;
   align-items: center;
   justify-content: center;
   padding: 60px 20px;
-  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
   
   mat-icon {
     font-size: 48px;
     height: 48px;
     width: 48px;
     margin-bottom: 16px;
+    color: rgba(255, 255, 255, 0.5);
   }
   
   .empty-message {
     font-size: 18px;
     margin-bottom: 24px;
-  }
-  
-  .create-first-button {
-    margin-top: 16px;
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -285,10 +292,19 @@ $misc-color: #bdbdbd;
   right: 30px;
   
   .add-button {
-    background-color: $income-green;
+    background: linear-gradient(to right bottom, $income-green, darken($income-green, 10%));
+    box-shadow: 0 4px 12px rgba($income-green, 0.4);
+    transition: all 0.2s ease;
     
     &:hover {
-      background-color: darken($income-green, 5%);
+      background: linear-gradient(to right bottom, lighten($income-green, 5%), $income-green);
+      box-shadow: 0 6px 16px rgba($income-green, 0.5);
+      transform: translateY(-2px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba($income-green, 0.3);
     }
   }
 }
