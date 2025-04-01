@@ -7,11 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction.model';
 import { Subscription } from 'rxjs';
 import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
+import { TransactionModalComponent } from '../../components/transaction-modal/transaction-modal';
 
 @Component({
   selector: 'app-expense',
@@ -24,7 +26,8 @@ import { ConfirmationDialogService } from '../../services/confirmation-dialog.se
     MatButtonModule,
     MatMenuModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   templateUrl: './expense.component.html',
   styleUrls: ['./expense.component.scss']
@@ -45,7 +48,8 @@ export class ExpenseComponent implements OnInit, OnDestroy {
     private router: Router,
     private transactionService: TransactionService,
     private snackBar: MatSnackBar,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -113,20 +117,41 @@ export class ExpenseComponent implements OnInit, OnDestroy {
   }
 
   addExpense(): void {
-    this.router.navigate(['/transaction/new'], { queryParams: { type: 'expense' } });
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'expense'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadTransactions();
+      }
+    });
   }
 
   editTransaction(transaction: Transaction): void {
-    this.router.navigate(['/transaction/new'], { queryParams: { type: 'expense', id: transaction.id } });
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'expense',
+        transaction: transaction
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadTransactions();
+      }
+    });
   }
 
   async deleteTransaction(transaction: Transaction): Promise<void> {
-    // Benutzerdefinierte Nachricht erstellen, die die Beschreibung der Transaktion enthält
     const customMessage = transaction.description 
       ? `Möchtest du die Ausgabe "${transaction.description}" wirklich löschen?`
       : `Möchtest du diese Ausgabe wirklich löschen?`;
 
-    // Den ConfirmationDialogService verwenden
     this.confirmationDialogService.openDeleteDialog('Ausgabe', customMessage)
       .subscribe(async (confirmed) => {
         if (confirmed) {
@@ -184,10 +209,6 @@ export class ExpenseComponent implements OnInit, OnDestroy {
 
   getCategoryIcon(category: string): string {
     const iconMap: { [key: string]: string } = {
-      salary: 'work',
-      investment: 'trending_up',
-      gifts: 'card_giftcard',
-      other_income: 'more_horiz',
       housing: 'home',
       food: 'restaurant',
       transport: 'directions_car',
