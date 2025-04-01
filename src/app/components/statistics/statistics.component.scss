@@ -2,8 +2,7 @@ $dark-blue-background: #1e3045;
 $light-text: #ffffff;
 $income-green: #4caf50;
 $expense-red: #f44336;
-$tab-background: rgba(255, 255, 255, 0.06);
-$border-color: rgba(255, 255, 255, 0.1);
+$divider-color: rgba(255, 255, 255, 0.1);
 
 $housing-color: rgba(255, 99, 132, 0.7);
 $food-color: rgba(54, 162, 235, 0.7);
@@ -16,51 +15,69 @@ $other-color: rgba(255, 159, 64, 0.7);
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: $dark-blue-background;
+  background: linear-gradient(135deg, $dark-blue-background 0%, darken($dark-blue-background, 10%) 100%);
   color: $light-text;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
 .statistics-header {
-  padding: 20px;
+  padding: 24px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+  border-bottom: 1px solid $divider-color;
   
-  h1 {
-    font-size: 24px;
-    font-weight: 400;
-    margin-bottom: 20px;
-  }
-  
-  .filters {
+  .header-content {
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    align-items: center;
+    flex-direction: column;
     
-    mat-form-field {
-      width: 200px;
-      
-      ::ng-deep .mat-form-field-wrapper {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-      }
-      
-      ::ng-deep .mat-form-field-outline {
-        color: rgba(255, 255, 255, 0.3);
-      }
-      
-      ::ng-deep .mat-select-value, 
-      ::ng-deep .mat-select-arrow,
-      ::ng-deep .mat-form-field-label {
-        color: $light-text;
-      }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
     }
     
-    button {
-      height: 50px;
-      background-color: rgba(255, 255, 255, 0.1);
-      color: $light-text;
+    .filters {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
       
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.15);
+      mat-form-field {
+        width: 200px;
+        
+        ::ng-deep .mat-mdc-form-field-wrapper {
+          background-color: rgba(255, 255, 255, 0.06);
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        ::ng-deep .mat-mdc-form-field-outline {
+          display: none;
+        }
+        
+        ::ng-deep .mat-mdc-form-field-label,
+        ::ng-deep .mat-mdc-select-value {
+          color: $light-text !important;
+        }
+      }
+      
+      button {
+        background: linear-gradient(to right bottom, $income-green, darken($income-green, 10%));
+        box-shadow: 0 4px 12px rgba($income-green, 0.4);
+        transition: all 0.2s ease;
+        
+        &:hover {
+          background: linear-gradient(to right bottom, lighten($income-green, 5%), $income-green);
+          box-shadow: 0 6px 16px rgba($income-green, 0.5);
+          transform: translateY(-2px);
+        }
+        
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 3px 8px rgba($income-green, 0.3);
+        }
       }
     }
   }
@@ -68,10 +85,11 @@ $other-color: rgba(255, 159, 64, 0.7);
 
 ::ng-deep .mat-tab-group {
   flex: 1;
+  overflow: hidden;
   
   .mat-tab-header {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid $border-color;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+    border-bottom: 1px solid $divider-color;
     
     .mat-tab-label {
       color: $light-text;
@@ -89,6 +107,12 @@ $other-color: rgba(255, 159, 64, 0.7);
   
   .mat-tab-body-wrapper {
     flex: 1;
+    overflow: hidden;
+  }
+  
+  .mat-tab-body-content {
+    overflow: hidden !important;
+    height: 100% !important;
   }
 }
 
@@ -97,164 +121,36 @@ $other-color: rgba(255, 159, 64, 0.7);
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .chart-placeholder {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 24px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  
-  .chart-title {
-    font-size: 18px;
-    margin-bottom: 24px;
-    text-align: center;
-  }
-}
-
-.line-chart-placeholder {
-  display: flex;
-  flex: 1;
-  margin-bottom: 24px;
-  position: relative;
-  height: 300px;
-  
-  .axis {
-    display: flex;
-    
-    &.y-axis {
-      flex-direction: column-reverse;
-      justify-content: space-between;
-      width: 60px;
-      
-      .tick {
-        font-size: 12px;
-        opacity: 0.7;
-      }
-    }
-    
-    &.x-axis {
-      position: absolute;
-      bottom: -25px;
-      left: 60px;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      
-      .tick {
-        font-size: 12px;
-        opacity: 0.7;
-      }
-    }
-  }
-  
-  .chart-area {
-    flex: 1;
-    position: relative;
-    border-left: 1px solid $border-color;
-    border-bottom: 1px solid $border-color;
-    
-    .data-line {
-      position: absolute;
-      height: 2px;
-      left: 0;
-      right: 0;
-      
-      &.income {
-        background: linear-gradient(to right, 
-          transparent 0%, $income-green 10%, $income-green 30%, 
-          $income-green 50%, $income-green 70%, $income-green 90%, transparent 100%);
-        top: 20%;
-      }
-      
-      &.expenses {
-        background: linear-gradient(to right, 
-          transparent 0%, $expense-red 10%, $expense-red 30%, 
-          $expense-red 70%, $expense-red 90%, transparent 100%);
-        top: 40%;
-      }
-    }
-  }
-}
-
-.pie-chart-placeholder {
-  position: relative;
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  
-  .pie-segment {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    
-    &.housing {
-      background-color: $housing-color;
-      clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 70%, 50% 50%);
-    }
-    
-    &.food {
-      background-color: $food-color;
-      clip-path: polygon(50% 50%, 100% 70%, 90% 100%, 50% 100%, 50% 50%);
-    }
-    
-    &.transport {
-      background-color: $transport-color;
-      clip-path: polygon(50% 50%, 50% 100%, 20% 100%, 10% 70%, 50% 50%);
-    }
-    
-    &.leisure {
-      background-color: $leisure-color;
-      clip-path: polygon(50% 50%, 10% 70%, 0 30%, 20% 10%, 50% 50%);
-    }
-    
-    &.savings {
-      background-color: $savings-color;
-      clip-path: polygon(50% 50%, 20% 10%, 50% 0, 50% 50%);
-    }
-    
-    &.other {
-      display: none;
-    }
-  }
 }
 
-.chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 24px;
-  
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
-    .color-box {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      
-      &.income { background-color: $income-green; }
-      &.expenses { background-color: $expense-red; }
-      &.housing { background-color: $housing-color; }
-      &.food { background-color: $food-color; }
-      &.transport { background-color: $transport-color; }
-      &.leisure { background-color: $leisure-color; }
-      &.savings { background-color: $savings-color; }
-      &.other { background-color: $other-color; }
-    }
-    
-    span {
-      font-size: 12px;
-    }
-  }
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: $light-text;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .placeholder-message {
@@ -265,41 +161,57 @@ $other-color: rgba(255, 159, 64, 0.7);
   background-color: rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   font-size: 18px;
-  opacity: 0.5;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .export-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 16px;
   padding: 20px;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid $divider-color;
   
   button {
-    color: $light-text;
-    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(to right bottom, $income-green, darken($income-green, 10%));
+    box-shadow: 0 4px 12px rgba($income-green, 0.4);
+    transition: all 0.2s ease;
     
     &:hover {
-      background-color: rgba(255, 255, 255, 0.05);
+      background: linear-gradient(to right bottom, lighten($income-green, 5%), $income-green);
+      box-shadow: 0 6px 16px rgba($income-green, 0.5);
+      transform: translateY(-2px);
     }
     
-    mat-icon {
-      margin-right: 8px;
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba($income-green, 0.3);
     }
   }
 }
 
 @media (max-width: 768px) {
-  .statistics-header .filters {
+  .statistics-header .header-content .filters {
     flex-direction: column;
     align-items: stretch;
     
     mat-form-field {
       width: 100%;
     }
+    
+    button {
+      align-self: center;
+      margin-top: 16px;
+    }
   }
   
   .export-container {
     flex-direction: column;
+    align-items: center;
+    
+    button {
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 16px;
+    }
   }
 }
