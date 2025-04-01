@@ -1,0 +1,263 @@
+<div class="savings-container">
+    <div class="savings-header">
+      <h2>Meine Sparziele</h2>
+      <button mat-flat-button color="primary" class="add-goal-button" (click)="openNewGoalDialog()">
+        <mat-icon>add</mat-icon>
+        <span>Neues Ziel</span>
+      </button>
+    </div>
+  
+    <div class="goals-grid">
+      <div class="goal-card" *ngFor="let goal of savingsGoals" (click)="openGoalDetails(goal)">
+        <div class="goal-header">
+          <div class="goal-icon" [ngClass]="goal.category">
+            <mat-icon>{{ getCategoryIcon(goal.category) }}</mat-icon>
+          </div>
+          <div class="goal-info">
+            <h3 class="goal-title">{{ goal.title }}</h3>
+            <p class="goal-category">{{ getCategoryName(goal.category) }}</p>
+          </div>
+        </div>
+        
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="(goal.currentAmount / goal.targetAmount) * 100"></div>
+          </div>
+          <div class="progress-stats">
+            <span class="current-amount">{{ goal.currentAmount | currency:'EUR' }}</span>
+            <span class="progress-percentage">{{ (goal.currentAmount / goal.targetAmount) * 100 | number:'1.0-0' }}%</span>
+            <span class="target-amount">{{ goal.targetAmount | currency:'EUR' }}</span>
+          </div>
+        </div>
+        
+        <div class="goal-footer">
+          <div class="goal-timeframe">
+            <mat-icon>schedule</mat-icon>
+            <span *ngIf="getTimeToGoal(goal) === 'completed'">Ziel erreicht!</span>
+            <span *ngIf="getTimeToGoal(goal) !== 'completed'">{{ getTimeToGoal(goal) }}</span>
+          </div>
+          <div class="last-deposit" *ngIf="goal.transactions && goal.transactions.length">
+            <mat-icon>trending_up</mat-icon>
+            <span>Letzte Einzahlung: {{ goal.transactions[0].amount | currency:'EUR' }} ({{ goal.transactions[0].date | date:'dd.MM.yyyy' }})</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="empty-state" *ngIf="savingsGoals.length === 0">
+        <mat-icon>savings</mat-icon>
+        <h3>Keine Sparziele vorhanden</h3>
+        <p>Erstelle dein erstes Sparziel, um deine Finanzziele zu verfolgen.</p>
+        <button mat-flat-button color="primary" (click)="openNewGoalDialog()">
+          <mat-icon>add</mat-icon>
+          <span>Sparziel erstellen</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #goalDetailsTemplate>
+    <div class="goal-dialog-container">
+      <h2 mat-dialog-title>{{ selectedGoal?.title }}</h2>
+      
+      <mat-dialog-content>
+        <div class="goal-details-section">
+          <div class="goal-summary">
+            <div class="goal-large-icon" [ngClass]="selectedGoal?.category">
+              <mat-icon>{{ getCategoryIcon(selectedGoal?.category) }}</mat-icon>
+            </div>
+            
+            <div class="goal-metrics">
+              <div class="metric-card">
+                <span class="metric-label">Aktuell</span>
+                <span class="metric-value">{{ selectedGoal?.currentAmount | currency:'EUR' }}</span>
+              </div>
+              
+              <div class="metric-divider"></div>
+              
+              <div class="metric-card">
+                <span class="metric-label">Ziel</span>
+                <span class="metric-value">{{ selectedGoal?.targetAmount | currency:'EUR' }}</span>
+              </div>
+              
+              <div class="metric-divider"></div>
+              
+              <div class="metric-card">
+                <span class="metric-label">Fortschritt</span>
+                <span class="metric-value">{{ (selectedGoal?.currentAmount || 0) / (selectedGoal?.targetAmount || 1) * 100 | number:'1.0-0' }}%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="progress-section">
+            <div class="large-progress-bar">
+              <div class="large-progress-fill" [style.width.%]="(selectedGoal?.currentAmount || 0) / (selectedGoal?.targetAmount || 1) * 100"></div>
+            </div>
+          </div>
+          
+          <div class="estimate-section">
+            <div class="estimate-card">
+              <mat-icon>calendar_today</mat-icon>
+              <div class="estimate-info">
+                <span class="estimate-label">Geschätzter Abschluss</span>
+                <span class="estimate-value" *ngIf="selectedGoal && getTimeToGoal(selectedGoal) === 'completed'">Ziel erreicht!</span>
+                <span class="estimate-value" *ngIf="selectedGoal && getTimeToGoal(selectedGoal) !== 'completed'">{{ getTimeToGoal(selectedGoal) }}</span>
+              </div>
+            </div>
+            
+            <div class="estimate-card">
+              <mat-icon>speed</mat-icon>
+              <div class="estimate-info">
+                <span class="estimate-label">Durchschnittliche monatliche Sparrate</span>
+                <span class="estimate-value">{{ getAverageMonthlyAmount(selectedGoal) | currency:'EUR' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="transactions-section">
+          <h3>Transaktionen</h3>
+          
+          <div class="add-transaction">
+            <button mat-stroked-button color="primary" (click)="openAddTransactionDialog()">
+              <mat-icon>add</mat-icon>
+              <span>Einzahlung hinzufügen</span>
+            </button>
+          </div>
+          
+          <div class="transaction-list">
+            <div class="transaction-header">
+              <span class="transaction-date-header">Datum</span>
+              <span class="transaction-amount-header">Betrag</span>
+              <span class="transaction-note-header">Beschreibung</span>
+            </div>
+            
+            <div class="transaction-item" *ngFor="let transaction of selectedGoal?.transactions">
+              <span class="transaction-date">{{ transaction.date | date:'dd.MM.yyyy' }}</span>
+              <span class="transaction-amount">{{ transaction.amount | currency:'EUR' }}</span>
+              <span class="transaction-note">{{ transaction.note }}</span>
+            </div>
+            
+            <div class="empty-transactions" *ngIf="!selectedGoal?.transactions || selectedGoal?.transactions?.length === 0">
+              <mat-icon>info</mat-icon>
+              <p>Keine Transaktionen vorhanden</p>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+      
+      <mat-dialog-actions align="end">
+        <button mat-stroked-button color="warn" (click)="deleteGoal()">
+          <mat-icon>delete</mat-icon>
+          <span>Löschen</span>
+        </button>
+        <button mat-stroked-button (click)="closeDialog()">Schließen</button>
+        <button mat-flat-button color="primary" (click)="editGoal()">
+          <mat-icon>edit</mat-icon>
+          <span>Bearbeiten</span>
+        </button>
+      </mat-dialog-actions>
+    </div>
+  </ng-template>
+  
+  <ng-template #goalFormTemplate>
+    <div class="goal-form-container">
+      <h2 mat-dialog-title>{{ editMode ? 'Sparziel bearbeiten' : 'Neues Sparziel erstellen' }}</h2>
+      
+      <form [formGroup]="goalForm" (ngSubmit)="saveGoal()">
+        <mat-dialog-content>
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Titel</mat-label>
+              <input matInput formControlName="title" required>
+              <mat-error *ngIf="goalForm.get('title')?.invalid">Bitte gib einen Titel ein</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Kategorie</mat-label>
+              <mat-select formControlName="category" required>
+                <mat-option *ngFor="let category of categories" [value]="category.value">
+                  <mat-icon>{{ category.icon }}</mat-icon>
+                  <span>{{ category.name }}</span>
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="goalForm.get('category')?.invalid">Bitte wähle eine Kategorie</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row two-columns">
+            <mat-form-field appearance="fill">
+              <mat-label>Zielbetrag</mat-label>
+              <input matInput type="number" formControlName="targetAmount" required>
+              <span matTextPrefix>€&nbsp;</span>
+              <mat-error *ngIf="goalForm.get('targetAmount')?.invalid">Bitte gib einen gültigen Betrag ein</mat-error>
+            </mat-form-field>
+            
+            <mat-form-field appearance="fill">
+              <mat-label>Startbetrag (optional)</mat-label>
+              <input matInput type="number" formControlName="startAmount">
+              <span matTextPrefix>€&nbsp;</span>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Notizen (optional)</mat-label>
+              <textarea matInput formControlName="notes" rows="3"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-dialog-content>
+        
+        <mat-dialog-actions align="end">
+          <button mat-stroked-button type="button" (click)="closeDialog()">Abbrechen</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="goalForm.invalid">
+            {{ editMode ? 'Speichern' : 'Erstellen' }}
+          </button>
+        </mat-dialog-actions>
+      </form>
+    </div>
+  </ng-template>
+  
+  <ng-template #transactionFormTemplate>
+    <div class="transaction-form-container">
+      <h2 mat-dialog-title>Einzahlung hinzufügen</h2>
+      
+      <form [formGroup]="transactionForm" (ngSubmit)="saveTransaction()">
+        <mat-dialog-content>
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Betrag</mat-label>
+              <input matInput type="number" formControlName="amount" required>
+              <span matTextPrefix>€&nbsp;</span>
+              <mat-error *ngIf="transactionForm.get('amount')?.invalid">Bitte gib einen gültigen Betrag ein</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Datum</mat-label>
+              <input matInput [matDatepicker]="picker" formControlName="date" required>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="transactionForm.get('date')?.invalid">Bitte wähle ein Datum</mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="fill">
+              <mat-label>Beschreibung (optional)</mat-label>
+              <input matInput formControlName="note">
+            </mat-form-field>
+          </div>
+        </mat-dialog-content>
+        
+        <mat-dialog-actions align="end">
+          <button mat-stroked-button type="button" (click)="closeDialog()">Abbrechen</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="transactionForm.invalid">Hinzufügen</button>
+        </mat-dialog-actions>
+      </form>
+    </div>
+  </ng-template>
