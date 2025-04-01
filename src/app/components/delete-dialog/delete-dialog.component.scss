@@ -1,12 +1,76 @@
-mat-dialog-content {
-    min-width: 300px;
+::ng-deep .mat-mdc-dialog-container {
+  background-color: #2c2c2c;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.delete-dialog-container {
+  h2.mat-mdc-dialog-title {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    padding: 16px;
+    margin: 0;
+    border-bottom: none;
   }
-  
-  h2 {
-    margin-top: 0;
-    color: #f44336; 
+
+  .mat-mdc-dialog-content {
+    padding: 0 16px 16px;
+    min-width: 350px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 16px;
   }
-  
-  button {
-    margin-left: 8px;
+
+  .mat-mdc-dialog-actions {
+    padding: 16px;
+    justify-content: flex-end;
+
+    button {
+      min-width: 100px;
+      height: 40px;
+      border-radius: 8px;
+      text-transform: none;
+      font-size: 16px;
+      margin-left: 8px;
+
+      &.mat-mdc-button {
+        color: white;
+        opacity: 0.7;
+        
+        &:hover {
+          opacity: 1;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      &.mat-mdc-raised-button.mat-warn {
+        background-color: #f44336;
+        color: white;
+        box-shadow: none;
+        
+        &:hover {
+          background-color: darken(#f44336, 10%);
+        }
+      }
+    }
   }
+}
+
+@media (max-width: 600px) {
+  .delete-dialog-container {
+    .mat-mdc-dialog-content {
+      min-width: 280px;
+    }
+
+    .mat-mdc-dialog-actions {
+      flex-direction: column-reverse;
+      
+      button {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 16px;
+      }
+    }
+  }
+}
