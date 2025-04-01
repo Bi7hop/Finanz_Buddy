@@ -10,7 +10,8 @@ import { TransactionFormComponent } from './components/transactions/transactions
 import { LoginComponent } from './components/auth/login/login.component';
 import { SignupComponent } from './components/auth/signup/signup.component';
 import { LandingComponent } from './components/landing/landing.component'; 
-import { ManualComponent } from './components/manual/manual.component'; // Importiere die ManualComponent (Pfad anpassen!)
+import { ManualComponent } from './components/manual/manual.component';
+import { SavingsGoalsComponent } from './components/savings-goals/savings-goals.component'; // Neue Komponente importieren
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
@@ -28,6 +29,7 @@ export const routes: Routes = [
       { path: 'einnahmen', component: IncomeComponent },
       { path: 'ausgaben', component: ExpenseComponent },
       { path: 'budget', component: BudgetComponent },
+      { path: 'sparziele', component: SavingsGoalsComponent }, // Neue Route für Sparziele
       { path: 'buchungen', component: NotImplementedComponent, data: { featureName: 'Buchungen' } },
       { path: 'dauerauftraege', component: NotImplementedComponent, data: { featureName: 'Daueraufträge' } },
       { path: 'banking', component: NotImplementedComponent, data: { featureName: 'Banking' } },
@@ -36,7 +38,7 @@ export const routes: Routes = [
       { path: 'verteilung', component: NotImplementedComponent, data: { featureName: 'Verteilung' } },
       { path: 'statistiken', component: StatisticsComponent },
       { path: 'einstellungen', component: NotImplementedComponent, data: { featureName: 'Einstellungen' } },
-      { path: 'handbuch', component: ManualComponent }, // Hier wurde die Komponente geändert
+      { path: 'handbuch', component: ManualComponent },
       { path: 'transaction/new', component: TransactionFormComponent },
     ]
   },
