@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
@@ -115,13 +115,45 @@ export class StatisticsComponent implements OnInit, AfterViewInit {
     {value: 'forecast', label: 'Prognose'}
   ];
 
-  constructor() { }
+  constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     this.createIncomeExpenseChart();
     this.createCategoryChart();
+    
+    setTimeout(() => {
+      this.fixTabLabels();
+    }, 100);
+  }
+
+  private fixTabLabels(): void {
+    const tabLabels = document.querySelectorAll('.mdc-tab__text-label');
+    tabLabels.forEach(label => {
+      this.renderer.setStyle(label, 'color', 'white');
+      this.renderer.setStyle(label, 'opacity', '1');
+      this.renderer.setStyle(label, 'font-weight', '500');
+    });
+    
+    const tabGroup = document.querySelector('mat-tab-group');
+    if (tabGroup) {
+      const observer = new MutationObserver(() => {
+        const activeTab = document.querySelector('.mdc-tab--active .mdc-tab__text-label');
+        if (activeTab) {
+          this.renderer.setStyle(activeTab, 'color', 'white');
+          this.renderer.setStyle(activeTab, 'opacity', '1');
+          this.renderer.setStyle(activeTab, 'font-weight', 'bold');
+          this.renderer.setStyle(activeTab, 'text-shadow', '0 0 8px rgba(255, 255, 255, 0.8)');
+        }
+      });
+
+      observer.observe(tabGroup, { 
+        attributes: true, 
+        childList: true, 
+        subtree: true 
+      });
+    }
   }
 
   createIncomeExpenseChart(): void {
