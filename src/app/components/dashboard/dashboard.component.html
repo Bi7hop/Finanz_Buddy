@@ -1,16 +1,27 @@
 <div class="dashboard-container">
+  <!-- Verbesserte Summary-Section mit Beschriftungen -->
   <div class="summary-section">
-    <div class="balance-item positive">
-      <span>+{{ totalIncome | currency:'EUR' }}</span>
+    <div class="balance-card">
+      <div class="label">Einnahmen</div>
+      <div class="balance-item positive">
+        <span>+{{ totalIncome | currency:'EUR' }}</span>
+      </div>
     </div>
-    <div class="balance-item negative">
-      <span>-{{ totalExpenses | currency:'EUR' }}</span>
+    <div class="balance-card">
+      <div class="label">Ausgaben</div>
+      <div class="balance-item negative">
+        <span>-{{ totalExpenses | currency:'EUR' }}</span>
+      </div>
     </div>
-    <div class="balance-item total">
-      <span>+{{ netBalance | currency:'EUR' }}</span>
+    <div class="balance-card">
+      <div class="label">Bilanz</div>
+      <div class="balance-item total">
+        <span>{{ netBalance | currency:'EUR' }}</span>
+      </div>
     </div>
   </div>
 
+  <!-- Verbesserte Month Navigation -->
   <div class="month-navigation">
     <button mat-icon-button class="nav-button" (click)="previousMonth()">
       <mat-icon>navigate_before</mat-icon>
@@ -24,53 +35,57 @@
     </div> -->
   </div>
 
-  <div class="table-header">
-    <div class="column-header date-column">Datum</div>
-    <div class="column-header category-column">Kategorie</div>
-    <div class="column-header description-column">Beschreibung</div>
-    <div class="column-header amount-column">Betrag</div>
-    <div class="column-header actions-column"></div>
-  </div>
-  
-  <div class="transactions-list">
-    <div *ngIf="isLoading" class="loading-state">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Daten werden geladen...</p>
-    </div>
-
-    <div *ngIf="errorMessage" class="error-state">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ errorMessage }}</p>
+  <!-- Verbesserte Transaktionsliste als Tabelle -->
+  <div class="transactions-container">
+    <!-- Table Header -->
+    <div class="transactions-table-header">
+      <div class="th-date">Datum</div>
+      <div class="th-category">Kategorie</div>
+      <div class="th-description">Beschreibung</div>
+      <div class="th-amount">Betrag</div>
     </div>
     
-    <div *ngFor="let category of categories" class="transaction-row">
-      <div class="date-column">
-        {{ category.displayDate || currentMonth }}
-        <mat-icon *ngIf="category.isRecurring" class="recurring-icon">loop</mat-icon>
+    <!-- Table Content -->
+    <div class="transactions-list">
+      <div *ngIf="isLoading" class="loading-state">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Daten werden geladen...</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-state">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ errorMessage }}</p>
       </div>
       
-      <div class="category-column">
-        <div class="category-icon-container" [ngClass]="category.type === 'income' ? 'income' : category.category">
-          <mat-icon>{{ getCategoryIcon(category) }}</mat-icon>
+      <!-- Transaction Rows -->
+      <div *ngFor="let category of categories" class="transaction-row">
+        <div class="td-date">
+          {{ category.displayDate || currentMonth }}
+          <mat-icon *ngIf="category.isRecurring" class="recurring-icon">loop</mat-icon>
         </div>
-        {{ category.name }}
+        
+        <div class="td-category">
+          <div class="category-icon-container" [ngClass]="category.type === 'income' ? 'income' : category.category">
+            <mat-icon>{{ getCategoryIcon(category) }}</mat-icon>
+          </div>
+          <span>{{ category.name }}</span>
+        </div>
+        
+        <div class="td-description">{{ category.description }}</div>
+        
+        <div class="td-amount" [ngClass]="{'positive': category.type === 'income', 'negative': category.type === 'expense'}">
+          {{ category.type === 'income' ? '+' : '-' }}{{ category.amount | currency:'EUR' }}
+        </div>
       </div>
       
-      <div class="description-column">{{ category.description }}</div>
-      
-      <div class="amount-column" [ngClass]="{'positive': category.type === 'income', 'negative': category.type === 'expense'}">
-        {{ category.type === 'income' ? '+' : '-' }}{{ category.amount | currency:'EUR' }}
+      <div *ngIf="categories.length === 0 && !isLoading && !errorMessage" class="empty-state">
+        <mat-icon>info</mat-icon>
+        <p>Keine Transaktionen in diesem Zeitraum gefunden.</p>
       </div>
-      
-      <div class="actions-column">
-      </div>
-    </div>
-    
-    <div *ngIf="categories.length === 0 && !isLoading && !errorMessage" class="empty-state">
-      Keine Transaktionen in diesem Zeitraum gefunden.
     </div>
   </div>
 
+  <!-- Verbesserte Navigation Footer -->
   <div class="navigation-footer">
     <div class="balance-total">
       <span>{{ netBalance | currency:'EUR' }}</span>
