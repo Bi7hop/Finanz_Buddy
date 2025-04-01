@@ -1,49 +1,50 @@
 <div class="expense-container">
-    <div class="expense-header">
-      <div class="month-navigation">
-        <button mat-icon-button (click)="previousMonth()">
-          <mat-icon>navigate_before</mat-icon>
-        </button>
-        <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
-        <button mat-icon-button (click)="nextMonth()">
-          <mat-icon>navigate_next</mat-icon>
-        </button>
-      </div>
-      
-      <div class="expense-total">
-        <div class="label">Gesamt Ausgaben</div>
-        <div class="amount">-{{ totalExpense | currency:'EUR' }}</div>
-      </div>
+  <div class="expense-header">
+    <div class="month-navigation">
+      <button mat-icon-button class="nav-button" (click)="previousMonth()">
+        <mat-icon>navigate_before</mat-icon>
+      </button>
+      <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
+      <button mat-icon-button class="nav-button" (click)="nextMonth()">
+        <mat-icon>navigate_next</mat-icon>
+      </button>
     </div>
     
-    <div class="table-header">
-      <div class="column-header date-column">Datum</div>
-      <div class="column-header category-column">Kategorie</div>
-      <div class="column-header description-column">Beschreibung</div>
-      <div class="column-header amount-column">Betrag</div>
-      <div class="column-header actions-column"></div>
+    <div class="expense-total">
+      <div class="label">Gesamt Ausgaben</div>
+      <div class="amount">-{{ totalExpense | currency:'EUR' }}</div>
+    </div>
+  </div>
+  
+  <div class="transactions-container">
+    <div class="transactions-table-header">
+      <div class="th-date">Datum</div>
+      <div class="th-category">Kategorie</div>
+      <div class="th-description">Beschreibung</div>
+      <div class="th-amount">Betrag</div>
+      <div class="th-actions"></div>
     </div>
     
     <div class="transactions-list">
       <div *ngFor="let transaction of transactions" class="transaction-row">
-        <div class="date-column">
+        <div class="td-date">
           {{ transaction.date | date:'dd.MM.yyyy' }}
           <mat-icon *ngIf="transaction.isRecurring" class="recurring-icon">loop</mat-icon>
         </div>
         
-        <div class="category-column">
+        <div class="td-category">
           <div class="category-icon-container" [ngClass]="transaction.category">
             <mat-icon>{{ getCategoryIcon(transaction.category) }}</mat-icon>
           </div>
-          {{ transaction.categoryName }}
+          <span>{{ transaction.categoryName }}</span>
         </div>
         
-        <div class="description-column">{{ transaction.description }}</div>
+        <div class="td-description">{{ transaction.description }}</div>
         
-        <div class="amount-column negative">-{{ transaction.amount | currency:'EUR' }}</div>
+        <div class="td-amount negative">-{{ transaction.amount | currency:'EUR' }}</div>
         
-        <div class="actions-column">
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+        <div class="td-actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu" class="action-menu-button">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -60,13 +61,15 @@
       </div>
       
       <div *ngIf="transactions.length === 0" class="empty-state">
-        Keine Ausgaben in diesem Zeitraum gefunden.
+        <mat-icon>info</mat-icon>
+        <p>Keine Ausgaben in diesem Zeitraum gefunden.</p>
       </div>
     </div>
-    
-    <div class="add-expense-container">
-      <button mat-fab color="warn" (click)="addExpense()" class="add-button">
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
   </div>
+  
+  <div class="add-expense-container">
+    <button mat-fab color="warn" (click)="addExpense()" class="add-button">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
