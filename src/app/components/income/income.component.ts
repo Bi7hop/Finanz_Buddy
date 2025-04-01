@@ -7,11 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { TransactionService } from '../../services/transaction.service';
 import { Transaction } from '../../models/transaction.model';
 import { Subscription } from 'rxjs';
 import { ConfirmationDialogService } from '../../services/confirmation-dialog.service';
+import { TransactionModalComponent } from '../../components/transaction-modal/transaction-modal';
 
 @Component({
   selector: 'app-income',
@@ -24,7 +26,8 @@ import { ConfirmationDialogService } from '../../services/confirmation-dialog.se
     MatButtonModule,
     MatMenuModule,
     MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   templateUrl: './income.component.html',
   styleUrls: ['./income.component.scss']
@@ -45,7 +48,8 @@ export class IncomeComponent implements OnInit, OnDestroy {
     private router: Router,
     private transactionService: TransactionService,
     private snackBar: MatSnackBar,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -133,30 +137,42 @@ export class IncomeComponent implements OnInit, OnDestroy {
   }
   
   addIncome(): void {
-    this.router.navigate(['/transaction/new'], { queryParams: { type: 'income' } });
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'income'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadTransactions();
+      }
+    });
   }
   
   editTransaction(transaction: Transaction): void {
-    console.log('Bearbeite Transaktion:', transaction); // Debug-Log
-    
-    // Stelle sicher, dass die ID als Zahl übergeben wird (falls sie als String vorliegt)
-    const transactionId = typeof transaction.id === 'string' ? parseInt(transaction.id) : transaction.id;
-    
-    this.router.navigate(['/transaction/new'], { 
-      queryParams: { 
-        type: 'income', 
-        id: transactionId
-      } 
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'income',
+        transaction: transaction
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+
+        this.loadTransactions();
+      }
     });
   }
   
   async deleteTransaction(transaction: Transaction): Promise<void> {
-    // Benutzerdefinierte Nachricht erstellen, die die Beschreibung der Transaktion enthält
     const customMessage = transaction.description 
       ? `Möchtest du die Einnahme "${transaction.description}" wirklich löschen?`
       : `Möchtest du diese Einnahme wirklich löschen?`;
 
-    // Den ConfirmationDialogService verwenden
     this.confirmationDialogService.openDeleteDialog('Einnahme', customMessage)
       .subscribe(async (confirmed) => {
         if (confirmed) {
