@@ -1,0 +1,106 @@
+<div class="transaction-modal-container">
+    <h2 mat-dialog-title>{{ formTitle }}</h2>
+    
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="transaction-form">
+      <mat-form-field appearance="outline" class="custom-form-field">
+        <mat-label>Betrag (€)</mat-label>
+        <input 
+          matInput 
+          type="text"
+          inputmode="decimal"
+          formControlName="amount" 
+          placeholder="0.00" 
+          min="0.01"
+          required
+        >
+        <div matSuffix class="custom-suffix">€</div>
+        <mat-error *ngIf="transactionForm.get('amount')?.hasError('required')">
+          Betrag ist erforderlich
+        </mat-error>
+        <mat-error *ngIf="transactionForm.get('amount')?.hasError('min')">
+          Betrag muss größer als 0 sein
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="custom-form-field">
+        <mat-label>Datum</mat-label>
+        <input 
+          matInput 
+          [matDatepicker]="picker" 
+          formControlName="date"
+          required
+        >
+        <mat-datepicker-toggle matSuffix [for]="picker" class="custom-suffix"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="transactionForm.get('date')?.hasError('required')">
+          Datum ist erforderlich
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Kategorie</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of getFilteredCategories()" [value]="category.id">
+            <mat-icon *ngIf="category.icon" class="category-icon">{{ category.icon }}</mat-icon>
+            {{ category.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="transactionForm.get('category')?.hasError('required')">
+          Kategorie ist erforderlich
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline">
+        <mat-label>Beschreibung</mat-label>
+        <input 
+          matInput 
+          formControlName="description" 
+          placeholder="Optional"
+          maxlength="100"
+        >
+        <mat-error *ngIf="transactionForm.get('description')?.hasError('maxlength')">
+          Beschreibung darf maximal 100 Zeichen haben
+        </mat-error>
+      </mat-form-field>
+      
+      <div class="recurring-container">
+        <label>Wiederkehrend</label>
+        <div class="toggle-input">
+          <mat-select formControlName="isRecurring">
+            <mat-option [value]="false">Nein</mat-option>
+            <mat-option [value]="true">Ja</mat-option>
+          </mat-select>
+        </div>
+      </div>
+      
+      <mat-form-field appearance="outline" *ngIf="transactionForm.get('isRecurring')?.value">
+        <mat-label>Intervall</mat-label>
+        <mat-select formControlName="interval">
+          <mat-option value="daily">Täglich</mat-option>
+          <mat-option value="weekly">Wöchentlich</mat-option>
+          <mat-option value="monthly">Monatlich</mat-option>
+          <mat-option value="quarterly">Vierteljährlich</mat-option>
+          <mat-option value="yearly">Jährlich</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <div class="form-actions">
+        <button 
+          mat-flat-button 
+          type="button" 
+          color="warn" 
+          (click)="onCancel()"
+        >
+          Abbrechen
+        </button>
+        <button 
+          mat-flat-button 
+          type="submit" 
+          color="primary" 
+          [disabled]="transactionForm.invalid"
+        >
+          {{ submitLabel }}
+        </button>
+      </div>
+    </form>
+  </div>
