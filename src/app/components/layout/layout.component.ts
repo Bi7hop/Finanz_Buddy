@@ -39,6 +39,7 @@ export class LayoutComponent implements OnInit {
     { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', implemented: true },
     { path: '/einnahmen', icon: 'arrow_upward', label: 'Einnahmen', implemented: true },
     { path: '/ausgaben', icon: 'arrow_downward', label: 'Ausgaben', implemented: true },
+    { path: '/sparziele', icon: 'savings', label: 'Sparziele', implemented: true },
     { path: '/buchungen', icon: 'account_balance_wallet', label: 'Buchungen', implemented: false },
     { path: '/budget', icon: 'calculate', label: 'Budget', implemented: true },
     { path: '/dauerauftraege', icon: 'schedule', label: 'Daueraufträge', implemented: false },
