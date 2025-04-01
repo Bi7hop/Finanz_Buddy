@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 interface ChartData {
   labels: string[];
@@ -39,7 +42,10 @@ interface ChartData {
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss']
 })
-export class StatisticsComponent implements OnInit {
+export class StatisticsComponent implements OnInit, AfterViewInit {
+  @ViewChild('incomeExpenseChart', { static: false }) incomeExpenseChart!: ElementRef;
+  @ViewChild('categoryChart', { static: false }) categoryChart!: ElementRef;
+
   selectedPeriod: string = 'month';
   selectedCategory: string = 'all';
   selectedChart: string = 'spending';
@@ -111,8 +117,71 @@ export class StatisticsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
 
+  ngAfterViewInit(): void {
+    this.createIncomeExpenseChart();
+    this.createCategoryChart();
+  }
+
+  createIncomeExpenseChart(): void {
+    const ctx = this.incomeExpenseChart.nativeElement.getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: this.spendingOverTimeData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              color: 'white'
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: 'white'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          },
+          y: {
+            ticks: {
+              color: 'white'
+            },
+            grid: {
+              color: 'rgba(255,255,255,0.1)'
+            }
+          }
+        }
+      }
+    });
+  }
+
+  createCategoryChart(): void {
+    const ctx = this.categoryChart.nativeElement.getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: this.categoryBreakdownData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'right',
+            labels: {
+              color: 'white'
+            }
+          }
+        }
+      }
+    });
   }
 
   applyFilters(): void {
