@@ -1,5 +1,6 @@
 <div class="statistics-container">
-    <div class="statistics-header">
+  <div class="statistics-header">
+    <div class="header-content">
       <h1>Statistiken</h1>
       
       <div class="filters">
@@ -21,124 +22,62 @@
           </mat-select>
         </mat-form-field>
         
-        <button mat-flat-button color="primary" (click)="applyFilters()">
+        <button mat-fab color="primary" (click)="applyFilters()">
           <mat-icon>filter_list</mat-icon>
-          Filter anwenden
         </button>
       </div>
     </div>
-  
-    <mat-tab-group>
-      <mat-tab label="Ausgaben & Einnahmen">
-        <div class="chart-container">
-          <div class="chart-placeholder">
-            <div class="chart-title">Ausgaben & Einnahmen über Zeit</div>
-            <div class="line-chart-placeholder">
-              <div class="axis y-axis">
-                <div class="tick">2000€</div>
-                <div class="tick">1500€</div>
-                <div class="tick">1000€</div>
-                <div class="tick">500€</div>
-                <div class="tick">0€</div>
-              </div>
-              <div class="chart-area">
-                <div class="data-line income"></div>
-                <div class="data-line expenses"></div>
-              </div>
-              <div class="axis x-axis">
-                <div class="tick">Jan</div>
-                <div class="tick">Feb</div>
-                <div class="tick">Mär</div>
-                <div class="tick">Apr</div>
-                <div class="tick">Mai</div>
-                <div class="tick">Jun</div>
-              </div>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item">
-                <div class="color-box income"></div>
-                <span>Einnahmen</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box expenses"></div>
-                <span>Ausgaben</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Kategorie-Verteilung">
-        <div class="chart-container">
-          <div class="chart-placeholder">
-            <div class="chart-title">Ausgaben nach Kategorien</div>
-            <div class="pie-chart-placeholder">
-              <div class="pie-segment housing"></div>
-              <div class="pie-segment food"></div>
-              <div class="pie-segment transport"></div>
-              <div class="pie-segment leisure"></div>
-              <div class="pie-segment savings"></div>
-              <div class="pie-segment other"></div>
-            </div>
-            <div class="chart-legend">
-              <div class="legend-item">
-                <div class="color-box housing"></div>
-                <span>Wohnen (35%)</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box food"></div>
-                <span>Lebensmittel (18%)</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box transport"></div>
-                <span>Transport (8%)</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box leisure"></div>
-                <span>Freizeit (14%)</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box savings"></div>
-                <span>Sparen (16%)</span>
-              </div>
-              <div class="legend-item">
-                <div class="color-box other"></div>
-                <span>Sonstiges (9%)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Trends">
-        <div class="chart-container">
-          <div class="placeholder-message">
-            Trends werden hier angezeigt
-          </div>
-        </div>
-      </mat-tab>
-      
-      <mat-tab label="Prognose">
-        <div class="chart-container">
-          <div class="placeholder-message">
-            Finanzprognose wird hier angezeigt
-          </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
-  
-    <div class="export-container">
-      <button mat-stroked-button (click)="exportData('pdf')">
-        <mat-icon>picture_as_pdf</mat-icon>
-        Als PDF exportieren
-      </button>
-      <button mat-stroked-button (click)="exportData('csv')">
-        <mat-icon>table_chart</mat-icon>
-        Als CSV exportieren
-      </button>
-      <button mat-stroked-button (click)="exportData('excel')">
-        <mat-icon>table_view</mat-icon>
-        Als Excel exportieren
-      </button>
-    </div>
   </div>
+
+  <mat-tab-group>
+    <mat-tab label="Ausgaben & Einnahmen">
+      <div class="chart-container">
+        <div class="chart-placeholder">
+          <div class="chart-title">Ausgaben & Einnahmen über Zeit</div>
+          <div class="chart-wrapper">
+            <canvas #incomeExpenseChart></canvas>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Kategorie-Verteilung">
+      <div class="chart-container">
+        <div class="chart-placeholder">
+          <div class="chart-title">Ausgaben nach Kategorien</div>
+          <div class="chart-wrapper">
+            <canvas #categoryChart></canvas>
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Trends">
+      <div class="chart-container">
+        <div class="placeholder-message">
+          Trends werden hier angezeigt
+        </div>
+      </div>
+    </mat-tab>
+    
+    <mat-tab label="Prognose">
+      <div class="chart-container">
+        <div class="placeholder-message">
+          Finanzprognose wird hier angezeigt
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="export-container">
+    <button mat-fab color="primary" (click)="exportData('pdf')">
+      <mat-icon>picture_as_pdf</mat-icon>
+    </button>
+    <button mat-fab color="primary" (click)="exportData('csv')">
+      <mat-icon>table_chart</mat-icon>
+    </button>
+    <button mat-fab color="primary" (click)="exportData('excel')">
+      <mat-icon>table_view</mat-icon>
+    </button>
+  </div>
+</div>
