@@ -1,8 +1,6 @@
 $dark-blue-background: #1e3045;
 $light-text: #ffffff;
 $income-green: #4caf50;
-$table-header-bg: rgba(0, 0, 0, 0.2);
-$table-hover-bg: rgba(255, 255, 255, 0.05);
 $divider-color: rgba(255, 255, 255, 0.1);
 
 $salary-color: #43a047;
@@ -10,137 +8,144 @@ $investment-color: #00acc1;
 $gifts-color: #ec407a;
 $other-income-color: #7cb342;
 
+$menu-background: #2a4364;
+$menu-hover-background: #3a5a7a;
+
 .income-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: $dark-blue-background;
+  background: linear-gradient(135deg, $dark-blue-background 0%, darken($dark-blue-background, 10%) 100%);
   color: $light-text;
   position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
 .income-header {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid $divider-color;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
   
   .month-navigation {
     display: flex;
     align-items: center;
     
+    .nav-button {
+      color: $light-text;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover:not([disabled]) {
+        background-color: rgba(255, 255, 255, 0.15);
+        transform: scale(1.05);
+      }
+      
+      &:active:not([disabled]) {
+        transform: scale(0.95);
+      }
+      
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+      }
+    }
+    
     .current-month {
-      font-size: 18px;
-      margin: 0 10px;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 20px;
+      padding: 5px 16px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      letter-spacing: 0.5px;
     }
   }
   
   .income-total {
     text-align: right;
+    padding: 12px 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     
     .label {
       font-size: 14px;
-      opacity: 0.7;
-      margin-bottom: 4px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
     }
     
     .amount {
       font-size: 24px;
-      font-weight: 500;
+      font-weight: 700;
       color: $income-green;
+      text-shadow: 0 0 10px rgba($income-green, 0.3);
     }
   }
 }
 
-.table-header {
-  display: flex;
-  align-items: center;
-  background-color: $table-header-bg;
-  padding: 12px 20px;
-  font-weight: 500;
-  border-bottom: 1px solid $divider-color;
-}
-
-.column-header,
-.date-column,
-.category-column,
-.description-column,
-.amount-column,
-.actions-column {
-  padding: 0 8px;
-}
-
-.date-column {
-  width: 120px;
-  display: flex;
-  align-items: center;
-  
-  .recurring-icon {
-    font-size: 14px;
-    height: 14px;
-    width: 14px;
-    margin-left: 5px;
-    opacity: 0.6;
-  }
-}
-
-.category-column {
-  width: 180px;
-  display: flex;
-  align-items: center;
-  
-  .category-icon-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
-    margin-right: 8px;
-    
-    &.salary {
-      background-color: $salary-color;
-    }
-    
-    &.investment {
-      background-color: $investment-color;
-    }
-    
-    &.gifts {
-      background-color: $gifts-color;
-    }
-    
-    &.other_income {
-      background-color: $other-income-color;
-    }
-    
-    mat-icon {
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-      color: white;
-    }
-  }
-}
-
-.description-column {
+.loading-state {
   flex: 1;
-}
-
-.amount-column {
-  width: 120px;
-  text-align: right;
-  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
   
-  &.positive {
-    color: $income-green;
+  .loading-text {
+    margin-top: 20px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
-.actions-column {
-  width: 48px;
-  text-align: right;
+.transactions-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.transactions-table-header {
+  display: grid;
+  grid-template-columns: 140px 220px 1fr 150px 60px;
+  padding: 16px 24px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15));
+  font-weight: 600;
+  border-bottom: 1px solid $divider-color;
+  letter-spacing: 0.5px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  
+  > div {
+    padding: 0 5px;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  
+  .th-amount {
+    text-align: right;
+  }
 }
 
 .transactions-list {
@@ -148,20 +153,148 @@ $other-income-color: #7cb342;
   overflow-y: auto;
   
   .transaction-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 140px 220px 1fr 150px 60px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
     align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid $divider-color;
     
     &:hover {
-      background-color: $table-hover-bg;
+      background-color: rgba(255, 255, 255, 0.07);
+      
+      .category-icon-container {
+        transform: scale(1.05);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+      }
+    }
+    
+    &:nth-child(odd) {
+      background-color: rgba(0, 0, 0, 0.03);
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.07);
+      }
+    }
+    
+    > div {
+      padding: 0 5px;
     }
   }
   
-  .empty-state {
-    padding: 40px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
+  .td-date {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    
+    .recurring-icon {
+      font-size: 14px;
+      height: 14px;
+      width: 14px;
+      margin-left: 8px;
+      opacity: 0.7;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  .td-category {
+    display: flex;
+    align-items: center;
+    
+    .category-icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      margin-right: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      
+      &.salary {
+        background: linear-gradient(135deg, $salary-color, darken($salary-color, 15%));
+      }
+      
+      &.investment {
+        background: linear-gradient(135deg, $investment-color, darken($investment-color, 15%));
+      }
+      
+      &.gifts {
+        background: linear-gradient(135deg, $gifts-color, darken($gifts-color, 15%));
+      }
+      
+      &.other_income {
+        background: linear-gradient(135deg, $other-income-color, darken($other-income-color, 15%));
+      }
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        color: white;
+      }
+    }
+    
+    span {
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+    }
+  }
+  
+  .td-description {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+    padding-left: 15px !important;
+  }
+  
+  .td-amount {
+    text-align: right;
+    font-weight: 600;
+    font-size: 16px;
+    padding-right: 10px;
+    
+    &.positive {
+      color: $income-green;
+      text-shadow: 0 0 10px rgba($income-green, 0.3);
+    }
+  }
+  
+  .td-actions {
+    text-align: right;
+    
+    .action-menu-button {
+      background-color: rgba(255, 255, 255, 0.08);
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+}
+
+.empty-state {
+  padding: 50px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  mat-icon {
+    font-size: 36px;
+    height: 36px;
+    width: 36px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin-top: 12px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -171,11 +304,73 @@ $other-income-color: #7cb342;
   right: 30px;
   
   .add-button {
-    background-color: $income-green;
+    background: linear-gradient(to right bottom, $income-green, darken($income-green, 10%));
+    box-shadow: 0 4px 12px rgba($income-green, 0.4);
+    transition: all 0.2s ease;
     
     &:hover {
-      background-color: darken($income-green, 5%);
+      background: linear-gradient(to right bottom, lighten($income-green, 5%), $income-green);
+      box-shadow: 0 6px 16px rgba($income-green, 0.5);
+      transform: translateY(-2px);
     }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba($income-green, 0.3);
+    }
+  }
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  background-color: $menu-background;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  
+  .mat-mdc-menu-content {
+    padding: 8px 0;
+    background-color: $menu-background;
+  }
+  
+  .mat-mdc-menu-item {
+    color: $light-text;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    
+    &:hover {
+      background-color: $menu-hover-background;
+    }
+    
+    &:active {
+      background-color: darken($menu-hover-background, 5%);
+    }
+    
+    .mat-icon {
+      margin-right: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.2s ease;
+    }
+    
+    &:hover .mat-icon {
+      color: $light-text;
+    }
+  }
+  
+  .mat-divider {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.cdk-overlay-container {
+  z-index: 1000;
+}
+
+@media (max-width: 900px) {
+  .transactions-table-header,
+  .transaction-row {
+    grid-template-columns: 120px 180px 1fr 120px 50px;
   }
 }
 
@@ -191,31 +386,22 @@ $other-income-color: #7cb342;
     }
     
     .income-total {
-      align-self: flex-end;
+      align-self: stretch;
+      text-align: center;
     }
   }
   
-  .column-header,
-  .date-column,
-  .category-column,
-  .description-column,
-  .amount-column,
-  .actions-column {
-    padding: 0 4px;
+  .transactions-table-header,
+  .transaction-row {
+    grid-template-columns: 100px 160px 1fr 100px 50px;
+    padding: 12px 16px;
   }
   
-  .date-column {
-    width: 90px;
-  }
-  
-  .category-column {
-    width: 140px;
-  }
-  
-  .description-column {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .td-category {
+    .category-icon-container {
+      width: 32px;
+      height: 32px;
+      margin-right: 8px;
+    }
   }
 }
