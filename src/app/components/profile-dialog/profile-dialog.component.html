@@ -1,109 +1,101 @@
 <div class="profile-dialog-container">
-  <h2 mat-dialog-title class="text-center">Profil & Einstellungen</h2>
-  
-  <mat-dialog-content>
-    <div class="profile-section">
-      <div class="avatar-large">
-        <img src="assets/images/test222.webp" 
-             alt="Profilbild" 
-             class="profile-avatar-large">
-        <button mat-mini-fab color="accent" class="edit-avatar-button">
+  <div class="profile-header">
+    <div class="profile-header-content">
+      <div class="avatar-wrapper">
+        <img src="assets/images/MM.png" alt="Profilbild" class="profile-avatar">
+        <button mat-mini-fab class="edit-avatar-button">
           <mat-icon>edit</mat-icon>
         </button>
       </div>
-      
-      <div class="profile-info">
-        <div class="info-row">
-          <mat-icon>person</mat-icon>
-          <div class="info-value">{{ userProfile.name }}</div>
-        </div>
-        <div class="info-row email-row">
+      <div class="user-info">
+        <h2 class="user-name">{{ userProfile.name }}</h2>
+        <div class="user-email">
           <mat-icon>email</mat-icon>
-          <div class="info-value email-value">{{ userProfile.email }}</div>
+          <span>{{ userProfile.email }}</span>
         </div>
       </div>
     </div>
-    
-    <div class="divider"></div>
-    
-    <button mat-stroked-button class="logout-button-prominent" (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      <span>Abmelden</span>
-    </button>
-    
-    <h3 class="settings-header">Einstellungen</h3>
+  </div>
+  
+  <mat-dialog-content>
+    <div class="settings-tabs">
+      <div class="tab active">Profil</div>
+      <div class="tab">Sicherheit</div>
+      <div class="tab">Benachrichtigungen</div>
+    </div>
     
     <div class="settings-section">
-      <div class="settings-card">
-        <div class="settings-row">
-          <div class="setting-label">
-            <mat-icon>dark_mode</mat-icon>
-            <span>Dark Mode</span>
+      <h3 class="settings-title">Persönliche Einstellungen</h3>
+      
+      <div class="settings-row">
+        <div class="setting-info">
+          <mat-icon class="feature-icon">dark_mode</mat-icon>
+          <div class="setting-text">
+            <div class="setting-label">Dark Mode</div>
+            <div class="setting-desc">Dunkles Erscheinungsbild aktivieren</div>
           </div>
+        </div>
+        <div class="setting-control">
+          <div class="coming-soon-tag">In Kürze</div>
           <mat-slide-toggle 
             [checked]="userSettings.darkMode"
             (change)="updateDarkMode($event.checked)"
-            color="primary">
+            color="primary"
+            [disabled]="true">
           </mat-slide-toggle>
         </div>
-        
-        <div class="settings-divider"></div>
-        
-        <div class="settings-row">
-          <div class="setting-label">
-            <mat-icon>euro</mat-icon>
-            <span>Währung</span>
-          </div>
-          <div class="custom-button-group">
-            <button 
-              [class.active]="userSettings.currency === 'EUR'"
-              (click)="updateCurrency('EUR')"
-              class="toggle-button">
-              <mat-icon>euro</mat-icon>
-            </button>
-            <button 
-              [class.active]="userSettings.currency === 'USD'"
-              (click)="updateCurrency('USD')"
-              class="toggle-button">
-              <mat-icon>attach_money</mat-icon>
-            </button>
+      </div>
+      
+      <div class="settings-row">
+        <div class="setting-info">
+          <mat-icon class="feature-icon">euro</mat-icon>
+          <div class="setting-text">
+            <div class="setting-label">Währung</div>
+            <div class="setting-desc">Standard-Währung für Transaktionen</div>
           </div>
         </div>
-        
-        <div class="settings-divider"></div>
-        
-        <div class="settings-row">
-          <div class="setting-label">
-            <mat-icon>language</mat-icon>
-            <span>Sprache</span>
+        <div class="setting-control">
+          <div class="coming-soon-tag">In Kürze</div>
+          <div class="currency-selector disabled">
+            <button class="currency-btn" [class.selected]="userSettings.currency === 'EUR'" disabled>€</button>
+            <button class="currency-btn" [class.selected]="userSettings.currency === 'USD'" disabled>$</button>
           </div>
-          <div class="custom-button-group">
-            <button 
-              [class.active]="userSettings.language === 'de'"
-              (click)="updateLanguage('de')"
-              class="toggle-button">
+        </div>
+      </div>
+      
+      <div class="settings-row">
+        <div class="setting-info">
+          <mat-icon class="feature-icon">language</mat-icon>
+          <div class="setting-text">
+            <div class="setting-label">Sprache</div>
+            <div class="setting-desc">Sprache der Benutzeroberfläche</div>
+          </div>
+        </div>
+        <div class="setting-control">
+          <div class="coming-soon-tag">In Kürze</div>
+          <div class="language-selector disabled">
+            <button class="lang-btn" [class.selected]="userSettings.language === 'de'" disabled>
               <span class="flag-icon de-flag"></span>
             </button>
-            <button 
-              [class.active]="userSettings.language === 'en'"
-              (click)="updateLanguage('en')"
-              class="toggle-button">
+            <button class="lang-btn" [class.selected]="userSettings.language === 'en'" disabled>
               <span class="flag-icon uk-flag"></span>
             </button>
           </div>
         </div>
       </div>
     </div>
+    
+    <div class="cta-section">
+      <button mat-flat-button class="logout-button" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Abmelden</span>
+      </button>
+    </div>
   </mat-dialog-content>
   
-  <mat-dialog-actions align="center" class="custom-actions">
-    <button mat-stroked-button class="cancel-button" mat-dialog-close>
-      Abbrechen
-    </button>
-    <button mat-flat-button
-            class="save-button"
-            (click)="saveSettings()"
-            [mat-dialog-close]="true">
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button class="cancel-button" mat-dialog-close>Abbrechen</button>
+    <button mat-flat-button class="save-button" (click)="saveSettings()" [mat-dialog-close]="true">
       Speichern
     </button>
   </mat-dialog-actions>
