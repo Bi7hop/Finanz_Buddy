@@ -7,6 +7,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ProfileDialogComponent } from '../profile-dialog/profile-dialog.component';
 import { UserProfileService } from '../../services/user-profile.service';
 import { filter } from 'rxjs/operators';
+import { Title } from '@angular/platform-browser';
 
 interface MenuItem {
   path: string;
@@ -32,18 +33,23 @@ export class LayoutComponent implements OnInit {
   private dialog = inject(MatDialog);
   private userProfileService = inject(UserProfileService);
   private router = inject(Router);
+  private titleService = inject(Title);
 
   showUnimplementedFeatures = false;
+  currentPageTitle = 'Dashboard';
 
-  menuItems: MenuItem[] = [
+  mainMenuItems: MenuItem[] = [
     { path: '/dashboard', icon: 'dashboard', label: 'Dashboard', implemented: true },
     { path: '/einnahmen', icon: 'arrow_upward', label: 'Einnahmen', implemented: true },
     { path: '/ausgaben', icon: 'arrow_downward', label: 'Ausgaben', implemented: true },
     { path: '/sparziele', icon: 'savings', label: 'Sparziele', implemented: true },
-    { path: '/buchungen', icon: 'account_balance_wallet', label: 'Buchungen', implemented: false },
     { path: '/budget', icon: 'calculate', label: 'Budget', implemented: true },
     { path: '/dauerauftraege', icon: 'schedule', label: 'Daueraufträge', implemented: false },
-    { path: '/banking', icon: 'account_balance', label: 'Banking', implemented: false },
+    { path: '/banking', icon: 'account_balance', label: 'Banking', implemented: false }
+  ];
+
+  analyticsMenuItems: MenuItem[] = [
+    { path: '/buchungen', icon: 'account_balance_wallet', label: 'Buchungen', implemented: false },
     { path: '/kredite', icon: 'person', label: 'Kredite', implemented: false },
     { path: '/berichte', icon: 'description', label: 'Berichte', implemented: false },
     { path: '/verteilung', icon: 'pie_chart', label: 'Verteilung', implemented: false },
@@ -53,7 +59,18 @@ export class LayoutComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      const currentRoute = this.router.url;
+      const allMenuItems = [...this.mainMenuItems, ...this.analyticsMenuItems];
+      const currentMenuItem = allMenuItems.find(item => item.path === currentRoute);
+      
+      if (currentMenuItem) {
+        this.currentPageTitle = currentMenuItem.label;
+        this.titleService.setTitle(`Finanz Buddy - ${currentMenuItem.label}`);
+      }
+    });
   }
 
   openProfileDialog(): void {
