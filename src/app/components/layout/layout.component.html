@@ -1,38 +1,67 @@
 <div class="app-container">
   <div class="sidebar">
-    <div class="app-title">Finanz Buddy</div>
+    <div class="app-branding">
+      <div class="logo-container">
+        <mat-icon class="app-logo">account_balance</mat-icon>
+      </div>
+      <div class="app-title">Finanz Buddy</div>
+    </div>
     
-    <nav class="nav-menu">
-      <ng-container *ngFor="let item of menuItems">
-        <a *ngIf="item.implemented || showUnimplementedFeatures" 
-           [routerLink]="item.path" 
-           routerLinkActive="active" 
-           class="nav-item"
-           [class.not-implemented]="!item.implemented">
-          <mat-icon>{{ item.icon }}</mat-icon>
-          <span>{{ item.label }}</span>
-        </a>
-      </ng-container>
-
+    <div class="menu-section">
+      <div class="section-title">HAUPTMENÜ</div>
+      <nav class="nav-menu">
+        <ng-container *ngFor="let item of mainMenuItems">
+          <a *ngIf="item.implemented || showUnimplementedFeatures" 
+             [routerLink]="item.path" 
+             routerLinkActive="active" 
+             class="nav-item"
+             [class.not-implemented]="!item.implemented">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+            <span *ngIf="!item.implemented" class="coming-badge">Bald</span>
+          </a>
+        </ng-container>
+      </nav>
+    </div>
+    
+    <div class="menu-section">
+      <div class="section-title">ANALYSEN</div>
+      <nav class="nav-menu">
+        <ng-container *ngFor="let item of analyticsMenuItems">
+          <a *ngIf="item.implemented || showUnimplementedFeatures" 
+             [routerLink]="item.path" 
+             routerLinkActive="active" 
+             class="nav-item"
+             [class.not-implemented]="!item.implemented">
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+            <span *ngIf="!item.implemented" class="coming-badge">Bald</span>
+          </a>
+        </ng-container>
+      </nav>
+    </div>
+    
+    <div class="sidebar-footer">
       <a (click)="toggleUnimplementedFeatures()" 
-         class="nav-item coming-features">
+         class="feature-toggle-btn">
         <mat-icon>
           {{ showUnimplementedFeatures ? 'visibility_off' : 'visibility' }}
         </mat-icon>
         <span>{{ showUnimplementedFeatures ? 'Features ausblenden' : 'Coming Features' }}</span>
       </a>
-    </nav>
+    </div>
   </div>
 
   <div class="main-content">
     <div class="header">
-      <h1 class="page-title">Finanz Buddy - Hauptbereich</h1>
+      <div class="left-section">
+        <h1 class="page-title">{{ currentPageTitle }}</h1>
+      </div>
       
-      <div class="profile-container">
-        <button mat-icon-button class="profile-button" (click)="openProfileDialog()">
+      <div class="right-section">
+        <button mat-icon-button class="profile-btn" (click)="openProfileDialog()">
           <div class="avatar-container">
-            <img src="assets/images/MM.png" 
-                alt="Profilbild" class="profile-avatar">
+            <img src="assets/images/MM.png" alt="Profilbild" class="profile-avatar">
             <div class="status-indicator"></div>
           </div>
         </button>
