@@ -5,10 +5,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { RouterModule, Router } from '@angular/router';
 import { SupabaseService } from '../../services/supabase.service';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { TransactionModalComponent } from '../../components/transaction-modal/transaction-modal';
 
 interface Category {
   id: number;
@@ -31,7 +33,8 @@ interface Category {
     MatButtonModule,
     MatCardModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDialogModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
@@ -51,7 +54,8 @@ export class DashboardComponent implements OnInit {
   
   constructor(
     private router: Router,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -118,14 +122,32 @@ export class DashboardComponent implements OnInit {
   }
   
   addIncome(): void {
-    this.router.navigate(['/transaction/new'], { 
-      queryParams: { type: 'income' }
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'income'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadMonthData();
+      }
     });
   }
   
   addExpense(): void {
-    this.router.navigate(['/transaction/new'], { 
-      queryParams: { type: 'expense' }
+    const dialogRef = this.dialog.open(TransactionModalComponent, {
+      width: '500px',
+      data: { 
+        type: 'expense'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadMonthData();
+      }
     });
   }
 
