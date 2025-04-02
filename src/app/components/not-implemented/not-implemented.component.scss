@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #1e3045;
+  --bg-secondary: #172a46;
+  --text-primary: #ffffff;
+  --text-secondary: #8ba3c1;
+  --primary-color: #4ecdc4;
+  --accent-color: #45b7d1;
+  --gradient-primary: linear-gradient(135deg, #4ecdc4, #45b7d1);
+  --gradient-secondary: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 15%) 100%);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  --income-green: #4caf50;
+  --expense-red: #f44336;
+  --divider-color: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.not-implemented-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
+  padding: 40px;
+  font-family: 'Space Grotesk', sans-serif;
+  position: relative;
+  color: var(--text-primary);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      circle at 15% 50%, 
+      rgba(78, 205, 196, 0.08),
+      transparent 25%
+    ), radial-gradient(
+      circle at 85% 30%, 
+      rgba(69, 183, 209, 0.08),
+      transparent 25%
+    );
+    z-index: 0;
+  }
+}
+
+.not-implemented-card {
+  width: 100%;
+  max-width: 600px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 50px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.construction-icon {
+  font-size: 80px;
+  margin-bottom: 30px;
+  color: var(--accent-color);
+  text-shadow: 0 0 20px rgba(69, 183, 209, 0.4);
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  text-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.description {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.back-button {
+  padding: 14px 30px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.not-implemented-card {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@media (max-width: 600px) {
+  .not-implemented-card {
+    padding: 30px 20px;
+  }
+  
+  h2 {
+    font-size: 28px;
+  }
+  
+  .description {
+    font-size: 16px;
+  }
+  
+  .construction-icon {
+    font-size: 60px;
+  }
+}
