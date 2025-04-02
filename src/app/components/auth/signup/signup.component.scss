@@ -1,15 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-primary: #0a1128;
+  --bg-primary: #1e3045; 
   --bg-secondary: #172a46;
-  --text-primary: #f0f4f8;
+  --text-primary: #ffffff;
   --text-secondary: #8ba3c1;
   --primary-color: #4ecdc4;
   --accent-color: #45b7d1;
   --gradient-primary: linear-gradient(135deg, #4ecdc4, #45b7d1);
-  --gradient-secondary: linear-gradient(135deg, #172a46, #0a1128);
+  --gradient-secondary: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
   --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  --income-green: #4caf50;
+  --expense-red: #f44336;
+  --divider-color: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -23,25 +27,44 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: var(--gradient-secondary);
+  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
   padding: 40px;
   font-family: 'Space Grotesk', sans-serif;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      circle at 15% 50%, 
+      rgba(78, 205, 196, 0.08),
+      transparent 25%
+    ), radial-gradient(
+      circle at 85% 30%, 
+      rgba(69, 183, 209, 0.08),
+      transparent 25%
+    );
+    z-index: 0;
+  }
 }
 
 .auth-card {
   width: 100%;
   max-width: 500px;
-  background-color: var(--bg-secondary);
-  border-radius: 24px;
-  padding: 60px;
-  box-shadow: 
-    0 40px 80px var(--shadow-color), 
-    0 20px 40px rgba(77, 207, 202, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
-  background: rgba(23, 42, 70, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
   z-index: 1;
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
 h2 {
@@ -56,21 +79,22 @@ h2 {
 .subtitle {
   text-align: center;
   color: var(--text-secondary);
-  margin-bottom: 40px;
+  margin-bottom: 30px;
   font-size: 18px;
   line-height: 1.6;
 }
 
 .form-group {
-  margin-bottom: 30px;
+  margin-bottom: 22px;
 }
 
 label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   color: var(--text-primary);
   font-weight: 500;
   font-size: 16px;
+  letter-spacing: 0.5px;
 }
 
 .password-wrapper {
@@ -80,21 +104,19 @@ label {
 
 input {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   padding-right: 50px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 2px solid var(--text-secondary);
-  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
   font-size: 16px;
   color: var(--text-primary);
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   
   &:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 
-      0 0 0 2px rgba(78, 205, 196, 0.3),
-      0 10px 20px rgba(78, 205, 196, 0.1);
+    box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
   }
 
   &::placeholder {
@@ -111,15 +133,22 @@ input {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
   
   .icon {
     font-size: 20px;
     opacity: 0.7;
     transition: opacity 0.3s ease;
+    color: var(--text-primary);
   }
 
   &:hover .icon {
@@ -128,57 +157,41 @@ input {
 }
 
 .error-message {
-  color: #e74c3c;
+  color: var(--expense-red);
   font-size: 14px;
   margin-top: 8px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .submit-button {
   width: 100%;
-  padding: 20px;
-  background-color: transparent;
-  color: var(--text-primary);
-  border: 2px solid var(--primary-color);
-  border-radius: 16px;
-  font-size: 22px;
+  padding: 16px;
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.8), rgba(67, 160, 71, 0.8));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.4s ease;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-      circle closest-corner at center, 
-      rgba(78, 205, 196, 0.3), 
-      transparent 70%
-    );
-    opacity: 0;
-    transition: all 0.4s ease;
-    z-index: -1;
-  }
-
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 8px rgba(76, 175, 80, 0.3), 0 0 0 1px rgba(76, 175, 80, 0.5);
+  margin-top: 10px;
+  
   &:hover {
-    background: var(--gradient-primary);
-    color: var(--bg-primary);
-    box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
-    transform: translateY(-5px);
-
-    &::before {
-      opacity: 1;
-    }
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4), 0 0 0 1px rgba(76, 175, 80, 0.6);
+    transform: translateY(-2px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3), 0 0 0 1px rgba(76, 175, 80, 0.6);
   }
   
   &:disabled {
-    background-color: var(--text-secondary);
-    color: var(--bg-primary);
+    background: rgba(139, 163, 193, 0.3);
+    color: rgba(255, 255, 255, 0.5);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -186,7 +199,7 @@ input {
 }
 
 .auth-footer {
-  margin-top: 40px;
+  margin-top: 25px;
   text-align: center;
   color: var(--text-secondary);
   
@@ -197,16 +210,17 @@ input {
     transition: color 0.3s ease, transform 0.2s ease;
     cursor: pointer;
     display: inline-block;
+    padding: 5px;
+    border-radius: 5px;
     
     &:hover {
       color: var(--accent-color);
-      text-decoration: underline;
+      background-color: rgba(255, 255, 255, 0.05);
       transform: translateY(-2px);
     }
   }
 }
 
-// Zusätzliche Animationen
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -219,5 +233,29 @@ input {
 }
 
 .auth-card {
-  animation: fadeInUp 1s ease forwards;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+  
+  h2 {
+    font-size: 32px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+  
+  input {
+    padding: 12px;
+  }
+  
+  .submit-button {
+    padding: 14px;
+    font-size: 16px;
+  }
 }
