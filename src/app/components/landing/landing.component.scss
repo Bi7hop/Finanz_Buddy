@@ -1,15 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-primary: #0a1128;
+  --bg-primary: #1e3045; 
   --bg-secondary: #172a46;
-  --text-primary: #f0f4f8;
+  --text-primary: #ffffff;
   --text-secondary: #8ba3c1;
   --primary-color: #4ecdc4;
   --accent-color: #45b7d1;
   --gradient-primary: linear-gradient(135deg, #4ecdc4, #45b7d1);
-  --gradient-secondary: linear-gradient(135deg, #172a46, #0a1128);
+  --gradient-secondary: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
   --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  --income-green: #4caf50;
+  --expense-red: #f44336;
+  --divider-color: rgba(255, 255, 255, 0.1);
+  
+  --housing-color: #4a6572;
+  --food-color: #ff7043;
+  --transport-color: #5c6bc0;
+  --shopping-color: #7e57c2;
+  --entertainment-color: #26a69a;
+  --income-color: #43a047;
 }
 
 * {
@@ -34,7 +45,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--gradient-secondary);
+  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
   padding: 60px 20px;
   position: relative;
   overflow: hidden;
@@ -48,17 +59,14 @@
   margin: 0 auto;
   gap: 80px;
   align-items: center;
-  background-color: #172a46;
-  border-radius: 24px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
   padding: 100px;
   position: relative;
   z-index: 1;
-  box-shadow: 
-    0 40px 80px var(--shadow-color), 
-    0 20px 40px rgba(77, 207, 202, 0.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
   
   backdrop-filter: blur(10px);
-  background: rgba(23, 42, 70, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.05);
 
   @media (max-width: 1200px) {
@@ -127,13 +135,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(78, 205, 196, 0.1);
-        border-radius: 12px;
-        transition: transform 0.3s ease;
+        border-radius: 8px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        
+        &:nth-child(1) {
+          background: linear-gradient(135deg, var(--primary-color), darken(#4ecdc4, 15%));
+        }
+        
+        &:nth-child(2) {
+          background: linear-gradient(135deg, var(--accent-color), darken(#45b7d1, 15%));
+        }
+        
+        &:nth-child(3) {
+          background: linear-gradient(135deg, var(--entertainment-color), darken(#26a69a, 15%));
+        }
+
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
 
       &:hover .icon {
         transform: scale(1.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
       }
     }
   }
@@ -151,65 +173,56 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 40px;
-      border-radius: 16px;
+      padding: 16px 30px;
+      border-radius: 10px;
       text-decoration: none;
       font-weight: 600;
-      font-size: 22px;
-      transition: all 0.4s ease;
+      font-size: 18px;
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
       color: var(--text-primary);
       border: 2px solid transparent;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(
-          circle closest-corner at center, 
-          rgba(78, 205, 196, 0.3), 
-          transparent 70%
-        );
-        opacity: 0;
-        transition: all 0.4s ease;
-        z-index: -1;
-      }
-
-      &:hover {
-        &::before {
-          opacity: 1;
-        }
-      }
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .btn-primary {
-      background-color: transparent;
-      border-color: var(--primary-color);
+      background: linear-gradient(to right, rgba(var(--income-green), 0.8), rgba(darken(#4caf50, 10%), 0.8));
+      color: white;
+      box-shadow: 0 3px 8px rgba(#4caf50, 0.3), 0 0 0 1px rgba(#4caf50, 0.5);
       
       &:hover {
-        background: var(--gradient-primary);
-        color: var(--bg-primary);
-        box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
-        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(#4caf50, 0.4), 0 0 0 1px rgba(#4caf50, 0.6);
+        transform: translateY(-2px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(#4caf50, 0.3), 0 0 0 1px rgba(#4caf50, 0.6);
       }
     }
 
     .btn-secondary {
       background: transparent;
       border-color: var(--text-secondary);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
       
       &:hover {
         background: rgba(255,255,255,0.05);
         border-color: var(--primary-color);
-        transform: translateY(-5px);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
     }
   }
 }
+
 .landing-visual {
   position: relative;
   display: flex;
@@ -223,18 +236,15 @@
   .dashboard-mockup {
     position: relative;
     max-width: 600px;
-    border-radius: 24px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 
-      0 30px 60px var(--shadow-color), 
-      0 20px 40px rgba(69, 183, 209, 0.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.4s ease;
     perspective: 1000px;
 
     &:hover {
       transform: rotateX(5deg) rotateY(-5deg) scale(1.03);
-      box-shadow: 
-        0 40px 80px var(--shadow-color), 
+      box-shadow: 0 40px 80px var(--shadow-color), 
         0 30px 50px rgba(69, 183, 209, 0.2);
     }
 
@@ -260,4 +270,23 @@
 
 .landing-content .content-wrapper {
   animation: fadeInUp 1s ease forwards;
+}
+
+.landing-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 15% 50%, 
+    rgba(78, 205, 196, 0.08),
+    transparent 25%
+  ), radial-gradient(
+    circle at 85% 30%, 
+    rgba(69, 183, 209, 0.08),
+    transparent 25%
+  );
+  z-index: 0;
 }
