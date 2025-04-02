@@ -1,12 +1,12 @@
-$sidebar-width: 210px;
-$sidebar-bg: #2c3546;
-$header-height: 60px;
-$main-bg: #1e3045;
+$sidebar-width: 250px;
+$sidebar-bg: #1a232e; 
+$header-height: 70px;
+$main-bg: #151f2e; 
 $text-color: #ffffff;
-$active-item-bg: rgba(255, 255, 255, 0.1);
+$active-item-bg: rgba(76, 175, 80, 0.1);
 $hover-bg: rgba(255, 255, 255, 0.05);
-$not-implemented-color: rgba(255, 165, 0, 0.7); 
-$feature-toggle-color: #4caf50; 
+$not-implemented-color: rgba(255, 255, 255, 0.5);
+$feature-toggle-color: #4caf50;
 $income-green: #4caf50;
 $income-green-dark: darken($income-green, 10%);
 $divider-color: rgba(255, 255, 255, 0.1);
@@ -27,71 +27,163 @@ $divider-color: rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
   height: 100%;
   overflow-y: auto;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 10;
   
-  .app-title {
-    font-size: 20px;
-    font-weight: 500;
-    padding: 22px 16px;
-    border-bottom: 1px solid $divider-color;
-    letter-spacing: 0.5px;
-    background: linear-gradient(to right, rgba($income-green, 0.1), rgba($income-green, 0));
+  &::-webkit-scrollbar {
+    width: 6px;
   }
   
-  .nav-menu {
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($income-green, 0.7);
+    border-radius: 20px;
+  }
+  
+  .app-branding {
     display: flex;
-    flex-direction: column;
-    padding: 16px 0;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid $divider-color;
     
-    .nav-item {
+    .logo-container {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, $income-green 0%, darken($income-green, 15%) 100%);
       display: flex;
       align-items: center;
-      padding: 12px 16px;
-      color: $text-color;
-      text-decoration: none;
-      border-left: 3px solid transparent;
-      transition: all 0.2s ease;
-      margin-bottom: 4px;
+      justify-content: center;
+      margin-right: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       
-      mat-icon {
-        margin-right: 10px;
+      .app-logo {
+        color: white;
         font-size: 20px;
         width: 20px;
         height: 20px;
       }
+    }
+    
+    .app-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+  }
+  
+  .menu-section {
+    padding: 15px 0;
+    
+    .section-title {
+      padding: 0 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
       
-      &:hover {
-        background-color: $hover-bg;
-        transform: translateX(3px);
-      }
-      
-      &.active {
-        background-color: rgba(0, 0, 0, 0.2);
-        border-left: 3px solid $income-green;
-        font-weight: 500;
-      }
-      
-      &.not-implemented {
-        color: $not-implemented-color;
+      .nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: $text-color;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        margin: 2px 8px;
+        border-radius: 8px;
         
         mat-icon {
-          color: $not-implemented-color;
-        }
-      }
-      
-      &.coming-features {
-        margin-top: 20px;
-        border-top: 1px solid $divider-color;
-        padding-top: 20px;
-        cursor: pointer;
-        
-        mat-icon {
-          color: $feature-toggle-color;
+          margin-right: 12px;
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
         }
         
         &:hover {
-          background-color: rgba($income-green, 0.1);
+          background-color: $hover-bg;
         }
+        
+        &.active {
+          background: $active-item-bg;
+          font-weight: 500;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: $income-green;
+            border-radius: 0 3px 3px 0;
+          }
+          
+          mat-icon {
+            color: $income-green;
+          }
+        }
+        
+        &.not-implemented {
+          color: $not-implemented-color;
+          
+          mat-icon {
+            color: $not-implemented-color;
+          }
+        }
+        
+        .coming-badge {
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          background-color: rgba($income-green, 0.2);
+          color: $income-green;
+          font-size: 10px;
+          padding: 2px 6px;
+          border-radius: 10px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 15px 20px;
+    border-top: 1px solid $divider-color;
+    
+    .feature-toggle-btn {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.1);
+      color: $text-color;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba($income-green, 0.1);
+      }
+      
+      mat-icon {
+        margin-right: 10px;
+        color: $income-green;
+      }
+      
+      span {
+        font-size: 13px;
       }
     }
   }
@@ -101,8 +193,9 @@ $divider-color: rgba(255, 255, 255, 0.1);
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, $main-bg 0%, darken($main-bg, 5%) 100%);
+  background: $main-bg;
   overflow: hidden;
+  position: relative;
   
   .header {
     height: $header-height;
@@ -110,49 +203,36 @@ $divider-color: rgba(255, 255, 255, 0.1);
     align-items: center;
     padding: 0 24px;
     color: $text-color;
-    border-bottom: 1px solid $divider-color;
     justify-content: space-between;
     background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 5;
     
-    .page-title {
-      font-size: 20px;
-      font-weight: 400;
-      margin: 0;
-      letter-spacing: 0.5px;
+    .left-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      
+      .page-title {
+        font-size: 26px;
+        font-weight: 500;
+        margin: 0;
+        letter-spacing: 0.5px;
+      }
     }
     
-    .profile-container {
-      display: flex;
-      align-items: center;
-      
-      .profile-button {
-        background: none;
-        border: none;
+    .right-section {
+      .profile-btn {
         padding: 0;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          transform: scale(1.05);
-          
-          .avatar-container {
-            opacity: 0.9;
-            box-shadow: 0 0 0 2px $income-green;
-          }
-        }
-        
-        &:active {
-          transform: scale(0.95);
-        }
         
         .avatar-container {
           position: relative;
-          width: 38px;
-          height: 38px;
-          border-radius: 50%;
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
           overflow: hidden;
-          transition: all 0.2s ease;
-          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
           
           .profile-avatar {
             width: 100%;
@@ -168,7 +248,7 @@ $divider-color: rgba(255, 255, 255, 0.1);
             height: 8px;
             border-radius: 50%;
             background-color: $income-green;
-            border: 2px solid $sidebar-bg;
+            border: 2px solid $main-bg;
           }
         }
       }
@@ -179,7 +259,20 @@ $divider-color: rgba(255, 255, 255, 0.1);
     flex: 1;
     overflow-y: auto;
     position: relative;
-    padding: 16px;
+    padding: 20px;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba($income-green, 0.5);
+      border-radius: 20px;
+    }
     
     ::ng-deep app-dashboard,
     ::ng-deep app-savings-goals,
@@ -198,63 +291,70 @@ $divider-color: rgba(255, 255, 255, 0.1);
   }
 }
 
-/* Webkit-Browser (Chrome, Safari) */
-.sidebar::-webkit-scrollbar,
-.content-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background-color: $income-green;
-  border-radius: 4px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: lighten($income-green, 10%);
-}
-
-.content-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.content-container::-webkit-scrollbar-thumb {
-  background-color: $income-green;
-  border-radius: 4px;
-}
-
-.content-container::-webkit-scrollbar-thumb:hover {
-  background-color: lighten($income-green, 10%);
-}
-
-/* Firefox */
 .sidebar {
   scrollbar-width: thin;
-  scrollbar-color: $income-green rgba(0, 0, 0, 0.2);
+  scrollbar-color: rgba($income-green, 0.7) rgba(0, 0, 0, 0.2);
 }
 
 .content-container {
   scrollbar-width: thin;
-  scrollbar-color: $income-green rgba(0, 0, 0, 0.1);
+  scrollbar-color: rgba($income-green, 0.5) rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 64px;
+    width: 70px;
     
-    .app-title {
-      display: none;
+    .app-branding {
+      justify-content: center;
+      padding: 15px 0;
+      
+      .app-title {
+        display: none;
+      }
+      
+      .logo-container {
+        margin-right: 0;
+      }
     }
     
-    .nav-menu .nav-item span {
-      display: none;
+    .menu-section {
+      .section-title {
+        display: none;
+      }
+      
+      .nav-menu .nav-item {
+        padding: 12px 0;
+        justify-content: center;
+        
+        span {
+          display: none;
+        }
+        
+        mat-icon {
+          margin-right: 0;
+        }
+        
+        .coming-badge {
+          display: none;
+        }
+      }
     }
     
-    .nav-menu .nav-item mat-icon {
-      margin-right: 0;
+    .sidebar-footer {
+      padding: 15px 0;
+      
+      .feature-toggle-btn {
+        justify-content: center;
+        
+        span {
+          display: none;
+        }
+        
+        mat-icon {
+          margin-right: 0;
+        }
+      }
     }
   }
 }
