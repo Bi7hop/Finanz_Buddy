@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface UserProfile {
@@ -45,13 +46,18 @@ export class UserProfileService {
   userProfile$ = this.userProfileSubject.asObservable();
   userSettings$ = this.userSettingsSubject.asObservable();
 
-  constructor(private supabaseService: SupabaseService) {
-    this.initUserSettings();
+  constructor(
+    private supabaseService: SupabaseService,
+    private authService: AuthService
+  ) {
+    this.initUserSettings().catch(error => {
+      console.error('Fehler bei der Initialisierung der Benutzereinstellungen:', error);
+    });
   }
 
   async loadUserProfile(): Promise<UserProfile> {
     try {
-      const { data: user, error } = await this.supabaseService.supabaseClient.auth.getUser();
+      const { data: user, error } = await this.authService.getUser();
       
       if (error) {
         console.error('Fehler beim Laden des Benutzers:', error);
@@ -63,35 +69,30 @@ export class UserProfileService {
         return this.defaultProfile;
       }
       
-      // Benutze die E-Mail aus der Authentifizierung als Backup
       const authEmail = user.user.email || '';
       
       const { data: profileData, error: profileError } = await this.supabaseService.supabaseClient
         .from('profiles')
         .select('*')
         .eq('user_id', user.user.id)
-        .single();
+        .maybeSingle();
       
       if (profileError) {
         console.error('Fehler beim Laden des Profils:', profileError);
-        // Verwende die E-Mail aus der Authentifizierung, wenn das Profil nicht geladen werden kann
         return { ...this.defaultProfile, email: authEmail };
       }
       
       if (!profileData) {
         console.log('Kein Profil gefunden, verwende Standard-Profil');
-        // Verwende die E-Mail aus der Authentifizierung, wenn kein Profil gefunden wurde
         return { ...this.defaultProfile, email: authEmail };
       }
       
-      // Debug: Log das gesamte Profil aus der Datenbank
       console.log('Geladene Profildaten aus der Datenbank:', profileData);
       
       const profile: UserProfile = {
         id: profileData.id,
         name: `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || this.defaultProfile.name,
         nickname: profileData.nickname || this.defaultProfile.nickname,
-        // Verwende die E-Mail aus dem Profil ODER aus der Auth ODER den Standardwert
         email: profileData.email || authEmail || this.defaultProfile.email,
         avatar_url: profileData.avatar_url,
         currency: profileData.currency || this.defaultProfile.currency
@@ -111,7 +112,7 @@ export class UserProfileService {
 
   async loadUserSettings(): Promise<UserSettings> {
     try {
-      const { data: user, error } = await this.supabaseService.supabaseClient.auth.getUser();
+      const { data: user, error } = await this.authService.getUser();
       
       if (error) {
         console.error('Fehler beim Laden des Benutzers:', error);
@@ -126,25 +127,64 @@ export class UserProfileService {
       const { data: settingsData, error: settingsError } = await this.supabaseService.supabaseClient
         .from('user_settings')
         .select('*')
-        .eq('user_id', user.user.id)
-        .single();
+        .eq('user_id', user.user.id);
       
       if (settingsError) {
         console.error('Fehler beim Laden der Einstellungen:', settingsError);
         return this.defaultSettings;
       }
       
-      if (!settingsData) {
-        console.log('Keine Einstellungen gefunden, verwende Standard-Einstellungen');
+      if (!settingsData || settingsData.length === 0) {
+        console.log('Keine Einstellungen gefunden, erstelle neue Einstellungen');
+        
+        const newSettings = {
+          user_id: user.user.id,
+          dark_mode: this.defaultSettings.darkMode,
+          currency: this.defaultSettings.currency,
+          language: this.defaultSettings.language,
+          created_at: new Date(),
+          updated_at: new Date()
+        };
+        
+        const { data: insertedData, error: insertError } = await this.supabaseService.supabaseClient
+          .from('user_settings')
+          .insert(newSettings)
+          .select();
+          
+        if (insertError) {
+          console.error('Fehler beim Erstellen der Einstellungen:', insertError);
+          return this.defaultSettings;
+        }
+        
+        const insertedSettings = insertedData && insertedData.length > 0 ? insertedData[0] : null;
+        
+        if (insertedSettings) {
+          const settings: UserSettings = {
+            id: insertedSettings.id,
+            user_id: insertedSettings.user_id,
+            darkMode: insertedSettings.dark_mode,
+            currency: insertedSettings.currency || this.defaultSettings.currency,
+            language: insertedSettings.language || this.defaultSettings.language
+          };
+          
+          this.userSettingsSubject.next(settings);
+          localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+          this.applySettings(settings);
+          
+          return settings;
+        }
+        
         return this.defaultSettings;
       }
       
+      const settingsItem = settingsData[0];
+      
       const settings: UserSettings = {
-        id: settingsData.id,
-        user_id: settingsData.user_id,
-        darkMode: settingsData.dark_mode === undefined ? this.defaultSettings.darkMode : settingsData.dark_mode,
-        currency: settingsData.currency || this.defaultSettings.currency,
-        language: settingsData.language || this.defaultSettings.language
+        id: settingsItem.id,
+        user_id: settingsItem.user_id,
+        darkMode: settingsItem.dark_mode === undefined ? this.defaultSettings.darkMode : settingsItem.dark_mode,
+        currency: settingsItem.currency || this.defaultSettings.currency,
+        language: settingsItem.language || this.defaultSettings.language
       };
       
       this.userSettingsSubject.next(settings);
@@ -162,7 +202,9 @@ export class UserProfileService {
     const storedProfile = localStorage.getItem(this.PROFILE_KEY);
     const cachedProfile = storedProfile ? JSON.parse(storedProfile) : this.defaultProfile;
     
-    this.loadUserProfile();
+    setTimeout(() => {
+      this.loadUserProfile().catch(err => console.error('Fehler beim asynchronen Laden des Profils:', err));
+    }, 300);
     
     return cachedProfile;
   }
@@ -171,14 +213,16 @@ export class UserProfileService {
     const storedSettings = localStorage.getItem(this.SETTINGS_KEY);
     const cachedSettings = storedSettings ? JSON.parse(storedSettings) : this.defaultSettings;
     
-    this.loadUserSettings();
+    setTimeout(() => {
+      this.loadUserSettings().catch(err => console.error('Fehler beim asynchronen Laden der Einstellungen:', err));
+    }, 600);
     
     return cachedSettings;
   }
 
   async saveUserProfile(profile: UserProfile): Promise<void> {
     try {
-      const { data: user, error } = await this.supabaseService.supabaseClient.auth.getUser();
+      const { data: user, error } = await this.authService.getUser();
       
       if (error) {
         console.error('Fehler beim Laden des Benutzers:', error);
@@ -194,18 +238,43 @@ export class UserProfileService {
       const firstName = nameParts[0];
       const lastName = nameParts.slice(1).join(' ');
       
-      const { error: upsertError } = await this.supabaseService.supabaseClient
+      const { data: existingProfile } = await this.supabaseService.supabaseClient
         .from('profiles')
-        .upsert({
-          user_id: user.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          nickname: profile.nickname,
-          email: profile.email,
-          currency: profile.currency || 'EUR',
-          avatar_url: profile.avatar_url,
-          updated_at: new Date()
-        });
+        .select('id')
+        .eq('user_id', user.user.id);
+      
+      let operation;
+      
+      if (!existingProfile || existingProfile.length === 0) {
+        operation = this.supabaseService.supabaseClient
+          .from('profiles')
+          .insert({
+            user_id: user.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            nickname: profile.nickname,
+            email: profile.email,
+            currency: profile.currency || 'EUR',
+            avatar_url: profile.avatar_url,
+            created_at: new Date(),
+            updated_at: new Date()
+          });
+      } else {
+        operation = this.supabaseService.supabaseClient
+          .from('profiles')
+          .update({
+            first_name: firstName,
+            last_name: lastName,
+            nickname: profile.nickname,
+            email: profile.email,
+            currency: profile.currency || 'EUR',
+            avatar_url: profile.avatar_url,
+            updated_at: new Date()
+          })
+          .eq('user_id', user.user.id);
+      }
+      
+      const { error: upsertError } = await operation;
       
       if (upsertError) {
         console.error('Fehler beim Speichern des Profils:', upsertError);
@@ -220,10 +289,9 @@ export class UserProfileService {
     }
   }
 
-
   async saveUserSettings(settings: UserSettings): Promise<void> {
     try {
-      const { data: user, error } = await this.supabaseService.supabaseClient.auth.getUser();
+      const { data: user, error } = await this.authService.getUser();
       
       if (error) {
         console.error('Fehler beim Laden des Benutzers:', error);
@@ -235,18 +303,40 @@ export class UserProfileService {
         return;
       }
       
-      const { error: upsertError } = await this.supabaseService.supabaseClient
+      const { data: existingSettings } = await this.supabaseService.supabaseClient
         .from('user_settings')
-        .upsert({
-          user_id: user.user.id,
-          dark_mode: settings.darkMode,
-          currency: settings.currency,
-          language: settings.language,
-          updated_at: new Date()
-        });
+        .select('id')
+        .eq('user_id', user.user.id);
       
-      if (upsertError) {
-        console.error('Fehler beim Speichern der Einstellungen:', upsertError);
+      let operation;
+      
+      if (!existingSettings || existingSettings.length === 0) {
+        operation = this.supabaseService.supabaseClient
+          .from('user_settings')
+          .insert({
+            user_id: user.user.id,
+            dark_mode: settings.darkMode,
+            currency: settings.currency,
+            language: settings.language,
+            created_at: new Date(),
+            updated_at: new Date()
+          });
+      } else {
+        operation = this.supabaseService.supabaseClient
+          .from('user_settings')
+          .update({
+            dark_mode: settings.darkMode,
+            currency: settings.currency,
+            language: settings.language,
+            updated_at: new Date()
+          })
+          .eq('user_id', user.user.id);
+      }
+      
+      const { error: updateError } = await operation;
+      
+      if (updateError) {
+        console.error('Fehler beim Speichern der Einstellungen:', updateError);
         return;
       }
       
@@ -267,8 +357,31 @@ export class UserProfileService {
     console.log(`Sprache auf ${settings.language} gesetzt`);
   }
 
-  initUserSettings(): void {
-    const settings = this.getUserSettings();
-    this.applySettings(settings);
+  async initUserSettings(): Promise<void> {
+    try {
+      const storedSettings = localStorage.getItem(this.SETTINGS_KEY);
+      if (storedSettings) {
+        const cachedSettings = JSON.parse(storedSettings);
+        this.applySettings(cachedSettings);
+      } else {
+        this.applySettings(this.defaultSettings);
+      }
+      
+      if (!this.supabaseService.supabaseClient.auth.getSession()) {
+        return;
+      }
+      
+      setTimeout(async () => {
+        try {
+          const settings = await this.loadUserSettings();
+          this.applySettings(settings);
+        } catch (e) {
+          console.error('Fehler beim verzögerten Laden der Einstellungen:', e);
+        }
+      }, 2000); 
+    } catch (error) {
+      console.error('Fehler bei der Initialisierung der Benutzereinstellungen:', error);
+      this.applySettings(this.defaultSettings);
+    }
   }
 }
