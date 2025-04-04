@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,7 +25,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './profile-dialog.component.html',
   styleUrls: ['./profile-dialog.component.scss']
 })
-export class ProfileDialogComponent implements OnInit, OnDestroy {
+export class ProfileDialogComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('firstFocusableElement', { static: false }) firstFocusableElement?: ElementRef;
+
   private userProfileService = inject(UserProfileService);
   private supabaseService = inject(SupabaseService);
   private dialogRef = inject(MatDialogRef<ProfileDialogComponent>);
@@ -47,12 +49,10 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
   loading = true;
 
   ngOnInit(): void {
-    // Lokale Kopie aus dem Cache laden für schnelle erste Anzeige
     this.userProfile = this.userProfileService.getUserProfile();
     this.userSettings = this.userProfileService.getUserSettings();
     console.log('Geladenes Profil:', this.userProfile);
     
-    // Aktive Daten aus Supabase laden
     this.loadProfileData();
     
     this.subscriptions.add(
@@ -70,21 +70,32 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
     );
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => {
+      if (this.firstFocusableElement?.nativeElement) {
+        try {
+          this.firstFocusableElement.nativeElement.focus();
+        } catch (error) {
+          console.error('Error focusing element:', error);
+        }
+      } else {
+        console.warn('First focusable element not found');
+      }
+    });
+  }
+
   async loadProfileData(): Promise<void> {
     try {
-      // Parallel laden der Profil- und Einstellungsdaten von Supabase
       const [profileData, settingsData] = await Promise.all([
         this.userProfileService.loadUserProfile(),
         this.userProfileService.loadUserSettings()
       ]);
       
-      // Direkt lokale Objekte aktualisieren
       this.userProfile = profileData;
       this.userSettings = settingsData;
     } catch (error) {
       console.error('Fehler beim Laden der Profildaten:', error);
     } finally {
-      // Loading-State auf false setzen, unabhängig davon ob erfolgreich oder nicht
       this.loading = false;
     }
   }
@@ -93,8 +104,9 @@ export class ProfileDialogComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  updateDarkMode(value: boolean): void {
-    this.userSettings.darkMode = value;
+  updateDarkMode(checked: boolean): void {
+    this.userSettings.darkMode = checked;
+    this.userProfileService.saveUserSettings(this.userSettings);
   }
 
   updateCurrency(value: 'EUR' | 'USD'): void {
