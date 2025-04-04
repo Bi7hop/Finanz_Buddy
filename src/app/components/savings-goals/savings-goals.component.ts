@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -10,6 +10,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { Subscription } from 'rxjs';
+import { SavingsGoalsService } from '../../services/saving-goals.service';
+import { DeleteDialogComponent, DeleteDialogData } from '../../components/delete-dialog/delete-dialog.component';
 
 interface SavingsGoal {
   id: string;
@@ -52,10 +55,11 @@ interface Category {
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    DeleteDialogComponent
   ]
 })
-export class SavingsGoalsComponent implements OnInit {
+export class SavingsGoalsComponent implements OnInit, OnDestroy {
   @ViewChild('goalDetailsTemplate') goalDetailsTemplate!: TemplateRef<any>;
   @ViewChild('goalFormTemplate') goalFormTemplate!: TemplateRef<any>;
   @ViewChild('transactionFormTemplate') transactionFormTemplate!: TemplateRef<any>;
@@ -63,21 +67,11 @@ export class SavingsGoalsComponent implements OnInit {
   savingsGoals: SavingsGoal[] = [];
   selectedGoal: SavingsGoal = {} as SavingsGoal;
   
-  goalForm: FormGroup = this.fb.group({
-    title: ['', Validators.required],
-    category: ['', Validators.required],
-    targetAmount: [1000, [Validators.required, Validators.min(1)]],
-    startAmount: [0, [Validators.min(0)]],
-    notes: ['']
-  });
-
-  transactionForm: FormGroup = this.fb.group({
-    amount: [100, [Validators.required, Validators.min(0.01)]],
-    date: [new Date(), Validators.required],
-    note: ['']
-  });
+  goalForm: FormGroup;
+  transactionForm: FormGroup;
 
   editMode = false;
+  useSupabase = true; 
   
   categories: Category[] = [
     { value: 'vacation', name: 'Urlaub', icon: 'beach_access' },
@@ -90,16 +84,63 @@ export class SavingsGoalsComponent implements OnInit {
     { value: 'other', name: 'Sonstiges', icon: 'attach_money' }
   ];
 
+  private goalsSubscription?: Subscription;
+
   constructor(
     private dialog: MatDialog,
-    private fb: FormBuilder
-  ) { }
+    private fb: FormBuilder,
+    private savingsService: SavingsGoalsService
+  ) {
+    this.goalForm = this.fb.group({
+      title: ['', Validators.required],
+      category: ['', Validators.required],
+      targetAmount: [1000, [Validators.required, Validators.min(1)]],
+      startAmount: [0, [Validators.min(0)]],
+      notes: ['']
+    });
 
-  ngOnInit(): void {
-    this.loadSampleData();
+    this.transactionForm = this.fb.group({
+      amount: [100, [Validators.required, Validators.min(0.01)]],
+      date: [new Date(), Validators.required],
+      note: ['']
+    });
   }
 
-  // Beispieldaten laden (später durch Supabase ersetzt)
+  ngOnInit(): void {
+    if (this.useSupabase) {
+      this.goalsSubscription = this.savingsService.goals$.subscribe(goals => {
+        this.savingsGoals = goals.map(goal => this.convertFromSupabase(goal));
+      });
+      this.savingsService.loadGoals();
+    } else {
+      this.loadSampleData();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.goalsSubscription) {
+      this.goalsSubscription.unsubscribe();
+    }
+  }
+
+  private convertFromSupabase(supabaseGoal: any): SavingsGoal {
+    return {
+      id: supabaseGoal.id,
+      title: supabaseGoal.title,
+      category: supabaseGoal.category,
+      targetAmount: supabaseGoal.target_amount,
+      currentAmount: supabaseGoal.current_amount,
+      transactions: (supabaseGoal.transactions || []).map((t: any) => ({
+        id: t.id,
+        amount: t.amount,
+        date: new Date(t.date),
+        note: t.note
+      })),
+      createdAt: new Date(supabaseGoal.created_at),
+      notes: supabaseGoal.notes
+    };
+  }
+
   loadSampleData(): void {
     this.savingsGoals = [
       {
@@ -261,7 +302,9 @@ export class SavingsGoalsComponent implements OnInit {
     
     this.dialog.open(this.goalFormTemplate, {
       width: '500px',
-      panelClass: 'dark-theme-dialog'
+      panelClass: 'dark-theme-dialog',
+      autoFocus: 'first-tabbable', // Fokussiert das erste tabbable Element
+      restoreFocus: true // Stellt den Fokus wieder her, wenn der Dialog geschlossen wird
     });
   }
 
@@ -271,7 +314,8 @@ export class SavingsGoalsComponent implements OnInit {
 
   openEditGoalDialog(): void {
     this.editMode = true;
-    this.goalForm.setValue({
+    
+    this.goalForm.patchValue({
       title: this.selectedGoal.title,
       category: this.selectedGoal.category,
       targetAmount: this.selectedGoal.targetAmount,
@@ -302,53 +346,82 @@ export class SavingsGoalsComponent implements OnInit {
     this.dialog.closeAll();
   }
 
-  // CRUD-Operationen (später mit Supabase verbinden)
   saveGoal(): void {
     if (this.goalForm.invalid) return;
 
     const formValue = this.goalForm.value;
     
-    if (this.editMode) {
-
-      const updatedGoal = {
-        ...this.selectedGoal,
-        title: formValue.title,
-        category: formValue.category,
-        targetAmount: formValue.targetAmount,
-        notes: formValue.notes
-      };
-      
-      const index = this.savingsGoals.findIndex(g => g.id === this.selectedGoal.id);
-      if (index !== -1) {
-        this.savingsGoals[index] = updatedGoal;
-        this.selectedGoal = updatedGoal;
-      }
-    } else {
-  
-      const newGoal: SavingsGoal = {
-        id: Date.now().toString(), 
-        title: formValue.title,
-        category: formValue.category,
-        targetAmount: formValue.targetAmount,
-        currentAmount: formValue.startAmount || 0,
-        createdAt: new Date(),
-        notes: formValue.notes,
-        transactions: []
-      };
-      
-      if (formValue.startAmount > 0) {
-        newGoal.transactions.push({
-          id: `${newGoal.id}-1`,
-          amount: formValue.startAmount,
-          date: new Date(),
-          note: 'Startbetrag'
+    if (this.useSupabase) {
+      // Supabase-Version
+      if (this.editMode && this.selectedGoal) {
+        this.savingsService.updateGoal(this.selectedGoal.id, {
+          title: formValue.title,
+          category: formValue.category,
+          target_amount: formValue.targetAmount,
+          notes: formValue.notes
+        }).then(success => {
+          if (success) {
+            this.closeDialog();
+          } else {
+            console.error('Fehler beim Aktualisieren des Ziels');
+          }
+        });
+      } else {
+        this.savingsService.createGoal({
+          title: formValue.title,
+          category: formValue.category,
+          target_amount: formValue.targetAmount,
+          notes: formValue.notes
+        }, formValue.startAmount).then(id => {
+          if (id) {
+            this.closeDialog();
+          } else {
+            console.error('Fehler beim Erstellen des Ziels');
+          }
         });
       }
+    } else {
+      // Mock-Daten-Version
+      if (this.editMode) {
+        const updatedGoal = {
+          ...this.selectedGoal,
+          title: formValue.title,
+          category: formValue.category,
+          targetAmount: formValue.targetAmount,
+          notes: formValue.notes
+        };
+        
+        const index = this.savingsGoals.findIndex(g => g.id === this.selectedGoal.id);
+        if (index !== -1) {
+          this.savingsGoals[index] = updatedGoal;
+          this.selectedGoal = updatedGoal;
+        }
+      } else {
+        const newGoal: SavingsGoal = {
+          id: Date.now().toString(), 
+          title: formValue.title,
+          category: formValue.category,
+          targetAmount: formValue.targetAmount,
+          currentAmount: formValue.startAmount || 0,
+          createdAt: new Date(),
+          notes: formValue.notes,
+          transactions: []
+        };
+        
+        if (formValue.startAmount > 0) {
+          newGoal.transactions.push({
+            id: `${newGoal.id}-1`,
+            amount: formValue.startAmount,
+            date: new Date(),
+            note: 'Startbetrag'
+          });
+        }
+        
+        this.savingsGoals.push(newGoal);
+      }
       
-      this.savingsGoals.push(newGoal);
+      this.closeDialog();
     }
-    
-    this.closeDialog();
   }
 
   saveTransaction(): void {
@@ -356,28 +429,89 @@ export class SavingsGoalsComponent implements OnInit {
 
     const formValue = this.transactionForm.value;
     
-    const newTransaction: Transaction = {
-      id: `${this.selectedGoal.id}-${Date.now()}`,
-      amount: formValue.amount,
-      date: formValue.date,
-      note: formValue.note
-    };
-    
-    this.selectedGoal.transactions.push(newTransaction);
-    this.selectedGoal.currentAmount += formValue.amount;
-    
-    const index = this.savingsGoals.findIndex(g => g.id === this.selectedGoal.id);
-    if (index !== -1) {
-      this.savingsGoals[index] = { ...this.selectedGoal };
+    if (this.useSupabase) {
+      // Supabase-Version
+      this.savingsService.createTransaction({
+        goal_id: this.selectedGoal.id,
+        amount: formValue.amount,
+        date: formValue.date,
+        note: formValue.note
+      }).then(id => {
+        if (id) {
+          this.closeDialog();
+        } else {
+          console.error('Fehler beim Erstellen der Transaktion');
+        }
+      });
+    } else {
+      // Mock-Daten-Version
+      const newTransaction: Transaction = {
+        id: `${this.selectedGoal.id}-${Date.now()}`,
+        amount: formValue.amount,
+        date: formValue.date,
+        note: formValue.note
+      };
+      
+      this.selectedGoal.transactions.push(newTransaction);
+      this.selectedGoal.currentAmount += formValue.amount;
+      
+      const index = this.savingsGoals.findIndex(g => g.id === this.selectedGoal.id);
+      if (index !== -1) {
+        this.savingsGoals[index] = { ...this.selectedGoal };
+      }
+      
+      this.closeDialog();
     }
-    
-    this.closeDialog();
   }
 
   deleteGoal(): void {
-    if (confirm('Möchtest du dieses Sparziel wirklich löschen?')) {
-      this.savingsGoals = this.savingsGoals.filter(g => g.id !== this.selectedGoal.id);
-      this.closeDialog();
+    const dialogData: DeleteDialogData = {
+      title: `${this.selectedGoal.title} löschen?`,
+      message: `Dieses Sparziel und alle zugehörigen Transaktionen werden dauerhaft gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.`,
+      confirmButtonText: 'Löschen',
+      cancelButtonText: 'Abbrechen',
+      itemType: 'Sparziel'
+    };
+
+    const dialogRef = this.dialog.open(DeleteDialogComponent, {
+      width: '450px',
+      data: dialogData,
+      panelClass: 'dark-theme-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        if (this.useSupabase) {
+          // Supabase-Version
+          this.savingsService.deleteGoal(this.selectedGoal.id).then(success => {
+            if (success) {
+              this.closeDialog();
+            } else {
+              console.error('Fehler beim Löschen des Ziels');
+            }
+          });
+        } else {
+          // Mock-Daten-Version
+          this.savingsGoals = this.savingsGoals.filter(g => g.id !== this.selectedGoal.id);
+          this.closeDialog();
+        }
+      }
+    });
+  }
+
+  // Hilfsmethode zum Umschalten zwischen Mock-Daten und Supabase
+  toggleDataSource(useSupabase: boolean): void {
+    this.useSupabase = useSupabase;
+    if (useSupabase) {
+      this.goalsSubscription = this.savingsService.goals$.subscribe(goals => {
+        this.savingsGoals = goals.map(goal => this.convertFromSupabase(goal));
+      });
+      this.savingsService.loadGoals();
+    } else {
+      if (this.goalsSubscription) {
+        this.goalsSubscription.unsubscribe();
+      }
+      this.loadSampleData();
     }
   }
 }
