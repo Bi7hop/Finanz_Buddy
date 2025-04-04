@@ -1,16 +1,43 @@
-<h2 mat-dialog-title>{{ data.title }}</h2>
-<mat-dialog-content>
-  <p>{{ data.message }}</p>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancelClick()">
-    {{ data.cancelButtonText || 'Abbrechen' }}
-  </button>
-  <button 
-    mat-raised-button 
-    color="warn" 
-    (click)="onConfirmClick()" 
-    cdkFocusInitial>
-    {{ data.confirmButtonText || 'Löschen' }}
-  </button>
-</mat-dialog-actions>
+<div class="delete-confirmation-container">
+  <div class="delete-header">
+    <mat-icon class="warning-icon">warning</mat-icon>
+    <h2>{{ data.title }}</h2>
+  </div>
+  
+  <mat-divider></mat-divider>
+  
+  <div class="delete-content">
+    <p class="delete-message">{{ data.message }}</p>
+    
+    <div class="error-container" *ngIf="errorMessage()">
+      <div class="error-message">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+      <button mat-icon-button (click)="dismissError()" aria-label="Fehler schließen">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  
+  <div class="delete-actions">
+    <button 
+      mat-stroked-button 
+      class="cancel-button" 
+      (click)="onCancelClick()" 
+      [disabled]="isDeleting()">
+      {{ data.cancelButtonText }}
+    </button>
+    
+    <button 
+      mat-flat-button 
+      class="delete-button" 
+      [class.loading]="isDeleting()"
+      (click)="onConfirmClick()" 
+      [disabled]="isDeleting()">
+      <mat-icon *ngIf="!isDeleting()">delete</mat-icon>
+      <mat-spinner *ngIf="isDeleting()" diameter="20"></mat-spinner>
+      <span>{{ isDeleting() ? 'Wird gelöscht...' : data.confirmButtonText }}</span>
+    </button>
+  </div>
+</div>
