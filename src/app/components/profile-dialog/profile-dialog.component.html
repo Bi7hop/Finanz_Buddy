@@ -86,7 +86,11 @@
     </div>
     
     <div class="cta-section">
-      <button mat-flat-button class="logout-button" (click)="logout()">
+      <button 
+        #firstFocusableElement 
+        mat-flat-button 
+        class="logout-button" 
+        (click)="logout()">
         <mat-icon>logout</mat-icon>
         <span>Abmelden</span>
       </button>
