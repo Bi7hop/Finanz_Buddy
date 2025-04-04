@@ -1,76 +1,169 @@
-::ng-deep .mat-mdc-dialog-container {
-  background-color: #2c2c2c;
-  color: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+$dark-blue-background: #1e3045 !default;
+$darker-blue: darken($dark-blue-background, 5%) !default;
+$light-text: #ffffff !default;
+$divider-color: rgba(255, 255, 255, 0.1) !default;
+$emergency-color: #f44336 !default;
+$card-background: rgba(255, 255, 255, 0.05) !default;
+$cancel-hover: rgba(255, 255, 255, 0.1) !default;
+
+
+:host {
+  display: block;
+  
+
+  ::ng-deep .mat-mdc-dialog-container {
+    .mdc-dialog__surface {
+      background: linear-gradient(135deg, $dark-blue-background 0%, $darker-blue 100%);
+      color: $light-text;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+  }
 }
 
-.delete-dialog-container {
-  h2.mat-mdc-dialog-title {
-    color: white;
+.delete-confirmation-container {
+  min-width: 400px;
+  max-width: 500px;
+}
+
+.delete-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  color: $light-text;
+  
+  .warning-icon {
+    color: $emergency-color;
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+    margin-right: 16px;
+  }
+  
+  h2 {
+    margin: 0;
     font-size: 20px;
     font-weight: 600;
-    padding: 16px;
-    margin: 0;
-    border-bottom: none;
+    letter-spacing: 0.5px;
   }
+}
 
-  .mat-mdc-dialog-content {
-    padding: 0 16px 16px;
-    min-width: 350px;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 16px;
+mat-divider {
+  background-color: $divider-color;
+}
+
+.delete-content {
+  padding: 20px 24px;
+  
+  .delete-message {
+    margin: 0 0 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgba($light-text, 0.9);
   }
-
-  .mat-mdc-dialog-actions {
-    padding: 16px;
-    justify-content: flex-end;
-
-    button {
-      min-width: 100px;
-      height: 40px;
-      border-radius: 8px;
-      text-transform: none;
-      font-size: 16px;
-      margin-left: 8px;
-
-      &.mat-mdc-button {
-        color: white;
-        opacity: 0.7;
-        
-        &:hover {
-          opacity: 1;
-          background-color: rgba(255, 255, 255, 0.1);
-        }
+  
+  .error-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba($emergency-color, 0.15);
+    border-left: 4px solid $emergency-color;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-top: 16px;
+    
+    .error-message {
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        color: $emergency-color;
+        margin-right: 12px;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
       }
-
-      &.mat-mdc-raised-button.mat-warn {
-        background-color: #f44336;
-        color: white;
-        box-shadow: none;
-        
-        &:hover {
-          background-color: darken(#f44336, 10%);
-        }
+      
+      span {
+        color: rgba($light-text, 0.9);
+        font-size: 14px;
+      }
+    }
+    
+    button {
+      color: rgba($light-text, 0.7);
+      
+      &:hover {
+        color: $light-text;
       }
     }
   }
 }
 
-@media (max-width: 600px) {
-  .delete-dialog-container {
-    .mat-mdc-dialog-content {
-      min-width: 280px;
+.delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  
+  .cancel-button {
+    color: rgba($light-text, 0.8);
+    border-color: rgba($light-text, 0.2);
+    
+    &:hover:not([disabled]) {
+      background-color: $cancel-hover;
+      border-color: rgba($light-text, 0.3);
     }
-
-    .mat-mdc-dialog-actions {
-      flex-direction: column-reverse;
+    
+    &:disabled {
+      color: rgba($light-text, 0.4);
+      border-color: rgba($light-text, 0.1);
+    }
+  }
+  
+  .delete-button {
+    background-color: $emergency-color;
+    color: $light-text;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    
+    &:hover:not([disabled]) {
+      background-color: darken($emergency-color, 8%);
+      box-shadow: 0 2px 8px rgba($emergency-color, 0.5);
+    }
+    
+    &:disabled {
+      background-color: rgba($emergency-color, 0.5);
+    }
+    
+    &.loading {
+      pointer-events: none;
       
-      button {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 16px;
+      ::ng-deep .mat-progress-spinner circle {
+        stroke: $light-text;
       }
+    }
+    
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .delete-confirmation-container {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .delete-actions {
+    flex-direction: column-reverse;
+    
+    button {
+      width: 100%;
     }
   }
 }
