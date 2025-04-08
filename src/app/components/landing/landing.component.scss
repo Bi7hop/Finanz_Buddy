@@ -29,6 +29,20 @@
   padding: 0;
 }
 
+/* Container als relative positionieren, damit der absolute Footer korrekt ausgerichtet werden kann */
+.landing-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
+  padding: 60px 20px;
+  overflow: hidden;
+}
+
 :host {
   display: block;
   min-height: 100vh;
@@ -37,18 +51,6 @@
   color: var(--text-primary);
   font-size: 16px;
   line-height: 1.6;
-}
-
-.landing-container {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
-  padding: 60px 20px;
-  position: relative;
-  overflow: hidden;
 }
 
 .landing-grid {
@@ -65,7 +67,6 @@
   position: relative;
   z-index: 1;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-  
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 
@@ -261,7 +262,7 @@
     &:hover {
       transform: rotateX(5deg) rotateY(-5deg) scale(1.03);
       box-shadow: 0 40px 80px var(--shadow-color), 
-        0 30px 50px rgba(69, 183, 209, 0.2);
+                  0 30px 50px rgba(69, 183, 209, 0.2);
     }
 
     .dashboard-image {
@@ -305,4 +306,26 @@
     transparent 25%
   );
   z-index: 0;
+}
+
+/* Neuer Footer für Imprint & Privacy Policy: unten mittig mit Cursor-Pointer */
+.legal-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 14px;
+
+  .legal-link {
+    margin: 0 10px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
 }
