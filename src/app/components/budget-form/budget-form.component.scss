@@ -1,8 +1,9 @@
 $dark-blue-background: #1e3045;
 $dark-background: #0f1b2a;
 $light-text: #ffffff;
-$input-background: rgba(255, 255, 255, 0.06);
-$divider-color: rgba(255, 255, 255, 0.1);
+$input-background: rgba(255, 255, 255, 0.15);
+$input-border: rgba(255, 255, 255, 0.3);
+$divider-color: rgba(255, 255, 255, 0.2);
 $income-green: #4caf50;
 $expense-red: #f44336;
 
@@ -15,137 +16,176 @@ $expense-red: #f44336;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-  
-  .form-title {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
-    color: $light-text;
-    padding: 20px 24px;
-    margin: 0;
-    border-bottom: 1px solid $divider-color;
-    font-size: 20px;
-    font-weight: 600;
-    text-align: center;
-  }
-  
-  form {
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .full-width {
-    width: 100%;
-  }
-  
-  ::ng-deep {
-    .mat-mdc-form-field {
-      margin-bottom: 16px;
-      
-      .mat-mdc-form-field-wrapper {
-        background-color: $input-background;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      .mat-mdc-form-field-outline {
-        display: none;
-      }
-      
-      .mat-mdc-form-field-infix {
-        padding: 12px 16px;
-        min-height: 48px;
-        display: flex;
-        align-items: center;
-      }
-      
-      .mat-mdc-form-field-label,
-      .mat-mdc-form-field-label-wrapper {
-        color: rgba(255, 255, 255, 0.7) !important;
-        top: -8px;
-      }
-      
-      .mat-mdc-input-element,
-      .mat-mdc-select-value {
-        color: $light-text !important;
-        font-size: 16px;
-      }
-      
-      .mat-mdc-select-arrow {
-        color: rgba(255, 255, 255, 0.7);
-      }
-      
-      &.mat-focused {
-        .mat-mdc-form-field-label {
-          color: $light-text !important;
-        }
-      }
-    }
-    
-    .mat-mdc-option {
-      color: $light-text;
-      background-color: $dark-background;
-      
-      &:hover,
-      &.mdc-list-item--selected {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-      
-      .mat-icon {
-        color: $light-text;
-        margin-right: 12px;
-      }
-    }
-    
-    .mat-mdc-menu-panel {
-      background-color: $dark-background;
-    }
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    
-    button {
-      min-width: 120px;
-      height: 48px;
-      border-radius: 8px;
-      text-transform: none;
-      font-size: 16px;
-      
-      &.mat-warn {
-        background: linear-gradient(to right bottom, $expense-red, darken($expense-red, 10%));
-        color: white;
-      }
-      
-      &.mat-primary {
-        background: linear-gradient(to right bottom, $income-green, darken($income-green, 10%));
-        color: white;
-      }
-    }
-  }
-  
-  // Error state styling
-  ::ng-deep .mat-mdc-form-field.mat-mdc-form-field-invalid {
-    .mat-mdc-form-field-label {
-      color: $expense-red !important;
-    }
+}
 
-    .mat-mdc-form-field-label-wrapper {
-      color: $expense-red !important;
-    }
+.form-title {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+  color: $light-text;
+  padding: 20px 24px;
+  margin: 0;
+  border-bottom: 1px solid $divider-color;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
-    .mat-mdc-form-field-wrapper {
-      border-color: $expense-red;
+form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+::ng-deep {
+  .mat-mdc-form-field {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    margin-bottom: 16px !important;
+    
+    .mat-mdc-text-field-wrapper {
+      height: auto !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    
+    .mat-mdc-form-field-infix {
+      min-height: 36px !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    
+    &.mat-focused {
+      background-color: rgba(255, 255, 255, 0.25) !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2) !important;
     }
   }
+
+  .mat-mdc-floating-label,
+  .mat-mdc-form-field-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    
+    &.mat-mdc-floating-label--float-above {
+      color: $light-text !important;
+      font-weight: 500 !important;
+    }
+  }
+
+  .mat-mdc-input-element,
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-value,
+  input.mat-mdc-input-element {
+    color: $light-text !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+      opacity: 1 !important;
+    }
+  }
+
+  .mat-mdc-select-arrow-wrapper,
+  .mat-mdc-select-arrow {
+    color: $light-text !important;
+  }
+  
+  .mat-mdc-select-panel,
+  .mat-mdc-menu-panel,
+  .cdk-overlay-pane > .mat-mdc-select-panel {
+    background-color: lighten($dark-blue-background, 5%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .mat-mdc-option {
+    color: $light-text !important;
+    min-height: 36px !important;
+    
+    &:hover:not(.mdc-list-item--disabled) {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .mdc-list-item__primary-text,
+    span {
+      color: $light-text !important;
+    }
+    
+    .mat-icon {
+      color: $light-text !important;
+      margin-right: 8px !important;
+    }
+  }
+  
+  .mdc-notched-outline,
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: transparent !important;
+    border-width: 0 !important;
+  }
+  
+  .mat-mdc-form-field-suffix {
+    color: $light-text !important;
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  
+  button {
+    min-width: 120px;
+    height: 40px; 
+    border-radius: 8px;
+    text-transform: none;
+    font-size: 16px;
+    font-weight: 500;
+    
+    &.mat-warn {
+      background-color: $expense-red !important;
+      color: white !important;
+    }
+    
+    &.mat-primary {
+      background-color: $income-green !important;
+      color: white !important;
+    }
+  }
+}
+
+// Remove spinner arrows from number inputs
+::ng-deep input[type=number]::-webkit-inner-spin-button, 
+::ng-deep input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+// Fix for Firefox
+::ng-deep input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 @media (max-width: 600px) {
   .budget-form-container {
     width: 95%;
-    margin: 0 auto;
     
     .button-container {
       flex-direction: column-reverse;
