@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
+import { environment } from '../../environments/environment';
 
 export interface UserProfile {
   id: string;        
@@ -12,6 +13,8 @@ export interface UserProfile {
   currency?: string;
   created_at?: string;
   updated_at?: string;
+  isGuest?: boolean;  
+  guestSessionId?: string;
 }
 
 @Injectable({
@@ -46,14 +49,43 @@ export class AuthService {
 
   async loadUser() {
     const { data: { session } } = await this.supabaseService.supabaseClient.auth.getSession();
+    
     if (session?.user) {
       this.userCache = { user: session.user };
       this.lastCacheTime = Date.now();
       await this.loadUserProfile(session.user.id);
+      return;
+    }
+    
+    const guestSessionStr = localStorage.getItem('guestSession');
+    if (guestSessionStr) {
+      try {
+        const guestSession = JSON.parse(guestSessionStr);
+        const created = new Date(guestSession.created);
+        
+        const expiration = environment.guestMode.sessionExpirationHours * 60 * 60 * 1000;
+        if (Date.now() - created.getTime() < expiration) {
+          this.currentUserSubject.next(guestSession.profile);
+          return;
+        } else {
+          localStorage.removeItem('guestSession');
+        }
+      } catch (e) {
+        console.error('Error parsing guest session', e);
+        localStorage.removeItem('guestSession');
+      }
     }
   }
 
   async getUser(): Promise<{ data: { user: any } | null, error: any }> {
+
+    if (this.isGuestUser()) {
+      return { 
+        data: { user: this.getCurrentUser() }, 
+        error: null 
+      };
+    }
+    
     const CACHE_TTL = 5 * 60 * 1000; 
     const now = Date.now();
     
@@ -166,6 +198,38 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  isGuestUser(): boolean {
+    return !!this.currentUserSubject.value?.isGuest;
+  }
+
+  async loginAsGuest(): Promise<{ success: boolean, error?: any }> {
+    try {
+      const guestSessionId = crypto.randomUUID();
+      
+      const guestProfile: UserProfile = {
+        id: 'guest-' + guestSessionId,
+        user_id: 'guest-' + guestSessionId,
+        isGuest: true,
+        guestSessionId: guestSessionId,
+        currency: 'EUR'
+      };
+      
+      localStorage.setItem('guestSession', JSON.stringify({
+        profile: guestProfile,
+        created: new Date().toISOString()
+      }));
+      
+      this.currentUserSubject.next(guestProfile);
+      
+      this.router.navigate(['/dashboard']);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error creating guest session:', error);
+      return { success: false, error };
+    }
+  }
+
   async signUp(email: string, password: string, firstName?: string, lastName?: string): Promise<{ success: boolean, error?: any }> {
     try {
       const { data, error } = await this.supabaseService.supabaseClient.auth.signUp({
@@ -226,13 +290,24 @@ export class AuthService {
   }
 
   async signOut() {
+    const currentUser = this.getCurrentUser();
+    
+    if (currentUser?.isGuest) {
+      localStorage.removeItem('guestSession');
+      this.currentUserSubject.next(null);
+      this.router.navigate(['/login']);
+      return { success: true };
+    }
+    
     const { error } = await this.supabaseService.supabaseClient.auth.signOut();
     if (error) {
       console.error('Error signing out:', error);
+      return { success: false, error };
     } else {
       this.currentUserSubject.next(null);
       this.userCache = null;
       this.router.navigate(['/login']);
+      return { success: true };
     }
   }
 
@@ -240,6 +315,27 @@ export class AuthService {
     const currentUser = this.getCurrentUser();
     if (!currentUser) {
       return { success: false, error: 'Not authenticated' };
+    }
+    
+    if (currentUser.isGuest) {
+      const updatedProfile = {
+        ...currentUser,
+        ...profile
+      };
+
+      const guestSessionStr = localStorage.getItem('guestSession');
+      if (guestSessionStr) {
+        try {
+          const guestSession = JSON.parse(guestSessionStr);
+          guestSession.profile = updatedProfile;
+          localStorage.setItem('guestSession', JSON.stringify(guestSession));
+        } catch (e) {
+          console.error('Error updating guest profile:', e);
+        }
+      }
+      
+      this.currentUserSubject.next(updatedProfile);
+      return { success: true };
     }
 
     const { error } = await this.supabaseService.supabaseClient
