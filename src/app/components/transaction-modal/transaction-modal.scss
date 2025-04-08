@@ -1,145 +1,191 @@
 $dark-blue-background: #1e3045;
 $dark-background: #0f1b2a;
 $light-text: #ffffff;
-$input-background: rgba(255, 255, 255, 0.06);
-$divider-color: rgba(255, 255, 255, 0.1);
-$menu-hover-background: #2a4364;
+$input-background: rgba(255, 255, 255, 0.15);
+$input-border: rgba(255, 255, 255, 0.3);
+$divider-color: rgba(255, 255, 255, 0.2);
+$income-green: #4caf50;
+$expense-red: #f44336;
 
 .transaction-modal-container {
-  width: 500px;
-  max-width: 100%;
-  background: $dark-background;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(135deg, $dark-blue-background 0%, darken($dark-blue-background, 10%) 100%);
   color: $light-text;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
-  padding: 0;
+}
 
-  ::ng-deep .mat-mdc-dialog-title {
-    color: $light-text;
-    background: rgba(0, 0, 0, 0.1);
-    padding: 16px 24px;
-    margin: 0;
-    border-bottom: 1px solid $divider-color;
-    font-weight: 600;
-    text-align: center;
-    font-size: 20px;
-  }
+.transaction-title {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
+  color: $light-text;
+  padding: 20px 24px;
+  margin: 0;
+  border-bottom: 1px solid $divider-color;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
-  .transaction-form {
-    display: flex;
-    flex-direction: column;
-    padding: 24px;
+.transaction-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-    ::ng-deep .mat-mdc-form-field {
-      margin-bottom: 16px;
-      
-      .mat-mdc-form-field-wrapper {
-        background-color: $input-background;
-        border-radius: 8px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      .mat-mdc-form-field-outline {
-        display: none;
-      }
-      
-      .mat-mdc-form-field-infix {
-        padding: 12px 16px;
-        min-height: 48px;
-      }
-      
-      .mat-mdc-form-field-label,
-      .mat-mdc-form-field-label-wrapper {
-        color: rgba(255, 255, 255, 0.7) !important;
-        top: -8px;
-      }
-      
-      .mat-mdc-input-element,
-      .mat-mdc-select-value {
-        color: $light-text !important;
-        font-size: 16px;
-      }
-      
-      &.mat-focused {
-        .mat-mdc-form-field-label {
-          color: $light-text !important;
-        }
-      }
+.full-width {
+  width: 100%;
+}
 
-      .mat-datepicker-toggle-default-icon {
-        color: rgba(255, 255, 255, 0.7);
-      }
+::ng-deep {
+  .mat-mdc-form-field {
+    background-color: $input-background !important;
+    border-radius: 8px !important;
+    border: 1px solid $input-border !important;
+    margin-bottom: 16px !important;
+    
+    .mat-mdc-text-field-wrapper {
+      height: auto !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
     }
-
-    .recurring-container {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-      
-      label {
-        margin-right: 16px;
-        flex: 0 0 120px;
-        color: $light-text;
-      }
-      
-      .toggle-input {
-        flex: 1;
-        
-        ::ng-deep .mat-mdc-select {
-          background-color: $input-background;
-          border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-      }
+    
+    .mat-mdc-form-field-infix {
+      min-height: 36px !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
     }
-
-    .form-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 16px;
-      
-      button {
-        min-width: 120px;
-        height: 48px;
-        border-radius: 8px;
-        text-transform: none;
-        font-size: 16px;
-        
-        &.mat-warn {
-          background: linear-gradient(to right bottom, #f44336, darken(#f44336, 10%));
-          color: white;
-        }
-        
-        &.mat-primary {
-          background: linear-gradient(to right bottom, #4caf50, darken(#4caf50, 10%));
-          color: white;
-        }
-      }
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    
+    &.mat-focused {
+      background-color: rgba(255, 255, 255, 0.25) !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.2) !important;
     }
   }
 
-  .category-icon {
-    margin-right: 8px;
-    color: $light-text;
-    opacity: 0.7;
+  .mat-mdc-floating-label,
+  .mat-mdc-form-field-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    
+    &.mat-mdc-floating-label--float-above {
+      color: $light-text !important;
+      font-weight: 500 !important;
+    }
   }
+
+  .mat-mdc-input-element,
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-value,
+  input.mat-mdc-input-element {
+    color: $light-text !important;
+    font-weight: 500 !important;
+    line-height: 1.2 !important;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7) !important;
+      opacity: 1 !important;
+    }
+  }
+
+  .mat-mdc-select-arrow-wrapper,
+  .mat-mdc-select-arrow {
+    color: $light-text !important;
+  }
+  
+  .mat-mdc-select-panel,
+  .mat-mdc-menu-panel,
+  .cdk-overlay-pane > .mat-mdc-select-panel {
+    background-color: lighten($dark-blue-background, 5%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+  }
+  
+  .mat-mdc-option {
+    color: $light-text !important;
+    min-height: 36px !important;
+    
+    &:hover:not(.mdc-list-item--disabled) {
+      background-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    &.mdc-list-item--selected {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .mdc-list-item__primary-text,
+    span {
+      color: $light-text !important;
+    }
+    
+    .mat-icon {
+      color: $light-text !important;
+      margin-right: 8px !important;
+    }
+  }
+  
+  .mdc-notched-outline,
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: transparent !important;
+    border-width: 0 !important;
+  }
+  
+  .mat-mdc-form-field-suffix {
+    color: $light-text !important;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  
+  button {
+    min-width: 120px;
+    height: 40px; 
+    border-radius: 8px;
+    text-transform: none;
+    font-size: 16px;
+    font-weight: 500;
+    
+    &.mat-warn {
+      background-color: $expense-red !important;
+      color: white !important;
+    }
+    
+    &.mat-primary {
+      background-color: $income-green !important;
+      color: white !important;
+    }
+  }
+}
+
+.category-icon {
+  margin-right: 8px;
+  color: $light-text;
+  opacity: 0.7;
 }
 
 @media (max-width: 600px) {
   .transaction-modal-container {
     width: 95%;
     
-    .transaction-form {
-      padding: 16px;
+    .form-actions {
+      flex-direction: column-reverse;
+      gap: 16px;
       
-      .form-actions {
-        flex-direction: column-reverse;
-        gap: 16px;
-        
-        button {
-          width: 100%;
-        }
+      button {
+        width: 100%;
       }
     }
   }
