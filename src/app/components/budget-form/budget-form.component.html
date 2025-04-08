@@ -1,64 +1,64 @@
 <div class="budget-form-container">
-    <h2 class="form-title">{{ formTitle }}</h2>
+  <h2 class="form-title">{{ formTitle }}</h2>
+  
+  <form [formGroup]="budgetForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Kategorie</mat-label>
+      <mat-select formControlName="category" required>
+        <mat-option *ngFor="let category of categories" [value]="category.value">
+          <mat-icon>{{ category.icon }}</mat-icon>
+          <span>{{ category.viewValue }}</span>
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="budgetForm.get('category')?.hasError('required')">
+        Kategorie ist erforderlich
+      </mat-error>
+    </mat-form-field>
     
-    <form [formGroup]="budgetForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Kategorie</mat-label>
-        <mat-select formControlName="category" required>
-          <mat-option *ngFor="let category of categories" [value]="category.value">
-            <mat-icon>{{ category.icon }}</mat-icon>
-            <span>{{ category.viewValue }}</span>
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="budgetForm.get('category')?.hasError('required')">
-          Kategorie ist erforderlich
-        </mat-error>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" required>
-        <mat-error *ngIf="budgetForm.get('name')?.hasError('required')">
-          Name ist erforderlich
-        </mat-error>
-      </mat-form-field>
-      
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Budgetierter Betrag (€)</mat-label>
-        <input 
-          matInput
-          type="number"
-          formControlName="budgeted"
-          min="0"
-          step="10"
-          required
-        >
-        <span matSuffix>€</span>
-        <mat-error *ngIf="budgetForm.get('budgeted')?.hasError('required')">
-          Betrag ist erforderlich
-        </mat-error>
-        <mat-error *ngIf="budgetForm.get('budgeted')?.hasError('min')">
-          Betrag muss größer als 0 sein
-        </mat-error>
-      </mat-form-field>
-      
-      <div class="button-container">
-        <button 
-          mat-flat-button 
-          type="button" 
-          color="warn" 
-          (click)="onCancel()"
-        >
-          Abbrechen
-        </button>
-        <button 
-          mat-flat-button 
-          type="submit" 
-          color="primary" 
-          [disabled]="budgetForm.invalid"
-        >
-          {{ isEditing ? 'Aktualisieren' : 'Erstellen' }}
-        </button>
-      </div>
-    </form>
-  </div>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-error *ngIf="budgetForm.get('name')?.hasError('required')">
+        Name ist erforderlich
+      </mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Budgetierter Betrag (€)</mat-label>
+      <input 
+        matInput
+        type="number"
+        formControlName="budgeted"
+        min="0"
+        step="10"
+        required
+      >
+      <span matSuffix>€</span>
+      <mat-error *ngIf="budgetForm.get('budgeted')?.hasError('required')">
+        Betrag ist erforderlich
+      </mat-error>
+      <mat-error *ngIf="budgetForm.get('budgeted')?.hasError('min')">
+        Betrag muss größer als 0 sein
+      </mat-error>
+    </mat-form-field>
+    
+    <div class="button-container">
+      <button 
+        mat-flat-button 
+        type="button" 
+        color="warn" 
+        (click)="onCancel()"
+      >
+        Abbrechen
+      </button>
+      <button 
+        mat-flat-button 
+        type="submit" 
+        color="primary" 
+        [disabled]="budgetForm.invalid"
+      >
+        {{ isEditing ? 'Aktualisieren' : 'Erstellen' }}
+      </button>
+    </div>
+  </form>
+</div>
