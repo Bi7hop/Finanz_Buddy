@@ -9,12 +9,20 @@ import { IncomeComponent } from './components/income/income.component';
 import { TransactionFormComponent } from './components/transactions/transactions.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { SignupComponent } from './components/auth/signup/signup.component';
-import { LandingComponent } from './components/landing/landing.component'; 
+import { LandingComponent } from './components/landing/landing.component';
 import { ManualComponent } from './components/manual/manual.component';
-import { SavingsGoalsComponent } from './components/savings-goals/savings-goals.component'; // Neue Komponente importieren
+import { SavingsGoalsComponent } from './components/savings-goals/savings-goals.component';
+
+// Neue Komponenten importieren:
+import { ImprintComponent } from './components/imprint/imprint.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 
 export const routes: Routes = [
   { path: '', component: LandingComponent },
+
+  // Öffentliche Routen:
+  { path: 'imprint', component: ImprintComponent },
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
   // Auth-Routen:
   { path: 'login', component: LoginComponent },
@@ -29,7 +37,7 @@ export const routes: Routes = [
       { path: 'einnahmen', component: IncomeComponent },
       { path: 'ausgaben', component: ExpenseComponent },
       { path: 'budget', component: BudgetComponent },
-      { path: 'sparziele', component: SavingsGoalsComponent }, // Neue Route für Sparziele
+      { path: 'sparziele', component: SavingsGoalsComponent },
       { path: 'buchungen', component: NotImplementedComponent, data: { featureName: 'Buchungen' } },
       { path: 'dauerauftraege', component: NotImplementedComponent, data: { featureName: 'Daueraufträge' } },
       { path: 'banking', component: NotImplementedComponent, data: { featureName: 'Banking' } },
