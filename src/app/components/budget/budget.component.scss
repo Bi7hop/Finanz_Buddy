@@ -6,6 +6,13 @@ $divider-color: rgba(255, 255, 255, 0.1);
 $menu-background: #2a4364;
 $menu-hover-background: #3a5a7a;
 
+$housing-color: #4a6572;
+$food-color: #ff7043;
+$transport-color: #5c6bc0;
+$shopping-color: #7e57c2;
+$entertainment-color: #26a69a;
+$income-color: #43a047;
+
 .budget-container {
   display: flex;
   flex-direction: column;
@@ -18,97 +25,105 @@ $menu-hover-background: #3a5a7a;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
 }
 
-.budget-header {
+.summary-section {
   padding: 24px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
   border-bottom: 1px solid $divider-color;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.15));
   
-  .month-navigation {
+  .balance-card {
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+    
+    .balance-item {
+      font-size: 22px;
+      font-weight: 600;
+      
+      &.positive {
+        color: $income-green;
+      }
+      
+      &.negative {
+        color: $expense-red;
+      }
+      
+      &.total {
+        color: $light-text;
+      }
+    }
+  }
+}
+
+.month-navigation {
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid $divider-color;
+  background-color: rgba(0, 0, 0, 0.1);
+  
+  .nav-button {
+    color: $light-text;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
     
-    .nav-button {
-      color: $light-text;
-      background-color: rgba(255, 255, 255, 0.08);
-      border-radius: 50%;
-      transition: all 0.2s ease;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      &:hover:not([disabled]) {
-        background-color: rgba(255, 255, 255, 0.15);
-        transform: scale(1.05);
-      }
-      
-      &:active:not([disabled]) {
-        transform: scale(0.95);
-      }
-      
-      &[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      
-      mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
-      }
+    &:hover:not([disabled]) {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
     }
     
-    .current-month {
-      font-size: 20px;
-      font-weight: 600;
-      margin: 0 20px;
-      padding: 5px 16px;
-      border-radius: 6px;
-      background-color: rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-      letter-spacing: 0.5px;
+    &:active:not([disabled]) {
+      transform: scale(0.95);
+    }
+    
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
   
-  .budget-summary {
-    .summary-card {
-      display: flex;
-      justify-content: space-between;
-      
-      .summary-item {
-        text-align: center;
-        flex: 1;
-        
-        .label {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 6px;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: 500;
-        }
-        
-        .amount {
-          font-size: 24px;
-          font-weight: 700;
-          
-          &.positive {
-            color: $income-green;
-            text-shadow: 0 0 10px rgba($income-green, 0.3);
-          }
-          
-          &.negative {
-            color: $expense-red;
-            text-shadow: 0 0 10px rgba($expense-red, 0.3);
-          }
-        }
-      }
-    }
+  .current-month {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 20px;
+    padding: 5px 16px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
   }
 }
 
@@ -164,11 +179,11 @@ $menu-hover-background: #3a5a7a;
       border-radius: 8px;
       margin-right: 12px;
       
-      &.housing { background: linear-gradient(135deg, #4a6572, darken(#4a6572, 15%)); }
-      &.food { background: linear-gradient(135deg, #ff7043, darken(#ff7043, 15%)); }
-      &.transport { background: linear-gradient(135deg, #5c6bc0, darken(#5c6bc0, 15%)); }
-      &.shopping { background: linear-gradient(135deg, #7e57c2, darken(#7e57c2, 15%)); }
-      &.entertainment { background: linear-gradient(135deg, #26a69a, darken(#26a69a, 15%)); }
+      &.housing { background: linear-gradient(135deg, $housing-color, darken($housing-color, 15%)); }
+      &.food { background: linear-gradient(135deg, $food-color, darken($food-color, 15%)); }
+      &.transport { background: linear-gradient(135deg, $transport-color, darken($transport-color, 15%)); }
+      &.shopping { background: linear-gradient(135deg, $shopping-color, darken($shopping-color, 15%)); }
+      &.entertainment { background: linear-gradient(135deg, $entertainment-color, darken($entertainment-color, 15%)); }
       &.savings { background: linear-gradient(135deg, #00acc1, darken(#00acc1, 15%)); }
       &.health { background: linear-gradient(135deg, #ec407a, darken(#ec407a, 15%)); }
       &.education { background: linear-gradient(135deg, #9ccc65, darken(#9ccc65, 15%)); }
@@ -310,12 +325,11 @@ $menu-hover-background: #3a5a7a;
 }
 
 @media (max-width: 768px) {
-  .budget-header {
-    .budget-summary {
-      .summary-card {
-        flex-direction: column;
-        gap: 16px;
-      }
+  .summary-section {
+    flex-direction: column;
+    
+    .balance-card {
+      margin-bottom: 10px;
     }
   }
   

@@ -56,6 +56,7 @@ export class BudgetComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   private budgetsSubscription: Subscription | null = null;
   private loadingSubscription: Subscription | null = null;
+  private transactionSubscription: Subscription | null = null;
 
   constructor(
     private dialog: MatDialog, 
@@ -72,6 +73,10 @@ export class BudgetComponent implements OnInit, OnDestroy {
       loading => this.isLoading = loading
     );
 
+    this.transactionSubscription = this.transactionService.transactions$.subscribe(() => {
+      this.loadBudgetData();
+    });
+
     this.loadBudgetData();
   }
 
@@ -81,6 +86,9 @@ export class BudgetComponent implements OnInit, OnDestroy {
     }
     if (this.loadingSubscription) {
       this.loadingSubscription.unsubscribe();
+    }
+    if (this.transactionSubscription) {
+      this.transactionSubscription.unsubscribe();
     }
   }
 
@@ -98,20 +106,18 @@ export class BudgetComponent implements OnInit, OnDestroy {
   async loadBudgetData(): Promise<void> {
     try {
       const budgets = await this.budgetService.fetchBudgets();
-      
-      const currentBudgets = budgets.filter(budget => 
-        budget.period === this.currentPeriod
-      );
-
+      const currentBudgets = budgets.filter(budget => budget.period === this.currentPeriod);
       this.budgetCategories = await this.convertBudgetsToBudgetCategories(currentBudgets);
-      
       this.calculateTotals();
     } catch (error) {
-      console.error('Fehler beim Laden der Budgets:', error);
       this.snackBar.open('Fehler beim Laden der Budgets', 'Schließen', {
         duration: 3000
       });
     }
+  }
+
+  private getCategoryForBudget(budget: Budget): string {
+    return budget.category_icon || budget.category;
   }
 
   async convertBudgetsToBudgetCategories(budgets: Budget[]): Promise<BudgetCategory[]> {
@@ -119,23 +125,20 @@ export class BudgetComponent implements OnInit, OnDestroy {
     
     for (const budget of budgets) {
       try {
-        const spent = await this.transactionService.getIncomeSumByCategory(
-          budget.category, 
+        const categoryToUse = this.getCategoryForBudget(budget);
+        const spent = await this.transactionService.getExpenseSumByCategory(
+          categoryToUse, 
           budget.period
         );
-        
         const remaining = budget.amount - spent;
-        const progressPercentage = (spent / budget.amount) * 100;
-        
+        const progressPercentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
         let status: 'good' | 'warning' | 'danger' = 'good';
         if (progressPercentage >= 100) {
           status = 'danger';
         } else if (progressPercentage >= 80) {
           status = 'warning';
         }
-        
         const iconCategory = budget.category_icon || this.mapCategoryToIcon(budget.category);
-        
         result.push({
           id: budget.id,
           name: budget.category, 
@@ -148,20 +151,25 @@ export class BudgetComponent implements OnInit, OnDestroy {
           period: budget.period
         });
       } catch (error) {
-        console.error(`Fehler beim Verarbeiten des Budgets ${budget.id}:`, error);
-        const spent = Math.floor(Math.random() * budget.amount);
+        let spent = 0;
+        try {
+          const categoryToUse = this.getCategoryForBudget(budget);
+          spent = await this.transactionService.getExpenseSumByCategory(
+            categoryToUse, 
+            budget.period
+          );
+        } catch (retryError) {
+          spent = 0;
+        }
         const remaining = budget.amount - spent;
-        const progressPercentage = (spent / budget.amount) * 100;
-        
+        const progressPercentage = budget.amount > 0 ? (spent / budget.amount) * 100 : 0;
         let status: 'good' | 'warning' | 'danger' = 'good';
         if (progressPercentage >= 100) {
           status = 'danger';
         } else if (progressPercentage >= 80) {
           status = 'warning';
         }
-        
         const iconCategory = budget.category_icon || this.mapCategoryToIcon(budget.category);
-        
         result.push({
           id: budget.id,
           name: budget.category,
@@ -180,11 +188,15 @@ export class BudgetComponent implements OnInit, OnDestroy {
   }
 
   mapCategoryToIcon(category: string): string {
-    const categoryMap: {[key: string]: string} = {
+    const categoryMap: { [key: string]: string } = {
       'Wohnen': 'housing',
+      'Miete / Strom': 'housing',
       'Lebensmittel': 'food',
       'Transport': 'transport',
+      'ÖVP': 'transport',
+      'Auto': 'transport',
       'Einkaufen': 'shopping',
+      'Monatseinkauf': 'shopping',
       'Freizeit': 'entertainment',
       'Sparen': 'savings',
       'Gesundheit': 'health',
@@ -205,11 +217,11 @@ export class BudgetComponent implements OnInit, OnDestroy {
     
     const lowerCategory = category.toLowerCase();
     
-    if (lowerCategory.includes('wohn') || lowerCategory.includes('miete') || lowerCategory.includes('haus')) {
+    if (lowerCategory.includes('wohn') || lowerCategory.includes('miete') || lowerCategory.includes('haus') || lowerCategory.includes('strom')) {
       return 'housing';
     } else if (lowerCategory.includes('essen') || lowerCategory.includes('lebensmittel')) {
       return 'food';
-    } else if (lowerCategory.includes('auto') || lowerCategory.includes('bahn') || lowerCategory.includes('transport')) {
+    } else if (lowerCategory.includes('auto') || lowerCategory.includes('bahn') || lowerCategory.includes('transport') || lowerCategory.includes('öpnv')) {
       return 'transport';
     } else if (lowerCategory.includes('kauf') || lowerCategory.includes('shop')) {
       return 'shopping';
@@ -247,21 +259,18 @@ export class BudgetComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
         try {
-          const newBudget = await this.budgetService.createBudget({
+          await this.budgetService.createBudget({
             amount: result.budgeted,     
             category: result.name,         
             category_icon: result.category, 
             period: this.currentPeriod,
             user_id: ''  
           });
-          
           this.loadBudgetData();
-          
           this.snackBar.open('Budget erfolgreich erstellt', 'Schließen', {
             duration: 3000
           });
         } catch (error) {
-          console.error('Fehler beim Erstellen des Budgets:', error);
           this.snackBar.open('Fehler beim Erstellen des Budgets', 'Schließen', {
             duration: 3000
           });
@@ -272,7 +281,6 @@ export class BudgetComponent implements OnInit, OnDestroy {
   
   async editBudgetCategory(id: number): Promise<void> {
     const category = this.budgetCategories.find(cat => cat.id === id);
-    
     if (!category) {
       return;
     }
@@ -298,14 +306,11 @@ export class BudgetComponent implements OnInit, OnDestroy {
             category: result.name,        
             category_icon: result.category 
           });
-          
           this.loadBudgetData();
-          
           this.snackBar.open('Budget erfolgreich aktualisiert', 'Schließen', {
             duration: 3000
           });
         } catch (error) {
-          console.error('Fehler beim Aktualisieren des Budgets:', error);
           this.snackBar.open('Fehler beim Aktualisieren des Budgets', 'Schließen', {
             duration: 3000
           });
@@ -315,17 +320,13 @@ export class BudgetComponent implements OnInit, OnDestroy {
   }
 
   async deleteBudgetCategory(id: number): Promise<void> {
-    // Budget-Kategorie finden, um den Namen in der Nachricht zu verwenden
     const category = this.budgetCategories.find(cat => cat.id === id);
-    
     if (!category) {
       return;
     }
     
-    // Benutzerdefinierte Nachricht erstellen
     const customMessage = `Möchtest du das Budget für "${category.name}" wirklich löschen?`;
     
-    // Den ConfirmationDialogService verwenden
     this.confirmationDialogService.openDeleteDialog('Budget', customMessage)
       .subscribe(async (confirmed) => {
         if (confirmed) {
@@ -336,7 +337,6 @@ export class BudgetComponent implements OnInit, OnDestroy {
               duration: 3000
             });
           } catch (error) {
-            console.error('Fehler beim Löschen des Budgets:', error);
             this.snackBar.open('Fehler beim Löschen des Budgets', 'Schließen', {
               duration: 3000
             });
@@ -349,12 +349,10 @@ export class BudgetComponent implements OnInit, OnDestroy {
     const [year, month] = this.currentPeriod.split('-').map(Number);
     let newMonth = month - 1;
     let newYear = year;
-    
     if (newMonth < 1) {
       newMonth = 12;
       newYear -= 1;
     }
-    
     this.currentPeriod = `${newYear}-${String(newMonth).padStart(2, '0')}`;
     const monthNames = [
       'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -362,7 +360,6 @@ export class BudgetComponent implements OnInit, OnDestroy {
     ];
     this.currentMonth = monthNames[newMonth - 1];
     this.currentYear = newYear;
-    
     await this.loadBudgetData();
   }
 
@@ -370,12 +367,10 @@ export class BudgetComponent implements OnInit, OnDestroy {
     const [year, month] = this.currentPeriod.split('-').map(Number);
     let newMonth = month + 1;
     let newYear = year;
-    
     if (newMonth > 12) {
       newMonth = 1;
       newYear += 1;
     }
-    
     this.currentPeriod = `${newYear}-${String(newMonth).padStart(2, '0')}`;
     const monthNames = [
       'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
@@ -383,12 +378,11 @@ export class BudgetComponent implements OnInit, OnDestroy {
     ];
     this.currentMonth = monthNames[newMonth - 1];
     this.currentYear = newYear;
-    
     await this.loadBudgetData();
   }
   
   getCategoryIcon(category: string): string {
-    const iconMap: {[key: string]: string} = {
+    const iconMap: { [key: string]: string } = {
       'housing': 'home',
       'food': 'restaurant',
       'transport': 'directions_car',
@@ -402,7 +396,6 @@ export class BudgetComponent implements OnInit, OnDestroy {
       'investment': 'trending_up',
       'gifts': 'card_giftcard'
     };
-    
     return iconMap[category] || 'category';
   }
 }

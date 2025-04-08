@@ -1,33 +1,33 @@
 <div class="budget-container">
-  <div class="budget-header">
-    <div class="month-navigation">
-      <button mat-icon-button (click)="previousMonth()" [disabled]="isLoading">
-        <mat-icon>navigate_before</mat-icon>
-      </button>
-      <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
-      <button mat-icon-button (click)="nextMonth()" [disabled]="isLoading">
-        <mat-icon>navigate_next</mat-icon>
-      </button>
-    </div>
-    
-    <div class="budget-summary">
-      <div class="summary-card">
-        <div class="summary-item">
-          <div class="label">Gesamt Budget</div>
-          <div class="amount">{{ totalBudgeted | currency:'EUR' }}</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">Ausgegeben</div>
-          <div class="amount">{{ totalSpent | currency:'EUR' }}</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">Verbleibend</div>
-          <div class="amount" [ngClass]="{'positive': totalRemaining > 0, 'negative': totalRemaining < 0}">
-            {{ totalRemaining | currency:'EUR' }}
-          </div>
-        </div>
+  <div class="summary-section">
+    <div class="balance-card">
+      <div class="label">Gesamt Budget</div>
+      <div class="balance-item total">
+        <span>{{ totalBudgeted | currency:'EUR' }}</span>
       </div>
     </div>
+    <div class="balance-card">
+      <div class="label">Ausgegeben</div>
+      <div class="balance-item negative">
+        <span>-{{ totalSpent | currency:'EUR' }}</span>
+      </div>
+    </div>
+    <div class="balance-card">
+      <div class="label">Verbleibend</div>
+      <div class="balance-item" [ngClass]="{'positive': totalRemaining > 0, 'negative': totalRemaining < 0}">
+        <span>{{ totalRemaining | currency:'EUR' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="month-navigation">
+    <button mat-icon-button class="nav-button" (click)="previousMonth()" [disabled]="isLoading">
+      <mat-icon>navigate_before</mat-icon>
+    </button>
+    <span class="current-month">{{ currentMonth }} {{ currentYear }}</span>
+    <button mat-icon-button class="nav-button" (click)="nextMonth()" [disabled]="isLoading">
+      <mat-icon>navigate_next</mat-icon>
+    </button>
   </div>
 
   <div *ngIf="isLoading" class="loading-container">
