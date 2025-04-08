@@ -11,6 +11,17 @@ $income-green: #4caf50;
 $income-green-dark: darken($income-green, 10%);
 $divider-color: rgba(255, 255, 255, 0.1);
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .app-container {
   display: flex;
   height: 100vh;
@@ -136,9 +147,14 @@ $divider-color: rgba(255, 255, 255, 0.1);
         
         &.not-implemented {
           color: $not-implemented-color;
+          opacity: 0; 
           
           mat-icon {
             color: $not-implemented-color;
+          }
+          
+          &.animate-in {
+            animation: fadeIn 0.5s ease forwards;
           }
         }
         
