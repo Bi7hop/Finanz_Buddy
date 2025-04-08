@@ -41,14 +41,19 @@
       </nav>
     </div>
     
+    <!-- Sidebar-Footer: Coming Features Button, Divider und Legal-Links darunter -->
     <div class="sidebar-footer">
-      <a (click)="toggleUnimplementedFeatures()" 
-         class="feature-toggle-btn">
+      <a (click)="toggleUnimplementedFeatures()" class="feature-toggle-btn">
         <mat-icon>
           {{ showUnimplementedFeatures ? 'visibility_off' : 'visibility' }}
         </mat-icon>
         <span>{{ showUnimplementedFeatures ? 'Features ausblenden' : 'Coming Features' }}</span>
       </a>
+      <div class="divider"></div>
+      <div class="legal-links">
+        <a routerLink="/imprint" class="legal-link">Imprint</a>
+        <a routerLink="/privacy-policy" class="legal-link">Privacy Policy</a>
+      </div>
     </div>
   </div>
 

@@ -202,6 +202,32 @@ $divider-color: rgba(255, 255, 255, 0.1);
         font-size: 13px;
       }
     }
+    
+    .divider {
+      border-top: 1px solid $divider-color;
+      margin: 10px 0;
+    }
+    
+    .legal-links {
+      text-align: center;
+      font-size: 12px;
+      
+      a {
+        color: $text-color;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.3s;
+        
+        &:hover {
+          color: $income-green;
+        }
+        
+        &:not(:last-child)::after {
+          content: " | ";
+          padding: 0 4px;
+        }
+      }
+    }
   }
 }
 
