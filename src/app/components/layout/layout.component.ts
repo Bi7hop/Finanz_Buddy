@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Renderer2 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,6 +34,7 @@ export class LayoutComponent implements OnInit {
   private userProfileService = inject(UserProfileService);
   private router = inject(Router);
   private titleService = inject(Title);
+  private renderer = inject(Renderer2);
 
   showUnimplementedFeatures = false;
   currentPageTitle = 'Dashboard';
@@ -89,5 +90,21 @@ export class LayoutComponent implements OnInit {
 
   toggleUnimplementedFeatures(): void {
     this.showUnimplementedFeatures = !this.showUnimplementedFeatures;
+    
+    if (this.showUnimplementedFeatures) {
+      setTimeout(() => {
+        const notImplementedItems = document.querySelectorAll('.nav-item.not-implemented');
+        notImplementedItems.forEach((item, index) => {
+          this.renderer.setStyle(item, 'animation-delay', `${index * 0.15}s`);
+          this.renderer.addClass(item, 'animate-in');
+        });
+      }, 10);
+    } else {
+      const animatedItems = document.querySelectorAll('.nav-item.animate-in');
+      animatedItems.forEach(item => {
+        this.renderer.removeClass(item, 'animate-in');
+        this.renderer.removeStyle(item, 'animation-delay');
+      });
+    }
   }
 }
