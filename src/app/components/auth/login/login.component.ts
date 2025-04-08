@@ -64,6 +64,10 @@ export class LoginComponent implements OnInit {
       if (!success) {
         this.errorMessage =
           error?.message || 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.';
+      
+        setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
       }
     } catch (error: any) {
       this.errorMessage = error.message || 'Ein unerwarteter Fehler ist aufgetreten.';
