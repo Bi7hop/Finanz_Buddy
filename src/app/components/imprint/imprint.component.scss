@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;    
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--text-primary);
+}
+
+.legal-page {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 40px;
+  max-width: 800px;
+  width: 90%;     
+  margin: auto;   
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 36px;
+    text-align: center;
+  }
+
+  p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: text-decoration 0.3s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
