@@ -2,7 +2,7 @@
   <div class="statistics-header">
     <div class="header-content">
       <h1>Statistiken</h1>
-      
+
       <div class="filters">
         <mat-form-field appearance="outline">
           <mat-label>Zeitraum</mat-label>
@@ -12,7 +12,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        
+
         <mat-form-field appearance="outline">
           <mat-label>Kategorie</mat-label>
           <mat-select [(ngModel)]="selectedCategory">
@@ -21,7 +21,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        
+
         <button mat-fab color="primary" (click)="applyFilters()">
           <mat-icon>filter_list</mat-icon>
         </button>
@@ -40,7 +40,7 @@
         </div>
       </div>
     </mat-tab>
-    
+
     <mat-tab label="Kategorie-Verteilung">
       <div class="chart-container">
         <div class="chart-placeholder">
@@ -51,33 +51,84 @@
         </div>
       </div>
     </mat-tab>
-    
+
     <mat-tab label="Trends">
-      <div class="chart-container">
-        <div class="placeholder-message">
-          Trends werden hier angezeigt
+      <div class="trends-content">
+        <div class="trends-charts-container">
+          <div class="trend-chart">
+            <div class="chart-placeholder">
+              <div class="chart-title">Monatliche Ausgaben pro Kategorie</div>
+              <div class="chart-wrapper">
+                <canvas #stackedCategoryExpensesChart></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="trend-chart">
+            <div class="chart-placeholder">
+              <div class="chart-title">Entwicklung ausgewählter Kategorien</div>
+              <div class="chart-wrapper">
+                <canvas #individualCategoryTrendsChart></canvas>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </mat-tab>
-    
+
     <mat-tab label="Prognose">
-      <div class="chart-container">
-        <div class="placeholder-message">
-          Finanzprognose wird hier angezeigt
+      <div class="forecast-container">
+        <div class="chart-placeholder">
+          <div class="chart-title">Prognose für die nächsten 6 Monate</div>
+          <div class="chart-wrapper">
+            <canvas #forecastChart></canvas>
+          </div>
+        </div>
+    
+        <div class="forecast-cards-container">
+          <mat-card>
+            <mat-card-title>Durchschnittliche monatliche Bilanz</mat-card-title>
+            <mat-card-content>
+              <div class="forecast-value">
+                {{ averageMonthlyBalance | number:'1.2-2' }} €
+              </div>
+            </mat-card-content>
+          </mat-card>
+    
+          <mat-card>
+            <mat-card-title>Durchschnittliche Ausgaben pro Kategorie</mat-card-title>
+            <mat-card-content>
+              <div class="forecast-list">
+                <ul>
+                  <li *ngFor="let item of categoryAverages">
+                    {{ item.category }}: {{ item.amount | number:'1.2-2' }} €
+                  </li>
+                </ul>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </div>
       </div>
     </mat-tab>
   </mat-tab-group>
 
   <div class="export-container">
-    <button mat-fab color="primary" (click)="exportData('pdf')">
+    <button mat-fab color="primary" (click)="exportData('pdf')" 
+      matTooltip="PDF-Export noch nicht verfügbar" 
+      matTooltipPosition="above"
+      class="disabled-button">
       <mat-icon>picture_as_pdf</mat-icon>
     </button>
-    <button mat-fab color="primary" (click)="exportData('csv')">
+    <button mat-fab color="primary" (click)="exportData('csv')" 
+      matTooltip="CSV-Export noch nicht verfügbar" 
+      matTooltipPosition="above"
+      class="disabled-button">
       <mat-icon>table_chart</mat-icon>
     </button>
-    <button mat-fab color="primary" (click)="exportData('excel')">
+    <button mat-fab color="primary" (click)="exportData('excel')" 
+      matTooltip="Excel-Export noch nicht verfügbar" 
+      matTooltipPosition="above"
+      class="disabled-button">
       <mat-icon>table_view</mat-icon>
     </button>
   </div>
-</div>
