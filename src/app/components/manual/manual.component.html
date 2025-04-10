@@ -1,58 +1,58 @@
 <div class="manual-container">
-    <div class="manual-toc">
-      <div class="toc-header">
-        <h2>Inhaltsverzeichnis</h2>
-      </div>
-      
-      <div class="toc-content">
-        <div *ngFor="let category of manualCategories" class="toc-category">
-          <div class="category-title">{{ category.title }}</div>
-          
-          <div class="category-sections">
-            <div *ngFor="let section of category.sections" 
-                 class="toc-section" 
-                 [class.active]="activeSection === section.id"
-                 [class.not-implemented]="!section.implemented"
-                 (click)="navigateToSection(section.id)">
-              <span class="section-title">{{ section.title }}</span>
-              <mat-icon *ngIf="!section.implemented" 
-                       class="not-implemented-icon"
-                       matTooltip="Feature noch nicht implementiert">
-                construction
-              </mat-icon>
-            </div>
+  <div class="manual-toc">
+    <div class="toc-header">
+      <h2>Inhaltsverzeichnis</h2>
+    </div>
+
+    <div class="toc-content">
+      <div *ngFor="let category of manualCategories" class="toc-category">
+        <div class="category-title">{{ category.title }}</div>
+
+        <div class="category-sections">
+          <div *ngFor="let section of category.sections"
+               class="toc-section"
+               [class.active]="activeSection === section.id"
+               [class.not-implemented]="!section.implemented"
+               (click)="navigateToSection(section.id)"
+               [style.marginLeft.px]="section.parentId ? 20 : 0">  <span class="section-title">{{ section.title }}</span>
+            <mat-icon *ngIf="!section.implemented"
+                      class="not-implemented-icon"
+                      matTooltip="Feature noch nicht implementiert">
+              construction
+            </mat-icon>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="manual-content">
-      <div class="content-header">
-        <h1>Finanz Buddy Handbuch</h1>
-      </div>
-      
-      <div class="content-body">
-        <ng-container *ngFor="let category of manualCategories">
-          <div class="content-category">
-            <h2 class="category-header">{{ category.title }}</h2>
-            
-            <div *ngFor="let section of category.sections" class="content-section" [id]="section.id">
-              <div class="section-header">
-                <h3>{{ section.title }}</h3>
-                
-                <div class="section-status" *ngIf="!section.implemented">
-                  <mat-chip color="warn" selected>In Entwicklung</mat-chip>
-                </div>
+  </div>
+
+  <div class="manual-content">
+    <div class="content-header">
+      <h1>Finanz Buddy Handbuch</h1>
+    </div>
+
+    <div class="content-body">
+      <ng-container *ngFor="let category of manualCategories">
+        <div class="content-category">
+          <h2 class="category-header">{{ category.title }}</h2>
+
+          <div *ngFor="let section of category.sections" class="content-section" [id]="section.id">
+            <div class="section-header">
+              <h3>{{ section.title }}</h3>
+
+              <div class="section-status" *ngIf="!section.implemented">
+                <mat-chip color="warn" selected>In Entwicklung</mat-chip>
               </div>
-              
-              <div class="section-body">
-                <p>{{ section.content }}</p>
-              </div>
-              
-              <mat-divider></mat-divider>
             </div>
+
+            <div class="section-body">
+              <p>{{ section.content }}</p>
+            </div>
+
+            <mat-divider></mat-divider>
           </div>
-        </ng-container>
-      </div>
+        </div>
+      </ng-container>
     </div>
   </div>
+</div>
