@@ -131,7 +131,7 @@ export class ProfileDialogComponent implements OnInit, OnDestroy, AfterViewInit 
     try {
       await this.supabaseService.supabaseClient.auth.signOut();
       this.dialogRef.close();
-      this.router.navigate(['/login']);
+      this.router.navigate(['/landing']);
     } catch (error) {
       console.error('Fehler beim Logout:', error);
     }
