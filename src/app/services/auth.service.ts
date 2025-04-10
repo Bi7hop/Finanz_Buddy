@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { environment } from '../../environments/environment';
+import { SupabaseClient, Session, User } from '@supabase/supabase-js';
 
 export interface UserProfile {
-  id: string;        
+  id: string;         
   user_id: string;   
   email?: string;
   first_name?: string;
@@ -13,79 +15,61 @@ export interface UserProfile {
   currency?: string;
   created_at?: string;
   updated_at?: string;
-  isGuest?: boolean;  
-  guestSessionId?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
-  public currentUser$: Observable<UserProfile | null> = this.currentUserSubject.asObservable();
+  private currentUserProfileSubject = new BehaviorSubject<UserProfile | null>(null);
+  public currentUserProfile$: Observable<UserProfile | null> = this.currentUserProfileSubject.asObservable();
   
-  private userCache: { user: any } | null = null;
+  private currentSupabaseUserSubject = new BehaviorSubject<User | null>(null);
+  public currentSupabaseUser$: Observable<User | null> = this.currentSupabaseUserSubject.asObservable();
+  public isLoggedIn$: Observable<boolean> = this.currentSupabaseUserSubject.pipe(map(user => !!user));
+
+  private supabase: SupabaseClient;
+  private userCache: { user: User } | null = null;
   private lastCacheTime: number = 0;
   private authLock = false;
   private authQueue: (() => void)[] = [];
 
+  private readonly GUEST_EMAIL = environment.guestMode.guestEmail; 
+  private readonly GUEST_PASSWORD = environment.guestMode.guestPassword; 
+  
   constructor(
     private supabaseService: SupabaseService,
     private router: Router
   ) {
-    this.loadUser();
+    this.supabase = this.supabaseService.supabaseClient; // Korrigiert
+    this.loadInitialSession();
     
-    this.supabaseService.supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        this.loadUserProfile(session.user.id);
-        this.userCache = { user: session.user };
-        this.lastCacheTime = Date.now();
+    this.supabase.auth.onAuthStateChange((event, session) => {
+      const supabaseUser = session?.user ?? null;
+      this.currentSupabaseUserSubject.next(supabaseUser);
+      this.userCache = supabaseUser ? { user: supabaseUser } : null;
+      this.lastCacheTime = supabaseUser ? Date.now() : 0;
+
+      if (event === 'SIGNED_IN' && supabaseUser) {
+        this.loadUserProfile(supabaseUser.id);
       } else if (event === 'SIGNED_OUT') {
-        this.currentUserSubject.next(null);
-        this.userCache = null;
+        this.currentUserProfileSubject.next(null);
       }
     });
   }
 
-  async loadUser() {
-    const { data: { session } } = await this.supabaseService.supabaseClient.auth.getSession();
-    
-    if (session?.user) {
-      this.userCache = { user: session.user };
-      this.lastCacheTime = Date.now();
-      await this.loadUserProfile(session.user.id);
-      return;
-    }
-    
-    const guestSessionStr = localStorage.getItem('guestSession');
-    if (guestSessionStr) {
-      try {
-        const guestSession = JSON.parse(guestSessionStr);
-        const created = new Date(guestSession.created);
-        
-        const expiration = environment.guestMode.sessionExpirationHours * 60 * 60 * 1000;
-        if (Date.now() - created.getTime() < expiration) {
-          this.currentUserSubject.next(guestSession.profile);
-          return;
-        } else {
-          localStorage.removeItem('guestSession');
-        }
-      } catch (e) {
-        console.error('Error parsing guest session', e);
-        localStorage.removeItem('guestSession');
-      }
+  private async loadInitialSession() {
+    const { data: { session } } = await this.supabase.auth.getSession();
+    const supabaseUser = session?.user ?? null;
+    this.currentSupabaseUserSubject.next(supabaseUser);
+    this.userCache = supabaseUser ? { user: supabaseUser } : null;
+    this.lastCacheTime = supabaseUser ? Date.now() : 0;
+    if (supabaseUser) {
+      await this.loadUserProfile(supabaseUser.id);
     }
   }
 
-  async getUser(): Promise<{ data: { user: any } | null, error: any }> {
-
-    if (this.isGuestUser()) {
-      return { 
-        data: { user: this.getCurrentUser() }, 
-        error: null 
-      };
-    }
-    
+  async getUser(): Promise<{ data: { user: User | null }, error: any }> {
     const CACHE_TTL = 5 * 60 * 1000; 
     const now = Date.now();
     
@@ -106,16 +90,22 @@ export class AuthService {
     
     try {
       this.authLock = true;
-      const { data, error } = await this.supabaseService.supabaseClient.auth.getUser();
+      const { data, error } = await this.supabase.auth.getUser();
       
       if (!error && data.user) {
         this.userCache = { user: data.user };
         this.lastCacheTime = now;
+        this.currentSupabaseUserSubject.next(data.user); 
+      } else if (error) {
+         this.currentSupabaseUserSubject.next(null); 
+         this.userCache = null;
       }
       
-      return { data, error };
+      return { data: { user: data?.user ?? null }, error };
     } catch (error) {
       console.error('Fehler beim Abrufen des Benutzers:', error);
+      this.currentSupabaseUserSubject.next(null);
+      this.userCache = null;
       return { data: { user: null }, error };
     } finally {
       this.authLock = false;
@@ -132,138 +122,98 @@ export class AuthService {
 
   async loadUserProfile(userId: string) {
     try {
-      const { data, error } = await this.supabaseService.supabaseClient
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .maybeSingle(); 
 
       if (error) {
         console.error('Error loading user profile:', error);
+        this.currentUserProfileSubject.next(null); 
         return;
       }
 
-      if (!data || data.length === 0) {
-        console.log('No profile found, creating a new one');
-        const { error: insertError } = await this.supabaseService.supabaseClient
-          .from('profiles')
-          .insert({
-            user_id: userId,
-            currency: 'EUR'
-          });
-
-        if (insertError) {
-          console.error('Error creating missing profile:', insertError);
-          return;
-        }
-
-        const { data: newData, error: newError } = await this.supabaseService.supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('user_id', userId);
-
-        if (newError || !newData || newData.length === 0) {
-          console.error('Error loading newly created profile:', newError);
-          return;
-        }
-
-        const { data: { user } } = await this.supabaseService.supabaseClient.auth.getUser();
-
-        const userProfile: UserProfile = {
-          id: userId,
-          user_id: userId,
-          email: user?.email,
-          ...newData[0]
-        };
-
-        this.currentUserSubject.next(userProfile);
+      if (!data) {
+        console.log('No profile found for user:', userId);
+        this.currentUserProfileSubject.next(null); 
         return;
       }
 
-      const { data: { user } } = await this.supabaseService.supabaseClient.auth.getUser();
-
+      const supabaseUser = this.currentSupabaseUserSubject.getValue();
       const userProfile: UserProfile = {
-        id: userId,
-        user_id: userId,
-        email: user?.email,
-        ...data[0] 
+        ...data,
+        id: data.id, 
+        user_id: data.user_id,
+        email: supabaseUser?.email ?? data.email 
       };
 
-      this.currentUserSubject.next(userProfile);
+      this.currentUserProfileSubject.next(userProfile);
     } catch (err) {
       console.error('Unexpected error loading profile:', err);
+      this.currentUserProfileSubject.next(null);
     }
   }
 
-  getCurrentUser(): UserProfile | null {
-    return this.currentUserSubject.value;
+  getCurrentUserProfile(): UserProfile | null {
+    return this.currentUserProfileSubject.value;
+  }
+
+  getCurrentSupabaseUser(): User | null {
+      return this.currentSupabaseUserSubject.value;
   }
 
   isGuestUser(): boolean {
-    return !!this.currentUserSubject.value?.isGuest;
+    const currentUser = this.currentSupabaseUserSubject.getValue();
+    return currentUser?.email === this.GUEST_EMAIL;
   }
 
   async loginAsGuest(): Promise<{ success: boolean, error?: any }> {
     try {
-      const guestSessionId = crypto.randomUUID();
-      
-      const guestProfile: UserProfile = {
-        id: 'guest-' + guestSessionId,
-        user_id: 'guest-' + guestSessionId,
-        isGuest: true,
-        guestSessionId: guestSessionId,
-        currency: 'EUR'
-      };
-      
-      localStorage.setItem('guestSession', JSON.stringify({
-        profile: guestProfile,
-        created: new Date().toISOString()
-      }));
-      
-      this.currentUserSubject.next(guestProfile);
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email: this.GUEST_EMAIL,
+        password: this.GUEST_PASSWORD,
+      });
+
+      if (error) throw error;
+      if (!data.session || !data.user) throw new Error('Guest login did not return session or user.');
       
       this.router.navigate(['/dashboard']);
-      
       return { success: true };
+
     } catch (error) {
-      console.error('Error creating guest session:', error);
+      console.error('Error during guest login:', error);
       return { success: false, error };
     }
   }
 
   async signUp(email: string, password: string, firstName?: string, lastName?: string): Promise<{ success: boolean, error?: any }> {
     try {
-      const { data, error } = await this.supabaseService.supabaseClient.auth.signUp({
+      const { data, error } = await this.supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         }
       });
 
-      if (error) {
-        console.error('Error in signup:', error);
-        return { success: false, error };
-      }
-
-      if (!data.user) {
-        return { success: false, error: new Error('No user data returned') };
-      }
+      if (error) throw error;
+      if (!data.user) throw new Error('No user data returned after signup');
 
       if (firstName || lastName) {
-        const { error: profileError } = await this.supabaseService.supabaseClient
-          .from('profiles')
-          .insert({
-            user_id: data.user.id,
-            first_name: firstName,
-            last_name: lastName,
-            currency: 'EUR'
-          });
+         const { error: profileError } = await this.supabase
+           .from('profiles')
+           .insert({
+             user_id: data.user.id,
+             first_name: firstName,
+             last_name: lastName,
+             currency: 'EUR' 
+           });
 
-        if (profileError) {
-          console.error('Error creating profile during signup:', profileError);
-        }
+         if (profileError) {
+           console.warn('Profile creation during signup failed:', profileError);
+         }
       }
-
       return { success: true };
     } catch (err) {
       console.error('Unexpected error during signup:', err);
@@ -272,82 +222,88 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string): Promise<{ success: boolean, error?: any }> {
-    const { data, error } = await this.supabaseService.supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
+     if (this.isGuestUser()) {
+         console.warn("Attempted normal sign in while guest is logged in.");
+         return { success: false, error: 'Guest user already logged in.' };
+     }
+    try {
+        const { data, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password
+        });
 
-    if (error) {
-      return { success: false, error };
+        if (error) throw error;
+        if (!data.user) throw new Error('No user data returned after signin');
+
+        this.router.navigate(['/dashboard']);
+        return { success: true };
+
+    } catch (error) {
+         console.error('Error during sign in:', error);
+         return { success: false, error };
     }
-
-    if (data.user) {
-      await this.loadUserProfile(data.user.id);
-      this.router.navigate(['/dashboard']);
-    }
-
-    return { success: true };
   }
 
   async signOut() {
-    const currentUser = this.getCurrentUser();
-    
-    if (currentUser?.isGuest) {
-      localStorage.removeItem('guestSession');
-      this.currentUserSubject.next(null);
-      this.router.navigate(['/login']);
-      return { success: true };
+    const currentUser = this.getCurrentSupabaseUser();
+    const isCurrentlyGuest = currentUser?.email === this.GUEST_EMAIL;
+
+    if (isCurrentlyGuest && currentUser) {
+      console.log('Guest is logging out. Resetting data...');
+      try {
+        const { data: funcData, error: funcError } = await this.supabase.functions.invoke('reset-guest-data');
+        if (funcError) throw funcError; 
+        console.log('Guest data reset successful:', funcData);
+      } catch (functionError) {
+           console.error('Error calling reset-guest-data function:', functionError);
+           alert('Fehler beim Zurücksetzen der Gastdaten. Logout wird trotzdem versucht.');
+      }
     }
     
-    const { error } = await this.supabaseService.supabaseClient.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
-      return { success: false, error };
-    } else {
-      this.currentUserSubject.next(null);
-      this.userCache = null;
-      this.router.navigate(['/login']);
-      return { success: true };
+    try {
+        const { error } = await this.supabase.auth.signOut();
+        if (error) throw error;
+
+        this.router.navigate(['/login']); 
+        return { success: true };
+
+    } catch (error) {
+        console.error('Error signing out:', error);
+        this.currentSupabaseUserSubject.next(null);
+        this.currentUserProfileSubject.next(null);
+        this.userCache = null;
+        this.router.navigate(['/login']); 
+        return { success: false, error };
     }
   }
 
-  async updateProfile(profile: Partial<UserProfile>): Promise<{ success: boolean, error?: any }> {
-    const currentUser = this.getCurrentUser();
+  async updateProfile(profileUpdateData: Partial<UserProfile>): Promise<{ success: boolean, error?: any }> {
+    const currentUser = this.getCurrentSupabaseUser();
     if (!currentUser) {
       return { success: false, error: 'Not authenticated' };
     }
     
-    if (currentUser.isGuest) {
-      const updatedProfile = {
-        ...currentUser,
-        ...profile
-      };
+    const { id, user_id, email, created_at, updated_at, ...updateData } = profileUpdateData;
 
-      const guestSessionStr = localStorage.getItem('guestSession');
-      if (guestSessionStr) {
-        try {
-          const guestSession = JSON.parse(guestSessionStr);
-          guestSession.profile = updatedProfile;
-          localStorage.setItem('guestSession', JSON.stringify(guestSession));
-        } catch (e) {
-          console.error('Error updating guest profile:', e);
-        }
-      }
-      
-      this.currentUserSubject.next(updatedProfile);
-      return { success: true };
+    if (Object.keys(updateData).length === 0) {
+        console.warn("UpdateProfile called with no updatable data.");
+        return { success: true }; 
     }
 
-    const { error } = await this.supabaseService.supabaseClient
-      .from('profiles')
-      .update(profile)
-      .eq('user_id', currentUser.id); 
+    try {
+        const { error } = await this.supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('user_id', currentUser.id); 
 
-    if (error) {
-      return { success: false, error };
+        if (error) throw error;
+
+        await this.loadUserProfile(currentUser.id); 
+        return { success: true };
+
+    } catch(error) {
+        console.error('Error updating profile:', error);
+        return { success: false, error };
     }
-
-    this.loadUserProfile(currentUser.id);
-    return { success: true };
   }
 }
