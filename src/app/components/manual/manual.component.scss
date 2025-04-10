@@ -82,7 +82,6 @@ $highlight-color: #64b5f6;
           &:hover {
             background-color: $hover-overlay;
             color: lighten($light-text, 10%);
-            transform: translateX(3px);
           }
           
           &.active {
