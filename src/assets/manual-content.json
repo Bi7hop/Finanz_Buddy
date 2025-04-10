@@ -1,0 +1,145 @@
+[
+    {
+      "id": "getting-started",
+      "title": "Erste Schritte",
+      "sections": [
+        {
+          "id": "welcome",
+          "title": "Willkommen zu Finanz Buddy",
+          "content": "Willkommen bei Finanz Buddy – einem Portfolio-Projekt, das meinen versierten Umgang mit Angular demonstriert. Diese Anwendung unterstützt dich dabei, deine Finanzen effektiv zu verwalten, zu planen und zu überwachen. In diesem Handbuch erhältst du alle wichtigen Informationen zu den Funktionen und Möglichkeiten der App.",
+          "implemented": true
+        },
+        {
+          "id": "dashboard-overview",
+          "title": "Überblick über das Dashboard",
+          "content": "Erhalte im Dashboard in Echtzeit einen kompakten Überblick über deine finanzielle Situation. Alle relevanten Kennzahlen wie Einnahmen, Ausgaben und Salden werden übersichtlich dargestellt. Passe die Widgets individuell an, um Trends und Entwicklungen schnell zu erkennen.",
+          "implemented": true
+        },
+        {
+          "id": "initial-setup",
+          "title": "Ersteinrichtung",
+          "content": "Beginne mit der Ersteinrichtung, indem du deine Konten und Kategorien anlegst. In den Einstellungen kannst du deine Bankkonten hinzufügen und Kategorien für Einnahmen und Ausgaben definieren, um eine strukturierte Finanzverwaltung sicherzustellen.",
+          "implemented": true
+        }
+      ]
+    },
+    {
+      "id": "main-features",
+      "title": "Hauptfunktionen",
+      "sections": [
+        {
+          "id": "income-tracking",
+          "title": "Einnahmen erfassen",
+          "content": "Erfasse und kategorisiere all deine Einnahmen mit dem Modul zur Einkommensverwaltung. Richte wiederkehrende Einnahmen ein und behalte so stets den Überblick über deine Einkommensquellen – ob manuell oder automatisch via Banking-Integration.",
+          "implemented": true
+        },
+        {
+          "id": "expense-tracking",
+          "title": "Ausgaben verwalten",
+          "content": "Mit dem Ausgaben-Modul kannst du sämtliche Ausgaben erfassen, kategorisieren und analysieren. Plane deine Ausgaben und erhalte durch detaillierte Analysen wertvolle Einblicke in dein Ausgabeverhalten, um gezielt Einsparpotenziale zu erkennen.",
+          "implemented": true
+        },
+        {
+          "id": "budget-planning",
+          "title": "Budgetplanung",
+          "content": "Lege monatliche Budgets für verschiedene Kategorien fest und behalte so jederzeit den Überblick über deine Finanzen. Die App visualisiert deine Ausgaben und verbleibende Budgets, sodass du stets die Kontrolle behältst und unerwartete Kosten vermeidest.",
+          "implemented": true
+        },
+        {
+          "id": "transactions",
+          "title": "Buchungen und Transaktionen",
+          "content": "Im Modul für Buchungen und Transaktionen erhältst du einen detaillierten Überblick aller Finanzbewegungen. Filtere, suche und bearbeite Einträge, um deine finanzielle Historie vollständig nachzuvollziehen. (Diese Funktion befindet sich aktuell in der Entwicklung.)",
+          "implemented": false
+        },
+        {
+          "id": "standing-orders",
+          "title": "Daueraufträge verwalten",
+          "content": "Verwalte wiederkehrende Zahlungen bequem mit der Dauerauftrags-Funktion. Die App erinnert dich an bevorstehende Zahlungen und berechnet Prognosen für zukünftige Kontostände. (Diese Funktion befindet sich aktuell in der Entwicklung.)",
+          "implemented": false
+        }
+      ]
+    },
+    {
+      "id": "advanced-features",
+      "title": "Erweiterte Funktionen",
+      "sections": [
+        {
+          "id": "banking-integration",
+          "title": "Banking-Integration",
+          "content": "Verbinde deine Bankkonten direkt mit Finanz Buddy. Über sichere API-Schnittstellen werden Transaktionen automatisch importiert und kategorisiert, sodass du jederzeit einen aktuellen und strukturierten Überblick über deine Finanzen behältst. (Funktion in Planung.)",
+          "implemented": false
+        },
+        {
+          "id": "credit-management",
+          "title": "Kreditverwaltung",
+          "content": "Verwalte deine Kredite und Darlehen effizient mit dem Kredit-Modul. Überwache Zinsen, Tilgungsraten und Restlaufzeiten und erhalte detaillierte Tilgungspläne, die dir den Rückzahlungszeitraum aufzeigen. (Funktion in Planung.)",
+          "implemented": false
+        },
+        {
+          "id": "reports",
+          "title": "Berichte und Analysen",
+          "content": "Erstelle umfassende Berichte und Analysen deiner finanziellen Daten. Passe Berichtszeiträume individuell an und exportiere deine Ergebnisse als PDF oder Excel, um Trends und Muster klar zu erkennen. (Funktion in Planung.)",
+          "implemented": false
+        },
+        {
+          "id": "distribution-analysis",
+          "title": "Verteilungsanalyse",
+          "content": "Erhalte durch die Verteilungsanalyse einen visuellen Überblick darüber, wie sich deine Einnahmen und Ausgaben auf unterschiedliche Kategorien verteilen. Erkenne Einsparpotenziale und optimiere deine finanzielle Planung. (Funktion in Planung.)",
+          "implemented": false
+        },
+        {
+          "id": "statistics",
+          "title": "Finanzstatistiken",
+          "content": "Mit dem Statistik-Modul erhältst du tiefgehende Einblicke in deine finanzielle Entwicklung. Vergleiche Zeiträume, erkenne Trends und erhalte Prognosen für zukünftige Entwicklungen – all das in interaktiven Grafiken.",
+          "implemented": true
+        },
+        {
+          "id": "statistics-spending",
+          "title": "Ausgaben und Einnahmen Statistiken",
+          "content": "Visualisiere deine Einnahmen und Ausgaben über individuell wählbare Zeiträume, wie Monat, Quartal oder Jahr. Interaktive Diagramme zeigen dir, wie sich deine finanzielle Situation im Zeitverlauf verändert hat.",
+          "implemented": true,
+          "parentId": "statistics"
+        },
+        {
+          "id": "statistics-categories",
+          "title": "Kategorieverteilung",
+          "content": "Das Kreisdiagramm zur Kategorieverteilung bietet dir einen schnellen Überblick darüber, wofür dein Geld ausgegeben wird. So siehst du auf einen Blick, welche Kategorien den größten finanziellen Anteil haben.",
+          "implemented": true,
+          "parentId": "statistics"
+        },
+        {
+          "id": "statistics-trends",
+          "title": "Trends",
+          "content": "Erkenne langfristige Entwicklungen deiner Finanzen im Trends-Bereich. Interaktive Grafiken zeigen dir, wie sich Einnahmen, Ausgaben und spezifische Kategorien im Laufe der Zeit entwickeln.",
+          "implemented": true,
+          "parentId": "statistics"
+        },
+        {
+          "id": "statistics-forecast",
+          "title": "Prognose",
+          "content": "Erhalte mit der Prognosefunktion eine fundierte Einschätzung deiner zukünftigen finanziellen Situation. Durchschnittswerte und Trends deiner bisherigen Daten ermöglichen dir einen realistischen Blick in den nächsten Monat.",
+          "implemented": true,
+          "parentId": "statistics"
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Einstellungen und Anpassungen",
+      "sections": [
+        {
+          "id": "user-profile",
+          "title": "Benutzerprofil",
+          "content": "Verwalte in deinem Benutzerprofil deine persönlichen Daten, ändere dein Passwort und passe Benachrichtigungseinstellungen an. Lade dein Profilbild hoch und optimiere deine Konto-Einstellungen individuell.",
+          "implemented": true
+        },
+        {
+          "id": "app-settings",
+          "title": "App-Einstellungen",
+          "content": "Stelle in den App-Einstellungen dein individuelles Nutzungserlebnis zusammen. Passe das Erscheinungsbild, die Standardwährung und weitere Präferenzen an, damit Finanz Buddy optimal auf deine Bedürfnisse zugeschnitten ist.",
+          "implemented": true
+        }
+      ]
+    }
+  ]
+  
