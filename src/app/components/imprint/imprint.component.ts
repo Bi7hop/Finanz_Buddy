@@ -1,5 +1,6 @@
+// imprint.component.ts
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,4 +10,11 @@ import { RouterModule } from '@angular/router';
   templateUrl: './imprint.component.html',
   styleUrls: ['./imprint.component.scss']
 })
-export class ImprintComponent { }
+export class ImprintComponent {
+
+  constructor(private location: Location) {}
+
+  goBack(): void {
+    this.location.back();
+  }
+}

@@ -1,31 +1,92 @@
+// imprint.component.scss
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:host {
+  --text-primary: #e0e0e0;
+  --accent-color: #4fc3f7;
+  --button-bg: rgba(255, 255, 255, 0.1);
+  --button-hover-bg: rgba(255, 255, 255, 0.2);
+  --button-border: rgba(255, 255, 255, 0.2);
+  --container-bg: rgba(0, 0, 0, 0.2);
+  --container-border: rgba(255, 255, 255, 0.05);
+}
 
 :host {
   display: flex;
   flex-direction: column;
-  justify-content: center; 
-  align-items: center;    
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #1e3045 0%, darken(#1e3045, 10%) 100%);
   font-family: 'Space Grotesk', sans-serif;
   color: var(--text-primary);
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-.legal-page {
-  background: rgba(0, 0, 0, 0.2);
+.legal-page-container {
+  position: relative;
+  background: var(--container-bg);
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--container-border);
   padding: 40px;
   max-width: 800px;
-  width: 90%;     
-  margin: auto;   
+  width: 90%;
+  margin: auto;
+}
 
+.back-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--text-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 0;
+  z-index: 10;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  &:hover {
+    background-color: var(--button-hover-bg);
+    transform: scale(1.1);
+  }
+
+  &:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+
+  &:active {
+      transform: scale(0.95);
+  }
+}
+
+.legal-page {
   h1 {
+    margin-top: 0;
     margin-bottom: 20px;
     font-size: 36px;
     text-align: center;
+  }
+
+  h2 {
+     margin-top: 30px;
+     margin-bottom: 15px;
   }
 
   p {
@@ -41,5 +102,9 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  strong {
+      font-weight: 600;
   }
 }
