@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,4 +9,11 @@ import { RouterModule } from '@angular/router';
   templateUrl: './privacy-policy.component.html',
   styleUrls: ['./privacy-policy.component.scss']
 })
-export class PrivacyPolicyComponent {}
+export class PrivacyPolicyComponent {
+
+  constructor(private location: Location) {}
+
+  goBack(): void {
+    this.location.back();
+  }
+}
