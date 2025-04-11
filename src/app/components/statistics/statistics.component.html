@@ -13,14 +13,14 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <!-- <mat-form-field appearance="outline">
           <mat-label>Kategorie</mat-label>
           <mat-select [(ngModel)]="selectedCategory">
             <mat-option *ngFor="let category of categories" [value]="category.value">
               {{ category.label }}
             </mat-option>
           </mat-select>
-        </mat-form-field>
+        </mat-form-field> -->
 
         <button mat-fab color="primary" (click)="applyFilters()">
           <mat-icon>filter_list</mat-icon>
