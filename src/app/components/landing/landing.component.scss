@@ -29,7 +29,6 @@
   padding: 0;
 }
 
-/* Container als relative positionieren, damit der absolute Footer korrekt ausgerichtet werden kann */
 .landing-container {
   position: relative;
   width: 100%;
@@ -221,22 +220,39 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
     }
-  }
-}
+    
+    .btn-guest {
+      background: linear-gradient(to right, rgba(69, 183, 209, 0.8), rgba(78, 205, 196, 0.8));
+      box-shadow: 0 3px 8px rgba(69, 183, 209, 0.3), 0 0 0 1px rgba(69, 183, 209, 0.5);
+      cursor: pointer;
+      
+      &:hover {
+        box-shadow: 0 5px 15px rgba(69, 183, 209, 0.4), 0 0 0 1px rgba(69, 183, 209, 0.6);
+        transform: translateY(-2px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(69, 183, 209, 0.3), 0 0 0 1px rgba(69, 183, 209, 0.6);
+      }
+    }
+// Only for demo Mode
+    .btn.disabled-button {
+      &:hover {
+        background: linear-gradient(to right bottom, #bdbdbd, darken(#bdbdbd, 10%)); 
+        color: #757575; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); 
+        cursor: not-allowed;
+        transform: none; 
+      }
 
-.btn-guest {
-  background: linear-gradient(to right, rgba(69, 183, 209, 0.8), rgba(78, 205, 196, 0.8));
-  box-shadow: 0 3px 8px rgba(69, 183, 209, 0.3), 0 0 0 1px rgba(69, 183, 209, 0.5);
-  cursor: pointer;
-  
-  &:hover {
-    box-shadow: 0 5px 15px rgba(69, 183, 209, 0.4), 0 0 0 1px rgba(69, 183, 209, 0.6);
-    transform: translateY(-2px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(69, 183, 209, 0.3), 0 0 0 1px rgba(69, 183, 209, 0.6);
+      &:active {
+        transform: none; 
+        background: linear-gradient(to right bottom, #bdbdbd, darken(#bdbdbd, 10%)); 
+        color: #757575; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+    }
   }
 }
 
@@ -308,7 +324,6 @@
   z-index: 0;
 }
 
-/* Neuer Footer für Imprint & Privacy Policy: unten mittig mit Cursor-Pointer */
 .legal-footer {
   position: absolute;
   bottom: 20px;
