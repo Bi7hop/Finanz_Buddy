@@ -1,0 +1,12 @@
+{
+    "name": "Finanz Buddy",
+    "theme": "material",
+    "output": "documentation",
+    "hideGenerator": true,
+    "language": "de-DE",
+    "disableSourceCode": false,
+    "disableCoverage": false,
+    "disablePrivate": false,
+    "disableProtected": false,
+    "disableInternal": false
+  }
