@@ -23,9 +23,21 @@
           </div>
         </div>
         <div class="cta-buttons">
-          <a routerLink="/login" class="btn btn-primary">Jetzt anmelden</a>
-          <a routerLink="/signup" class="btn btn-secondary">Kostenlos testen</a>
-          <a (click)="loginAsGuest()" class="btn btn-guest">Guest Login</a>
+          <!-- Demo Mode -->
+          <a 
+          class="btn btn-primary disabled-button" 
+          matTooltip="Diese Funktion ist in der Demo deaktiviert." 
+          aria-label="Diese Funktion ist in der Demo deaktiviert."
+          >
+          Jetzt Sparen
+        </a>
+        <!-- Normal Mode -->
+        <!-- <a 
+        routerLink="/login"  class="btn btn-primary" >
+        Jetzt Sparen
+      </a> -->
+          <!-- <a routerLink="/signup" class="btn btn-secondary">Kostenlos testen</a> -->
+          <a (click)="loginAsGuest()" class="btn btn-guest">Demo</a>
         </div>
       </div>
     </div>
