@@ -55,6 +55,13 @@ export class UserProfileService {
     });
   }
 
+  resetUserData(): void {
+    localStorage.removeItem(this.PROFILE_KEY);
+    localStorage.removeItem(this.SETTINGS_KEY);
+    this.userProfileSubject.next(this.defaultProfile);
+    this.userSettingsSubject.next(this.defaultSettings);
+  }
+
   async loadUserProfile(): Promise<UserProfile> {
     try {
       const { data: user, error } = await this.authService.getUser();
