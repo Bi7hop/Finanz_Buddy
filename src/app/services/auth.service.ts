@@ -7,8 +7,8 @@ import { environment } from '../../environments/environment';
 import { SupabaseClient, Session, User } from '@supabase/supabase-js';
 
 export interface UserProfile {
-  id: string;         
-  user_id: string;   
+  id: string;
+  user_id: string;
   email?: string;
   first_name?: string;
   last_name?: string;
@@ -23,7 +23,7 @@ export interface UserProfile {
 export class AuthService {
   private currentUserProfileSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUserProfile$: Observable<UserProfile | null> = this.currentUserProfileSubject.asObservable();
-  
+
   private currentSupabaseUserSubject = new BehaviorSubject<User | null>(null);
   public currentSupabaseUser$: Observable<User | null> = this.currentSupabaseUserSubject.asObservable();
   public isLoggedIn$: Observable<boolean> = this.currentSupabaseUserSubject.pipe(map(user => !!user));
@@ -34,16 +34,16 @@ export class AuthService {
   private authLock = false;
   private authQueue: (() => void)[] = [];
 
-  private readonly GUEST_EMAIL = environment.guestMode.guestEmail; 
-  private readonly GUEST_PASSWORD = environment.guestMode.guestPassword; 
-  
+  private readonly GUEST_EMAIL = environment.guestMode.guestEmail;
+  private readonly GUEST_PASSWORD = environment.guestMode.guestPassword;
+
   constructor(
     private supabaseService: SupabaseService,
     private router: Router
   ) {
-    this.supabase = this.supabaseService.supabaseClient; // Korrigiert
+    this.supabase = this.supabaseService.supabaseClient;
     this.loadInitialSession();
-    
+
     this.supabase.auth.onAuthStateChange((event, session) => {
       const supabaseUser = session?.user ?? null;
       this.currentSupabaseUserSubject.next(supabaseUser);
@@ -54,103 +54,131 @@ export class AuthService {
         this.loadUserProfile(supabaseUser.id);
       } else if (event === 'SIGNED_OUT') {
         this.currentUserProfileSubject.next(null);
+        this.userCache = null;
+        this.lastCacheTime = 0;
       }
+      this.processQueue();
     });
   }
 
   private async loadInitialSession() {
-    const { data: { session } } = await this.supabase.auth.getSession();
-    const supabaseUser = session?.user ?? null;
-    this.currentSupabaseUserSubject.next(supabaseUser);
-    this.userCache = supabaseUser ? { user: supabaseUser } : null;
-    this.lastCacheTime = supabaseUser ? Date.now() : 0;
-    if (supabaseUser) {
-      await this.loadUserProfile(supabaseUser.id);
+    try {
+      const { data: { session }, error } = await this.supabase.auth.getSession();
+      if (error) {
+        this.currentSupabaseUserSubject.next(null);
+        this.currentUserProfileSubject.next(null);
+        this.userCache = null;
+        return;
+      }
+      const supabaseUser = session?.user ?? null;
+      this.currentSupabaseUserSubject.next(supabaseUser);
+      this.userCache = supabaseUser ? { user: supabaseUser } : null;
+      this.lastCacheTime = supabaseUser ? Date.now() : 0;
+      if (supabaseUser) {
+        await this.loadUserProfile(supabaseUser.id);
+      } else {
+        this.currentUserProfileSubject.next(null);
+      }
+    } catch (err) {
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
     }
   }
 
   async getUser(): Promise<{ data: { user: User | null }, error: any }> {
-    const CACHE_TTL = 5 * 60 * 1000; 
+    const CACHE_TTL = 5 * 60 * 1000;
     const now = Date.now();
-    
+
     if (this.userCache && (now - this.lastCacheTime < CACHE_TTL)) {
       return { data: this.userCache, error: null };
     }
-    
+
     if (this.authLock) {
       return new Promise((resolve) => {
         this.authQueue.push(() => {
-          resolve({ 
-            data: this.userCache || { user: null }, 
-            error: null 
+          resolve({
+            data: this.userCache || { user: null },
+            error: null
           });
         });
       });
     }
-    
+
     try {
       this.authLock = true;
       const { data, error } = await this.supabase.auth.getUser();
-      
+
       if (!error && data.user) {
         this.userCache = { user: data.user };
         this.lastCacheTime = now;
-        this.currentSupabaseUserSubject.next(data.user); 
-      } else if (error) {
-         this.currentSupabaseUserSubject.next(null); 
-         this.userCache = null;
+        this.currentSupabaseUserSubject.next(data.user);
+        if (!this.currentUserProfileSubject.getValue() || this.currentUserProfileSubject.getValue()?.user_id !== data.user.id) {
+          await this.loadUserProfile(data.user.id);
+        }
+      } else {
+        this.currentSupabaseUserSubject.next(null);
+        this.currentUserProfileSubject.next(null);
+        this.userCache = null;
+        this.lastCacheTime = 0;
       }
-      
+
       return { data: { user: data?.user ?? null }, error };
     } catch (error) {
-      console.error('Fehler beim Abrufen des Benutzers:', error);
       this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
       this.userCache = null;
+      this.lastCacheTime = 0;
       return { data: { user: null }, error };
     } finally {
       this.authLock = false;
       this.processQueue();
     }
   }
-  
+
   private processQueue(): void {
     while (this.authQueue.length > 0) {
       const callback = this.authQueue.shift();
-      if (callback) callback();
+      if (callback) {
+        try {
+          callback();
+        } catch (e) {}
+      }
     }
   }
 
   async loadUserProfile(userId: string) {
+    if (!userId) {
+      this.currentUserProfileSubject.next(null);
+      return;
+    }
     try {
-      const { data, error } = await this.supabase
+      const { data, error, status } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('user_id', userId)
-        .maybeSingle(); 
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error loading user profile:', error);
-        this.currentUserProfileSubject.next(null); 
+      if (error && status !== 406) {
+        this.currentUserProfileSubject.next(null);
         return;
       }
 
       if (!data) {
-        console.log('No profile found for user:', userId);
-        this.currentUserProfileSubject.next(null); 
+        this.currentUserProfileSubject.next(null);
         return;
       }
 
       const supabaseUser = this.currentSupabaseUserSubject.getValue();
       const userProfile: UserProfile = {
         ...data,
-        id: data.id, 
+        id: data.id,
         user_id: data.user_id,
-        email: supabaseUser?.email ?? data.email 
+        email: supabaseUser?.email ?? data.email
       };
 
       this.currentUserProfileSubject.next(userProfile);
     } catch (err) {
-      console.error('Unexpected error loading profile:', err);
       this.currentUserProfileSubject.next(null);
     }
   }
@@ -160,15 +188,18 @@ export class AuthService {
   }
 
   getCurrentSupabaseUser(): User | null {
-      return this.currentSupabaseUserSubject.value;
+    return this.currentSupabaseUserSubject.value;
   }
 
   isGuestUser(): boolean {
     const currentUser = this.currentSupabaseUserSubject.getValue();
-    return currentUser?.email === this.GUEST_EMAIL;
+    return !!currentUser && currentUser.email === this.GUEST_EMAIL;
   }
 
   async loginAsGuest(): Promise<{ success: boolean, error?: any }> {
+    if (this.getCurrentSupabaseUser()) {
+      return { success: false, error: 'A user is already logged in.' };
+    }
     try {
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: this.GUEST_EMAIL,
@@ -177,12 +208,14 @@ export class AuthService {
 
       if (error) throw error;
       if (!data.session || !data.user) throw new Error('Guest login did not return session or user.');
-      
+
       this.router.navigate(['/dashboard']);
       return { success: true };
 
     } catch (error) {
-      console.error('Error during guest login:', error);
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
       return { success: false, error };
     }
   }
@@ -201,79 +234,92 @@ export class AuthService {
       if (!data.user) throw new Error('No user data returned after signup');
 
       if (firstName || lastName) {
-         const { error: profileError } = await this.supabase
-           .from('profiles')
-           .insert({
-             user_id: data.user.id,
-             first_name: firstName,
-             last_name: lastName,
-             currency: 'EUR' 
-           });
-
-         if (profileError) {
-           console.warn('Profile creation during signup failed:', profileError);
-         }
+        const { error: profileError } = await this.supabase
+          .from('profiles')
+          .insert({
+            user_id: data.user.id,
+            first_name: firstName,
+            last_name: lastName,
+            currency: 'EUR'
+          });
       }
+
+      alert('Registrierung erfolgreich! Bitte überprüfe deine E-Mails, um dein Konto zu bestätigen.');
       return { success: true };
     } catch (err) {
-      console.error('Unexpected error during signup:', err);
       return { success: false, error: err };
     }
   }
 
   async signIn(email: string, password: string): Promise<{ success: boolean, error?: any }> {
-     if (this.isGuestUser()) {
-         console.warn("Attempted normal sign in while guest is logged in.");
-         return { success: false, error: 'Guest user already logged in.' };
-     }
+    if (this.isGuestUser()) {
+      return { success: false, error: 'Guest user is currently logged in. Please log out first.' };
+    }
     try {
-        const { data, error } = await this.supabase.auth.signInWithPassword({
-        email,
-        password
-        });
+      const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (!data.user) throw new Error('No user data returned after signin');
 
-        if (error) throw error;
-        if (!data.user) throw new Error('No user data returned after signin');
-
-        this.router.navigate(['/dashboard']);
-        return { success: true };
+      this.router.navigate(['/dashboard']);
+      return { success: true };
 
     } catch (error) {
-         console.error('Error during sign in:', error);
-         return { success: false, error };
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
+      return { success: false, error };
     }
   }
 
   async signOut() {
     const currentUser = this.getCurrentSupabaseUser();
-    const isCurrentlyGuest = currentUser?.email === this.GUEST_EMAIL;
+    const isCurrentlyGuest = !!currentUser && currentUser.email === this.GUEST_EMAIL;
 
-    if (isCurrentlyGuest && currentUser) {
-      console.log('Guest is logging out. Resetting data...');
-      try {
-        const { data: funcData, error: funcError } = await this.supabase.functions.invoke('reset-guest-data');
-        if (funcError) throw funcError; 
-        console.log('Guest data reset successful:', funcData);
-      } catch (functionError) {
-           console.error('Error calling reset-guest-data function:', functionError);
-           alert('Fehler beim Zurücksetzen der Gastdaten. Logout wird trotzdem versucht.');
+    // Direkt localStorage-Einträge löschen ohne auf UserProfileService zu verweisen
+    localStorage.removeItem('user_profile');
+    localStorage.removeItem('user_settings');
+
+    // Suche nach Supabase-relevanten Einträgen im localStorage
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+        keysToRemove.push(key);
       }
     }
-    
-    try {
-        const { error } = await this.supabase.auth.signOut();
-        if (error) throw error;
 
-        this.router.navigate(['/login']); 
-        return { success: true };
+    // Lösche die gefundenen Keys
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    if (isCurrentlyGuest) {
+      try {
+        const { error: funcError } = await this.supabase.functions.invoke('reset-guest-data');
+        if (funcError) {
+          alert('Fehler beim Zurücksetzen der Gastdaten. Der Logout wird trotzdem durchgeführt.');
+        }
+      } catch (functionError) {
+        alert('Ein unerwarteter Fehler ist beim Zurücksetzen der Gastdaten aufgetreten. Der Logout wird trotzdem durchgeführt.');
+      }
+    }
+
+    try {
+      const { error } = await this.supabase.auth.signOut();
+      if (error) throw error;
+
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
+      this.lastCacheTime = 0;
+      this.router.navigate(['/login']);
+      return { success: true };
 
     } catch (error) {
-        console.error('Error signing out:', error);
-        this.currentSupabaseUserSubject.next(null);
-        this.currentUserProfileSubject.next(null);
-        this.userCache = null;
-        this.router.navigate(['/login']); 
-        return { success: false, error };
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
+      this.lastCacheTime = 0;
+      this.router.navigate(['/login']);
+      return { success: false, error };
     }
   }
 
@@ -282,28 +328,26 @@ export class AuthService {
     if (!currentUser) {
       return { success: false, error: 'Not authenticated' };
     }
-    
+
     const { id, user_id, email, created_at, updated_at, ...updateData } = profileUpdateData;
 
     if (Object.keys(updateData).length === 0) {
-        console.warn("UpdateProfile called with no updatable data.");
-        return { success: true }; 
+      return { success: true };
     }
 
     try {
-        const { error } = await this.supabase
+      const { error } = await this.supabase
         .from('profiles')
         .update(updateData)
-        .eq('user_id', currentUser.id); 
+        .eq('user_id', currentUser.id);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        await this.loadUserProfile(currentUser.id); 
-        return { success: true };
+      await this.loadUserProfile(currentUser.id);
+      return { success: true };
 
-    } catch(error) {
-        console.error('Error updating profile:', error);
-        return { success: false, error };
+    } catch (error) {
+      return { success: false, error };
     }
   }
 }
