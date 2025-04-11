@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -20,6 +20,18 @@ interface Category {
   type: 'income' | 'expense';
   icon?: string;
 }
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-transaction-modal',
@@ -37,8 +49,13 @@ interface Category {
     MatIconModule,
     MatDialogModule
   ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: DateAdapter, useClass: NativeDateAdapter }
+  ],
   templateUrl: './transaction-modal.html',
-styleUrls: ['./transaction-modal.scss']
+  styleUrls: ['./transaction-modal.scss']
 })
 export class TransactionModalComponent implements OnInit {
   transactionForm!: FormGroup;
@@ -74,20 +91,17 @@ export class TransactionModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Initialize form and set up based on input data
     this.initializeForm();
 
     if (this.data) {
       this.transactionType = this.data.type || 'expense';
       
-      // If editing an existing transaction
       if (this.data.transaction) {
         this.isEditing = true;
         this.transactionId = this.data.transaction.id;
         this.loadTransaction(this.data.transaction);
       }
 
-      // Set form title and submit label
       this.formTitle = this.isEditing 
         ? (this.transactionType === 'income' ? 'Einnahme bearbeiten' : 'Ausgabe bearbeiten')
         : (this.transactionType === 'income' ? 'Neue Einnahme' : 'Neue Ausgabe');
