@@ -12,12 +12,36 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   styleUrls: ['./landing.component.scss']
 })
 export class LandingComponent {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {
+    this.checkForInvalidSession();
+  }
+  
+  private async checkForInvalidSession() {
+    try {
+      const currentUser = this.authService.getCurrentUser();
+      
+      if (currentUser) {
+        const isValid = await this.authService.validateSession();
+        
+        if (!isValid) {
+          await this.authService.signOut();
+        }
+      }
+    } catch (err) {}
+  }
   
   async loginAsGuest() {
-    const result = await this.authService.loginAsGuest();
-    if (!result.success) {
-      console.error('Guest-Login fehlgeschlagen:', result.error);
-    }
+    try {
+      await this.checkForInvalidSession();
+      
+      const result = await this.authService.loginAsGuest();
+      
+      if (!result.success) {
+        if (result.error && String(result.error).includes('already logged in')) {
+          await this.authService.signOut();
+          await this.authService.loginAsGuest();
+        }
+      }
+    } catch (error) {}
   }
 }
