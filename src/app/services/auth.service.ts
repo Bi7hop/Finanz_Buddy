@@ -136,6 +136,42 @@ export class AuthService {
     }
   }
 
+  async validateSession(): Promise<boolean> {
+    try {
+      if (!this.userCache && this.lastCacheTime === 0) {
+        return false;
+      }
+
+      const { data: { session }, error } = await this.supabase.auth.getSession();
+      
+      if (error || !session) {
+        this.currentSupabaseUserSubject.next(null);
+        this.currentUserProfileSubject.next(null);
+        this.userCache = null;
+        this.lastCacheTime = 0;
+        return false;
+      }
+      
+      if (session.expires_at) {
+        const expiresAt = new Date(session.expires_at * 1000);
+        const now = new Date();
+        
+        if (expiresAt < now) {
+          await this.signOut();
+          return false;
+        }
+      }
+
+      return true;
+    } catch (err) {
+      this.currentSupabaseUserSubject.next(null);
+      this.currentUserProfileSubject.next(null);
+      this.userCache = null;
+      this.lastCacheTime = 0;
+      return false;
+    }
+  }
+
   private processQueue(): void {
     while (this.authQueue.length > 0) {
       const callback = this.authQueue.shift();
@@ -191,16 +227,25 @@ export class AuthService {
     return this.currentSupabaseUserSubject.value;
   }
 
+  getCurrentUser(): User | null {
+    return this.currentSupabaseUserSubject.value;
+  }
+
   isGuestUser(): boolean {
     const currentUser = this.currentSupabaseUserSubject.getValue();
     return !!currentUser && currentUser.email === this.GUEST_EMAIL;
   }
 
   async loginAsGuest(): Promise<{ success: boolean, error?: any }> {
-    if (this.getCurrentSupabaseUser()) {
-      return { success: false, error: 'A user is already logged in.' };
-    }
     try {
+      const isValid = await this.validateSession();
+      
+      if (isValid && this.getCurrentSupabaseUser()) {
+        return { success: false, error: 'A user is already logged in.' };
+      } else if (!isValid && this.getCurrentSupabaseUser()) {
+        await this.signOut();
+      }
+
       const { data, error } = await this.supabase.auth.signInWithPassword({
         email: this.GUEST_EMAIL,
         password: this.GUEST_PASSWORD,
@@ -234,7 +279,7 @@ export class AuthService {
       if (!data.user) throw new Error('No user data returned after signup');
 
       if (firstName || lastName) {
-        const { error: profileError } = await this.supabase
+        await this.supabase
           .from('profiles')
           .insert({
             user_id: data.user.id,
@@ -244,7 +289,6 @@ export class AuthService {
           });
       }
 
-      alert('Registrierung erfolgreich! Bitte überprüfe deine E-Mails, um dein Konto zu bestätigen.');
       return { success: true };
     } catch (err) {
       return { success: false, error: err };
@@ -274,12 +318,10 @@ export class AuthService {
   async signOut() {
     const currentUser = this.getCurrentSupabaseUser();
     const isCurrentlyGuest = !!currentUser && currentUser.email === this.GUEST_EMAIL;
-
-    // Direkt localStorage-Einträge löschen ohne auf UserProfileService zu verweisen
+  
     localStorage.removeItem('user_profile');
     localStorage.removeItem('user_settings');
-
-    // Suche nach Supabase-relevanten Einträgen im localStorage
+  
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -287,32 +329,20 @@ export class AuthService {
         keysToRemove.push(key);
       }
     }
-
-    // Lösche die gefundenen Keys
+  
     keysToRemove.forEach(key => localStorage.removeItem(key));
-
-    if (isCurrentlyGuest) {
-      try {
-        const { error: funcError } = await this.supabase.functions.invoke('reset-guest-data');
-        if (funcError) {
-          alert('Fehler beim Zurücksetzen der Gastdaten. Der Logout wird trotzdem durchgeführt.');
-        }
-      } catch (functionError) {
-        alert('Ein unerwarteter Fehler ist beim Zurücksetzen der Gastdaten aufgetreten. Der Logout wird trotzdem durchgeführt.');
-      }
-    }
-
+  
     try {
       const { error } = await this.supabase.auth.signOut();
       if (error) throw error;
-
+  
       this.currentSupabaseUserSubject.next(null);
       this.currentUserProfileSubject.next(null);
       this.userCache = null;
       this.lastCacheTime = 0;
       this.router.navigate(['/login']);
       return { success: true };
-
+  
     } catch (error) {
       this.currentSupabaseUserSubject.next(null);
       this.currentUserProfileSubject.next(null);
